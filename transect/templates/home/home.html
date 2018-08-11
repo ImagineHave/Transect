@@ -5,5 +5,12 @@
 {% endblock %}
 
 {% block content %}
-"hello!"
+  <ul>
+    {% if g.useruser %}
+      <li><span>{{ g.username }}</span>
+    {% else %}
+      <li><a href="{{ url_for('auth.register') }}">Register</a>
+      <li><a href="{{ url_for('auth.login') }}">Log In</a>
+    {% endif %}
+  </ul>   
 {% endblock %}
