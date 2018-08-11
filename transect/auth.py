@@ -24,7 +24,7 @@ def register():
         elif get_username(username=username) is not None:
             error = 'User {} is already registered.'.format(username)
         if error is None:
-            set_user(username=username, password=password)
+            set_user(username, password)
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -39,10 +39,10 @@ def login():
         password = request.form['password']
         error = None
 
-        if  not get_userName(username=username):
+        if not get_userName(username=username):
             error = 'Incorrect username.'
         
-        if not check_password_for_user(username=username,password=password):
+        if not check_password_for_user(username,password):
             error = 'Password is required or incorrect.'
 
         if error is None:
