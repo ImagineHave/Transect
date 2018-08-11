@@ -35,18 +35,6 @@ def register():
         flash(error)
 
     return render_template('auth/register.html')
-
-
-@bp.route('/register2', methods=['GET', 'POST'])
-def register2():
-    form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        user = User(form.username.data, form.email.data,
-                    form.password.data)
-        db_session.add(user)
-        flash('Thanks for registering')
-        return redirect(url_for('login'))
-    return render_template('auth/register2.html', form=form)
  
     
 @bp.route('/login', methods=('POST','GET'))
