@@ -60,9 +60,9 @@ def load_logged_in_user():
     user_id = session.get('user_id')
 
     if user_id is None:
-        g.user = None
+        g.username = None
     else:
-        g.user = get_username(id=user_id)
+        g.username = get_username(id=user_id)
         
         
 @bp.route('/logout')
