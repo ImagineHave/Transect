@@ -54,9 +54,17 @@ def get_user(username=None, id=None):
     return None
     
 def get_username(username=None, id=None):
-    username=get_user(username=username,id=id)
-    if username:
-        return username['username']
+    user=get_user(username=username,id=id)
+    if user:
+        return user['username']
+    else:
+        return None
+
+
+def get_userid(username=None, id=None):
+    user=get_user(username=username,id=id)
+    if user:
+        return user['_id']
     else:
         return None
 
