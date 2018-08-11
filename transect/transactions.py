@@ -13,9 +13,9 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 # list all transactions
 @bp.route('/all')
-def index():
+def all():
     transactions = get_transactions_for_user(username=g.username)
-    return render_template('auth/all.html')
+    return render_template('transactions/all.html')
     
 
 @bp.route('/add', methods=('POST','GET'))
@@ -28,7 +28,7 @@ def add():
         payee = request.form['payee']
         transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
         insert_transaction(transaction)
-        return redirect(url_for('transactions'))
+        return redirect(url_for('transactions.all'))
     return render_template('transactions/add.html')
     
     

@@ -9,7 +9,6 @@
     {% if g.username %}
       <li><span>{{ g.username }}</span>
       <li><a href="{{ url_for('transactions.all') }}">Log In</a>
-      <li><a href="{{ url_for('accounts') }}">Log In</a>
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>
       <li><a href="{{ url_for('auth.login') }}">Log In</a>
