@@ -43,7 +43,7 @@ def login():
             error='Incorrect username.'
         
         if error is None and not check_password_for_user(username,password):
-            error='Password required or incorrect'
+            error='Password required or incorrect.'
 
         if error is None:
             session.clear()
@@ -67,7 +67,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('auth/login'))
+    return redirect(url_for('auth.login'))
     
     
 def login_required(view):

@@ -1,0 +1,3 @@
+graft transect/static
+graft transect/templates
+global-exclude *.pyc

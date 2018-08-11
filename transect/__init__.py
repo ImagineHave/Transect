@@ -13,7 +13,11 @@ def create_app(test_config=None):
     
     if test_config:
         app.config.from_mapping(test_config)
-      
+        
+    # a simple page that says hello
+    @app.route('/hello')
+    def hello():
+        return 'Hello, World!'
         
     # register the database commands on the app
     # we can initialise the database
