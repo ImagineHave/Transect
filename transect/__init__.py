@@ -43,3 +43,13 @@ def create_app(test_config=None):
     app.register_blueprint(transactions.bp)
     
     return app
+    
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.username is None:
+            return redirect(url_for('auth.login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
