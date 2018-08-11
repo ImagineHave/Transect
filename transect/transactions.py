@@ -18,7 +18,7 @@ def index():
     return render_template('auth/transactions.html')
     
 
-@bp.route('/add', methods=('POST'))
+@bp.route('/add', methods=('POST','GET'))
 def add():
     if request.method == 'POST':
         userid = session.get('user_id')
@@ -26,7 +26,7 @@ def add():
         payer = request.form['payer']
         amount = request.form['amount']
         payee = request.form['payee']
-        transaction = {'userid':userid 'date':date, 'payer':payer, 'amount':amount, 'payee':payee}
+        transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
         insert_transaction(transaction)
         return redirect(url_for('transactions'))
     return render_template('transactions/add.html')
