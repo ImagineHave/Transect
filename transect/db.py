@@ -87,7 +87,6 @@ def get_transactions_for_user(username=None, userid=None):
     user=get_user(username=username,id=userid)
     if user:
         userid = getUserId(user)
-        print (get_db()['transactions'].find({"userid":userid}))
         return get_db()['transactions'].find({"userid":userid})
     else:
         return None
@@ -101,8 +100,8 @@ def update_transaction(transactionId, transaction):
     return get_db()['transactions'].update({"_id":transactionId}, transaction)
     
 
-def delete_transaction(transactionid):
-    get_db()['transactions'].deleteOne({"_id":transactionId})
+def delete_transaction(transactionId):
+    get_db()['transactions'].remove({"_id":transactionId})
 
 
 @click.command('init-db')

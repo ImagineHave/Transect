@@ -15,6 +15,7 @@ def app():
     
     with app.app_context():
         get_db()['users'].insert_one({"username":'test',"password":generate_password_hash('test')})
+        get_db()['users'].insert_one({"username":'test1',"password":generate_password_hash('test1')})
     
     yield app
     
