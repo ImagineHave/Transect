@@ -35,12 +35,11 @@ def init_db():
 
 
 def get_username(username=None, id=None):
-    if not username and not id:
-        return None
-    if not id: 
+    if id: 
         return get_db()['users'].find_one({"username":username})['username']
-    if not username:
+    if username:
         return get_db()['users'].find_one({"_id":ObjectId(user_id)})['username']
+    return None
         
 
 def set_user(username=None, password=None):
