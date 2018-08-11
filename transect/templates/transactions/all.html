@@ -20,14 +20,11 @@
                 <div class="amount">by {{ transaction['amount'] }}</div>
                 <div class="payee">by {{ transaction['payee'] }}</div>
               </div>
-              <a class="action" href="{{ url_for('transactions.edit', id=transaction['id']) }}">Edit</a>
+              <a class="action" href="{{ url_for('transactions.edit', id=getTransactionId(transaction)) }}">Edit</a>
             </header>
             <p class="body">{{ post['body'] }}</p>
           </article>
         {% endfor %}
-        {% if not loop.last %}
-        <hr>
-        {% endif %}
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>
       <li><a href="{{ url_for('auth.login') }}">Log In</a>

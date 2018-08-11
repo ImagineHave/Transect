@@ -39,7 +39,7 @@ def add():
     
 
 @login_required
-def get_transaction(id):
+def getTransaction(id):
     transaction = get_transaction(id)
     
     if transaction is None:
@@ -50,11 +50,11 @@ def get_transaction(id):
         
     return transaction
     
-@bp.route('/<int:id>/edit', methods=('POST','GET'))
+@bp.route('/<id>/edit', methods=('POST','GET'))
 @login_required
 def edit(id):
     
-    transaction = get_transaction(id)
+    transaction = getTransaction(id)
     
     if request.method == 'POST':
         date = request.form['date']
@@ -68,10 +68,10 @@ def edit(id):
     return render_template('transaction/edit.html', post=post)   
     
     
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/<id>/delete', methods=('POST',))
 @login_required
 def delete(id):
-    get_post(id)
+    getTransaction(id)
     delete_transaction(id)
     return redirect(url_for('transactions.all'))    
     

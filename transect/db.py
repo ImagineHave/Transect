@@ -93,19 +93,23 @@ def get_transactions_for_user(username=None, userid=None):
 
 
 def get_transaction(id):
-    return get_db()['transactions'].find({"_id":id})
+    return get_db()['transactions'].find({"_id":ObjectId(id)})
 
 
 def insert_transaction(transaction):
     return get_db()['transactions'].insert_one(transaction)
 
 
-def update_transaction(transactionId, transaction):
-    return get_db()['transactions'].update({"_id":transactionId}, transaction)
+def update_transaction(id, transaction):
+    return get_db()['transactions'].update({"_id":ObjectId(id)}, transaction)
     
 
-def delete_transaction(transactionId):
-    get_db()['transactions'].remove({"_id":transactionId})
+def delete_transaction(id):
+    get_db()['transactions'].remove({"_id":ObjectId(id)})
+    
+    
+def getTransactionId(transaction):
+    return str(get_db()['transactions'].find_one(transaction)['_id'])
 
 
 @click.command('init-db')
