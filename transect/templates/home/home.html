@@ -6,7 +6,7 @@
 
 {% block content %}
   <ul>
-    {% if g.useruser %}
+    {% if g.username %}
       <li><span>{{ g.username }}</span>
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>

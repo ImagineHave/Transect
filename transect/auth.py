@@ -62,7 +62,6 @@ def load_logged_in_user():
         g.username = None
     else:
         g.username = get_username(id=user_id)
-        print(g.username)
         
         
 @bp.route('/logout')
