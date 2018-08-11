@@ -9,7 +9,7 @@ from transect.db import (
 )
 
 
-from transect.form.register import (
+from transect.forms.auth.register import (
     RegistrationForm
 )
 
