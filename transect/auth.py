@@ -1,12 +1,12 @@
 import functools
-from bson.objectid import ObjectId
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from werkzeug.security import check_password_hash, generate_password_hash
 
-from transect.db import get_db
+from transect.db import ( 
+    get_user, set_user, get_username, check_password_for_user
+)
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -15,16 +15,15 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
         error = None
         if not username:
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif db['users'].find_one({"username":username}) is not None:
+        elif get_username(username=username) is not None:
             error = 'User {} is already registered.'.format(username)
         if error is None:
-            db['users'].insert_one({"username":username,"password":generate_password_hash(password)})
+            set_user(username=username, password=password)
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -39,12 +38,11 @@ def login():
         password = request.form['password']
         db = get_db()
         error = None
-        user = db['users'].find_one({"username":username})
 
-        if user is None:
+        if  get_userName(username=username) is None:
             error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+        elif not check_password_for_user(username=username,password=password):
+            error = 'Password is required or incorrect.'
 
         if error is None:
             session.clear()
@@ -63,7 +61,7 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db()['users'].find_one({"_id":ObjectId(user_id)})
+        g.user = get_username(id=user_id)
         
         
 @bp.route('/logout')

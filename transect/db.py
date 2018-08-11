@@ -2,6 +2,8 @@ import pymongo
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
+from bson.objectid import ObjectId
+from werkzeug.security import check_password_hash, generate_password_hash
 
 def getClient():
     """get MongoClient."""
@@ -30,6 +32,34 @@ def init_db():
     collections = db.collection_names(include_system_collections=False)
     for collection in collections:
         db[collection].drop()
+
+
+def get_username(username=None, id=None):
+    if not username and not id:
+        return None
+    if not id: 
+        return get_db()['users'].find_one({"username":username})['username']
+    if not uesrname:
+        return get_db()['users'].find_one({"_id":ObjectId(user_id)})['username']
+        
+
+def set_user(username=None, password=None):
+    get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password)})
+    return None
+    
+    
+def check_password_for_user(username=None,password=None):
+    user = get_user(username=username)
+    check_password_hash(user['password'], password)
+
+
+def get_user(username=None, id=None):
+    if not username and not id:
+        return None
+    if not id: 
+        return get_db()['users'].find_one({"username":username})
+    if not uesrname:
+        return get_db()['users'].find_one({"_id":ObjectId(user_id)})
 
 
 @click.command('init-db')
