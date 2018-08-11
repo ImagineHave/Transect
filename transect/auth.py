@@ -62,7 +62,7 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = db['users'].find_one({"user_id":user_id})
+        g.user = db['users'].find_one({"user_id":id})
         
         
 @bp.route('/logout')
