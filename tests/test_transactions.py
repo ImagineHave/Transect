@@ -179,6 +179,40 @@ def test_deletingTransactions(client, app, auth):
     with app.app_context():
         assert get_transactions_for_user(userid=userid1).count() == 1
         assert get_transactions_for_user(userid=userid2).count() == 1
+
+
+def insertSomeTransactions(app):
+    with app.app_context():
+        user1 = get_db()['users'].find_one({'username':'test'})
+        user2 = get_db()['users'].find_one({'username':'test1'})
+        
+        username1 = user1['username']
+        username2 = user2['username']
+        
+        userid1 = str(user1['_id'])
+        userid2 = str(user2['_id'])
+        
+        t1 = {'userid':userid1,'date':1,'payer':'a','amount':5,'payee':'chicken'}
+        t2 = {'userid':userid1,'date':2,'payer':'b','amount':4,'payee':'lamb'}
+        t3 = {'userid':userid2,'date':3,'payer':'c','amount':3,'payee':'bumface'}
+        
+        get_db()['transactions'].insert_one(t1)
+        get_db()['transactions'].insert_one(t2)
+        get_db()['transactions'].insert_one(t3)
+        
+
+def test_allTransactions(client, app, auth):
     
-
-
+    insertSomeTransactions(app)
+    assert client.get('/transactions/all').status_code == 302
+    
+    auth.login()
+    
+    response = client.get('/transactions/all')
+    assert response.status_code == 200
+    assert b'chicken' in response.data
+    assert b'lamb' in response.data
+    assert b'bumface' not in response.data
+    
+    
+    
