@@ -5,7 +5,7 @@ from flask import (
 )
 
 from transect.db import ( 
-    get_transactions_for_user, insert_transaction
+    get_transactions_for_user, insert_transaction, get_transaction, update_transaction, delete_transaction
 )
 
 
@@ -34,6 +34,44 @@ def add():
         return redirect(url_for('transactions.all'))
     return render_template('transactions/add.html')
     
+    
+
+@login_required
+def get_transaction(id):
+    transaction = get_transaction(id)
+    
+    if transaction is None:
+        abort(404, "Transaction doesn't exist.")
+        
+    if transaction['userid'] != session.get('user_id'):
+        abort(403)    
+        
+    return transaction
+    
+@bp.route('/<int:id>/edit', methods=('POST','GET'))
+@login_required
+def edit(id):
+    
+    transaction = get_transaction(id)
+    
+    if request.method == 'POST':
+        date = request.form['date']
+        payer = request.form['payer']
+        amount = request.form['amount']
+        payee = request.form['payee']
+        transaction = {"date":date, "payer":payer, "amount":amount, "payee":payee}
+        update_transaction(transaction)
+        return redirect(url_for('transactions.all'))
+
+    return render_template('transaction/edit.html', post=post)   
+    
+    
+@bp.route('/<int:id>/delete', methods=('POST',))
+@login_required
+def delete(id):
+    get_post(id)
+    delete_transaction(id)
+    return redirect(url_for('transactions.all'))    
     
     
     

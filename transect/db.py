@@ -92,6 +92,10 @@ def get_transactions_for_user(username=None, userid=None):
         return None
 
 
+def get_transaction(id):
+    return get_db()['transactions'].find({"_id":id})
+
+
 def insert_transaction(transaction):
     return get_db()['transactions'].insert_one(transaction)
 
