@@ -12,7 +12,18 @@
   <ul>
     {% if g.username %}
         {% for transaction in transactions %}
-          <p>{{ transaction }} </p>
+          <article class="post">
+            <header>
+              <div>
+                <h1>{{ transaction['date'] }}</h1>
+                <div class="payer">by {{ transaction['payer'] }}</div>
+                <div class="amount">by {{ transaction['amount'] }}</div>
+                <div class="payee">by {{ transaction['payee'] }}</div>
+              </div>
+              <a class="action" href="{{ url_for('transactions.edit', id=transaction['id']) }}">Edit</a>
+            </header>
+            <p class="body">{{ post['body'] }}</p>
+          </article>
         {% endfor %}
         {% if not loop.last %}
         <hr>
