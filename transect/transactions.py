@@ -61,7 +61,7 @@ def edit(id):
         amount = request.form['amount']
         payee = request.form['payee']
         transaction = {"date":date, "payer":payer, "amount":amount, "payee":payee}
-        update_transaction(transaction)
+        update_transaction(id, transaction)
         return redirect(url_for('transactions.all'))
 
     return render_template('transactions/edit.html', transaction=transaction)   
