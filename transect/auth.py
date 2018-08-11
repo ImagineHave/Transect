@@ -39,7 +39,7 @@ def login():
         password = request.form['password']
         error = None
 
-        if not get_userName(username=username):
+        if not get_username(username=username):
             error = 'Incorrect username.'
         
         if not check_password_for_user(username,password):
