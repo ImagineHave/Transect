@@ -37,8 +37,8 @@ def register():
     return render_template('auth/register.html')
 
 
-@app.route('/register2', methods=['GET', 'POST'])
-def register():
+@bp.route('/register2', methods=['GET', 'POST'])
+def register2():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         user = User(form.username.data, form.email.data,
