@@ -1,1 +1,1 @@
-web: gunicorn "flask4j:create_app()"
+web: gunicorn "transect:create_app()"
