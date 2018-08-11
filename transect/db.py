@@ -39,7 +39,7 @@ def get_username(username=None, id=None):
         return None
     if not id: 
         return get_db()['users'].find_one({"username":username})['username']
-    if not uesrname:
+    if not username:
         return get_db()['users'].find_one({"_id":ObjectId(user_id)})['username']
         
 
