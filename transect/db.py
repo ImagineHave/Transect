@@ -35,9 +35,9 @@ def init_db():
 
 
 def get_username(username=None, id=None):
-    if id: 
+    if username: 
         return get_db()['users'].find_one({"username":username})['username']
-    if username:
+    if id:
         return get_db()['users'].find_one({"_id":ObjectId(user_id)})['username']
     return None
         
