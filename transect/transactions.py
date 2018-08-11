@@ -1,25 +1,36 @@
-from flask import Blueprint, jsonify, request
-from .db import get_db
+import functools
 
-bp = Blueprint('transactions', __name__, url_prefix='/feeder')
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
+)
 
-# a simple page that says feeder
+from transect.db import ( 
+    get_transactions_for_user, insert_transaction
+)
+
+
+bp = Blueprint('transactions', __name__, url_prefix='/transactions')
+
+# list all transactions
 @bp.route('/')
 def index():
-    return 'transactions'
+    transactions = get_transactions_for_user(username=g.username)
+    return render_template('auth/transactions.html')
     
-# put a transaction into the database
-@bp.route('/put', methods=['POST'])
-def put():
-    '''put in a transaction'''
-    dataDict = request.get_json()
-    db = get_db()
-    db.fields.insert(dataDict)  
-    return ('', 204)
+
+@bp.route('/add', methods=('POST'))
+def add():
+    if request.method == 'POST':
+        userid = session.get('user_id')
+        date = request.form['date']
+        payer = request.form['payer']
+        amount = request.form['amount']
+        payee = request.form['payee']
+        transaction = {'userid':userid 'date':date, 'payer':payer, 'amount':amount, 'payee':payee}
+        insert_transaction(transaction)
+        return redirect(url_for('transactions'))
+    return render_template('transactions/add.html')
     
-# get a transaction from the database
-@bp.route('/get', methods=['GET'])
-def get():
-    '''get a transaction'''
-    print("herro")
-    return 'load'
+    
+    
+    

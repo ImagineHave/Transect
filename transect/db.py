@@ -78,6 +78,31 @@ def check_password_for_user(username, password=None):
         user = get_user(username=username)
         return check_password_hash(user['password'], password)
 
+
+def getUserId(user):
+    return ObjectId(user['_id']
+
+
+def get_transactions_for_user(username=None, userid=None):
+    user=get_user(username=username,id=userid)
+    if user:
+        return get_db()['transactions'].find({"userid":getUserId(user))})
+    else:
+        return None
+
+
+def insert_transaction(transaction):
+    return get_db()['transactions'].insert_one(transaction)
+
+
+def update_transaction(transactionId, transaction):
+    return get_db()['transactions'].update({"_id":transactionId}, transaction)
+    
+
+def delete_transaction(transactionid):
+    get_db()['transactions'].deleteOne({"_id":transactionId})
+
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():

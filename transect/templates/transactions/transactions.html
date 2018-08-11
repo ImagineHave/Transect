@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Welcome home{% endblock %}</h1>
+  <h1>{% block title %}Transactions{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
   <ul>
     {% if g.username %}
-      <li><span>{{ g.username }}</span>
+        {% for transaction in transactions %}
+          <p>{{ transaction }} </p>
+        {% endfor %}
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>
       <li><a href="{{ url_for('auth.login') }}">Log In</a>
-      <li><a href="{{ url_for('transactions') }}">Log In</a>
-      <li><a href="{{ url_for('accounts') }}">Log In</a>
     {% endif %}
   </ul>   
 {% endblock %}

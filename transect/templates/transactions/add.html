@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Add transaction{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="date">Date</label>
+    <input name="date" id="date" required>
+    <label for="payer">Payer</label>
+    <input name="payer" id="payer" required>
+    <label for="amount">Amount</label>
+    <input name="amount" id="amount" required>
+    <label for="payee">Payee</label>
+    <input name="payee" id="payee" required>
+    <input type="submit" value="Submit">
+  </form>
+{% endblock %}
