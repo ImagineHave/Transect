@@ -93,7 +93,7 @@ def get_transactions_for_user(username=None, userid=None):
 
 
 def get_transaction(id):
-    return get_db()['transactions'].find({"_id":ObjectId(id)})
+    return get_db()['transactions'].find_one({"_id":ObjectId(id)})
 
 
 def insert_transaction(transaction):

@@ -78,7 +78,7 @@ def test_editingTransactions(client, app, auth):
         get_db()['transactions'].insert_one(t)
     
     
-    date = 'date'
+    date = '1'
     payer = 'payer'
     amount = 'amount'
     transaction1 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'1'}

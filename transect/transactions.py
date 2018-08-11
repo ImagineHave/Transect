@@ -38,7 +38,6 @@ def add():
     
     
 
-@login_required
 def getTransaction(id):
     transaction = get_transaction(id)
     
