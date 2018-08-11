@@ -24,7 +24,7 @@ def create_app(test_config=None):
     
     # a simple page that says hello
     @app.route('/')
-    def hello():
+    def index():
         return 'hello!'
         
     # register the database commands on the app
