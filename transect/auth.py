@@ -24,7 +24,6 @@ def register():
             error = 'User {} is already registered.'.format(username)
         if error is None:
             db['users'].insert_one({"username":username,"password":generate_password_hash(password)})
-            db.commit()
             return redirect(url_for('auth.login'))
 
         flash(error)
