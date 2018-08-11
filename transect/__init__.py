@@ -21,11 +21,6 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
-    
-    # a simple page that says hello
-    @app.route('/')
-    def index():
-        return 'hello!'
         
     # register the database commands on the app
     # we can initialise the database
@@ -35,6 +30,9 @@ def create_app(test_config=None):
     
     from . import auth
     app.register_blueprint(auth.bp)
+    
+    from . import home
+    app.register_blueprint(home.bp)
         
     from . import accounts
     app.register_blueprint(accounts.bp)
@@ -44,12 +42,3 @@ def create_app(test_config=None):
     
     return app
     
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.username is None:
-            return redirect(url_for('auth.login'))
-
-        return view(**kwargs)
-
-    return wrapped_view
