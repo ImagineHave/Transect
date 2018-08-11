@@ -34,18 +34,30 @@ def init_db():
         db[collection].drop()
 
 
-def get_username(username=None, id=None):
-    if username: 
-        return get_db()['users'].find_one({"username":username})['username']
-    if id:
-        return get_db()['users'].find_one({"_id":ObjectId(user_id)})['username']
-    return None
-        
-
 def set_user(username, password):
     get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password)})
     
+
+def getByUsername(username):
+    return get_db()['users'].find_one({"username":username})
     
+    
+def getByUserId(id):
+    return get_db()['users'].find_one({"_id":ObjectId(id)})
+    
+    
+def get_username(username=None, id=None):
+    get_user(username=username,id=id)['username']
+
+
+def get_user(username=None, id=None):
+    if not username and not id:
+        return None
+    if not id: 
+        return getByUsername(username)
+    if not username:
+        return getByUserId(id)
+
 def check_password_for_user(username, password=None):
     ''' make sure you cannot match none against none '''
     if not password:
@@ -53,16 +65,6 @@ def check_password_for_user(username, password=None):
     else:
         user = get_user(username=username)
         return check_password_hash(user['password'], password)
-
-
-def get_user(username=None, id=None):
-    if not username and not id:
-        return None
-    if not id: 
-        return get_db()['users'].find_one({"username":username})
-    if not uesrname:
-        return get_db()['users'].find_one({"_id":ObjectId(id)})
-
 
 @click.command('init-db')
 @with_appcontext
