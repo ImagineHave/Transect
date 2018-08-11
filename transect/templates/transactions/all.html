@@ -22,7 +22,6 @@
               </div>
               <a class="action" href="{{ url_for('transactions.edit', id=transaction['_id']) }}">Edit</a>
             </header>
-            <p class="body">{{ post['body'] }}</p>
           </article>
         {% endfor %}
     {% else %}
