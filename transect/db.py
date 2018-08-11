@@ -86,7 +86,7 @@ def getUserId(user):
 def get_transactions_for_user(username=None, userid=None):
     user=get_user(username=username,id=userid)
     if user:
-        return get_db()['transactions'].find({"userid":getUserId(user))})
+        return get_db()['transactions'].find({"userid":getUserId(user)})
     else:
         return None
 
