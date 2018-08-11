@@ -16,9 +16,9 @@
             <header>
               <div>
                 <h1>{{ transaction['date'] }}</h1>
-                <div class="payer">by {{ transaction['payer'] }}</div>
-                <div class="amount">by {{ transaction['amount'] }}</div>
-                <div class="payee">by {{ transaction['payee'] }}</div>
+                <div class="payer">  Payer: {{ transaction['payer'] }}</div>
+                <div class="amount"> Amount: {{ transaction['amount'] }}</div>
+                <div class="payee">  Payee: {{ transaction['payee'] }}</div>
               </div>
               <a class="action" href="{{ url_for('transactions.edit', id=transaction['_id']) }}">Edit</a>
             </header>
