@@ -7,5 +7,6 @@ from flask import (
 bp = Blueprint('home', __name__, url_prefix='/')
 
 @bp.route('/')
+@login_required
 def index():
     return render_template('home/home.html')

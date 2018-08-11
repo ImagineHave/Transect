@@ -13,6 +13,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 # list all transactions
 @bp.route('/all')
+@login_required
 def all():
     transactionsCursor = get_transactions_for_user(username=g.username)
     transactions = list(transactionsCursor)
@@ -20,6 +21,7 @@ def all():
     
 
 @bp.route('/add', methods=('POST','GET'))
+@login_required
 def add():
     if request.method == 'POST':
         userid = session.get('user_id')

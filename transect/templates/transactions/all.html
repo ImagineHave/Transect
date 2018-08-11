@@ -3,6 +3,7 @@
 {% block header %}
   <h1>{% block title %}Transactions{% endblock %}</h1>
   {% if g.username %}
+    <a class="action" href="{{ url_for('home') }}">New</a>
     <a class="action" href="{{ url_for('transactions.add') }}">New</a>
   {% endif %}
 {% endblock %}
@@ -13,6 +14,9 @@
         {% for transaction in transactions %}
           <p>{{ transaction }} </p>
         {% endfor %}
+        {% if not loop.last %}
+        <hr>
+        {% endif %}
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>
       <li><a href="{{ url_for('auth.login') }}">Log In</a>
