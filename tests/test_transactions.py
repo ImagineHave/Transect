@@ -93,12 +93,13 @@ def test_editingTransactions(client, app, auth):
         t2 = getTransactionId(get_db()['transactions'].find_one({"userid":userid1, "payee":'2'}))
         t3 = getTransactionId(get_db()['transactions'].find_one({"userid":userid2}))
         
+    transaction3 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'3'}
         
-    client.post('/transactions/'+t1+'/edit')
+    client.post('/transactions/'+t1+'/edit', data=transaction3)
     assert client.post('/transactions/'+t3+'/edit').status_code == 403
     
     with app.app_context():
-        assert get_transactions_for_user(userid=userid1).count() == 1
+        assert get_transactions_for_user(userid=userid1).count() == 2
         
 def test_deletingTransactions(client, app, auth):
     assert client.get('/transactions/add').status_code == 302
@@ -131,12 +132,13 @@ def test_deletingTransactions(client, app, auth):
         t2 = getTransactionId(get_db()['transactions'].find_one({"userid":userid1, "payee":'2'}))
         t3 = getTransactionId(get_db()['transactions'].find_one({"userid":userid2}))
         
-        
+    
     client.post('/transactions/'+t1+'/delete')
     assert client.post('/transactions/'+t3+'/delete').status_code == 403
     
     with app.app_context():
         assert get_transactions_for_user(userid=userid1).count() == 1
+        assert get_transactions_for_user(userid=userid2).count() == 1
     
 
 
