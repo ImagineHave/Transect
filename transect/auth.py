@@ -51,10 +51,6 @@ def login():
             session.clear()
             session['user_id'] = get_userid(username=username)
             return redirect(url_for('home.index'))
-
-        flash(error)
-
-    
     
 
 @bp.before_app_request
