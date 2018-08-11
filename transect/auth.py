@@ -9,11 +9,15 @@ from transect.db import (
 )
 
 from transect.forms.auth.login import LoginForm
+from transect.forms.auth.register import RegisterForm
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=('POST','GET'))
 def register():
+    
+    form = RegisterForm()
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -31,7 +35,7 @@ def register():
 
         flash(error)
 
-    return render_template('auth/register.html')
+    return render_template('auth/register.html', title='register', form=form)
  
     
 @bp.route('/login', methods=('POST','GET'))

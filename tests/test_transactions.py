@@ -6,13 +6,13 @@ def test_home(client, auth):
     assert client.get('/').status_code == 302
     
     response = client.get('/auth/login')
-    assert b"Log In" in response.data
-    assert b"Register" in response.data
+    assert b"login" in response.data
+    assert b"register" in response.data
 
     auth.login()
     response = client.get('/')
-    assert b'Log Out' in response.data
-    assert b'Welcome home' in response.data
+    assert b'logout' in response.data
+    assert b'home' in response.data
     
     
 def insertSomeTransactions(app):
