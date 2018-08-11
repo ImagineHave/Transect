@@ -80,7 +80,7 @@ def check_password_for_user(username, password=None):
 
 
 def getUserId(user):
-    return ObjectId(user['_id']
+    return ObjectId(user['_id'])
 
 
 def get_transactions_for_user(username=None, userid=None):
