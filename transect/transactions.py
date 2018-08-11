@@ -14,8 +14,9 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 # list all transactions
 @bp.route('/all')
 def all():
-    transactions = get_transactions_for_user(username=g.username)
-    return render_template('transactions/all.html')
+    transactionsCursor = get_transactions_for_user(username=g.username)
+    transactions = list(transactionsCursor)
+    return render_template('transactions/all.html', transactions=transactions)
     
 
 @bp.route('/add', methods=('POST','GET'))
