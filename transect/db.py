@@ -53,6 +53,7 @@ def get_user(username=None, id=None):
         return getByUserId(id)
     return None
     
+    
 def get_username(username=None, id=None):
     user=get_user(username=username,id=id)
     if user:
@@ -64,7 +65,7 @@ def get_username(username=None, id=None):
 def get_userid(username=None, id=None):
     user=get_user(username=username,id=id)
     if user:
-        return user['_id']
+        return str(user['_id'])
     else:
         return None
 

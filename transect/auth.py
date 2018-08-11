@@ -5,7 +5,7 @@ from flask import (
 )
 
 from transect.db import ( 
-    get_user, set_user, get_username, check_password_for_user
+    get_user, set_user, get_username, get_userid, check_password_for_user
 )
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -47,7 +47,7 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = str(user['_id'])
+            session['user_id'] = get_userid(username=username)
             return redirect(url_for('index'))
 
         flash(error)
