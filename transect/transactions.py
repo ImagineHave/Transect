@@ -64,7 +64,7 @@ def edit(id):
         update_transaction(transaction)
         return redirect(url_for('transactions.all'))
 
-    return render_template('transaction/edit.html', transaction=transaction)   
+    return render_template('transactions/edit.html', transaction=transaction)   
     
     
 @bp.route('/<id>/delete', methods=('POST',))
