@@ -61,7 +61,7 @@ def get_user(username=None, id=None):
     if not id: 
         return get_db()['users'].find_one({"username":username})
     if not uesrname:
-        return get_db()['users'].find_one({"_id":ObjectId(user_id)})
+        return get_db()['users'].find_one({"_id":ObjectId(id)})
 
 
 @click.command('init-db')
