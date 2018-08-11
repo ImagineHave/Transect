@@ -32,11 +32,14 @@ def create_app(test_config=None):
     # database connections get torn down after each request
     from . import db
     db.init_app(app)
+    
+    from . import auth
+    app.register_blueprint(auth.bp)
         
     from . import accounts
     app.register_blueprint(accounts.bp)
     
     from . import transactions
-    app.register_blueprint(transactions).bp)
+    app.register_blueprint(transactions.bp)
     
     return app
