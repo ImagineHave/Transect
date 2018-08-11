@@ -47,12 +47,11 @@ def getByUserId(id):
 
 
 def get_user(username=None, id=None):
-    if not username and not id:
-        return None
-    if not id: 
+    if username: 
         return getByUsername(username)
-    if not username:
+    if id:
         return getByUserId(id)
+    return None
     
 def get_username(username=None, id=None):
     get_user(username=username,id=id)['username']
