@@ -44,10 +44,6 @@ def getByUsername(username):
     
 def getByUserId(id):
     return get_db()['users'].find_one({"_id":ObjectId(id)})
-    
-    
-def get_username(username=None, id=None):
-    get_user(username=username,id=id)['username']
 
 
 def get_user(username=None, id=None):
@@ -57,6 +53,10 @@ def get_user(username=None, id=None):
         return getByUsername(username)
     if not username:
         return getByUserId(id)
+    
+def get_username(username=None, id=None):
+    get_user(username=username,id=id)['username']
+
 
 def check_password_for_user(username, password=None):
     ''' make sure you cannot match none against none '''
