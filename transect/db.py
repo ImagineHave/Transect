@@ -46,7 +46,7 @@ def set_user(username, password):
     get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password)})
     
     
-def check_password_for_user(username=None,password=None):
+def check_password_for_user(username, password):
     user = get_user(username=username)
     check_password_hash(user['password'], password)
 
