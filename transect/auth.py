@@ -42,7 +42,7 @@ def login():
         if not get_username(username=username):
             error = 'Incorrect username.'
         
-        if not check_password_for_user(username,password):
+        if error is None and not check_password_for_user(username,password):
             error = 'Password is required or incorrect.'
 
         if error is None:
