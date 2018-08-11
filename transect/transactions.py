@@ -12,10 +12,10 @@ from transect.db import (
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 # list all transactions
-@bp.route('/')
+@bp.route('/all')
 def index():
     transactions = get_transactions_for_user(username=g.username)
-    return render_template('auth/transactions.html')
+    return render_template('auth/all.html')
     
 
 @bp.route('/add', methods=('POST','GET'))
