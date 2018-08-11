@@ -40,18 +40,19 @@ def login():
         error = None
 
         if not get_username(username=username):
-            flash('Incorrect username.')
-            return render_template('auth/login.html')
+            error='Incorrect username.'
         
         if error is None and not check_password_for_user(username,password):
-            flash('Password required or incorrect')
-            return render_template('auth/login.html')
+            error='Password required or incorrect'
 
         if error is None:
             session.clear()
             session['user_id'] = get_userid(username=username)
             return redirect(url_for('home.index'))
-    
+            
+    flash(error)
+            
+    return render_template('auth/login.html')
 
 @bp.before_app_request
 def load_logged_in_user():
