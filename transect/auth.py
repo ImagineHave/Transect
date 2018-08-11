@@ -50,7 +50,7 @@ def login():
             session['user_id'] = get_userid(username=username)
             return redirect(url_for('home.index'))
             
-    flash(error)
+        flash(error)
             
     return render_template('auth/login.html')
 
