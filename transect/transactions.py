@@ -56,11 +56,15 @@ def edit(id):
     transaction = getTransaction(id)
     
     if request.method == 'POST':
+        userid = session.get('user_id')
+        
+        print(request.form)
+        
         date = request.form['date']
         payer = request.form['payer']
         amount = request.form['amount']
         payee = request.form['payee']
-        transaction = {"date":date, "payer":payer, "amount":amount, "payee":payee}
+        transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
         update_transaction(id, transaction)
         return redirect(url_for('transactions.all'))
 
