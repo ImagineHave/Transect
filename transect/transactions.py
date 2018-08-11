@@ -57,9 +57,6 @@ def edit(id):
     
     if request.method == 'POST':
         userid = session.get('user_id')
-        
-        print(request.form)
-        
         date = request.form['date']
         payer = request.form['payer']
         amount = request.form['amount']

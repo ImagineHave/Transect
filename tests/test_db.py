@@ -3,7 +3,7 @@ import pymongo
 from werkzeug.security import check_password_hash, generate_password_hash
 from transect.db import (
     get_db, set_user, getByUsername, getByUserId, get_user, get_username, get_userid, check_password_for_user, getUserId, get_transactions_for_user, insert_transaction,
-    update_transaction, delete_transaction
+    update_transaction, delete_transaction, getTransactionId
     )
 
 def test_get_close_db(app):
@@ -182,4 +182,16 @@ def test_delete_transaction(app):
         
         assert ts1.count() == 1
         assert ts2.count() == 1  
+        
+def test_getTransactionId(app):
+    with app.app_context():
+        user1 = get_db()['users'].find_one({'username':'test'})
+        userid1 = getUserId(user1)
+        t1 = {'userid':userid1,'date':1,'payer':'a','amount':5,'payee':'c'}
+        get_db()['transactions'].insert_one(t1)
+        tid = get_db()['transactions'].find_one({"userid":userid1,'payer':'a'})['_id']
+        
+        assert str(get_db()['transactions'].find_one({"userid":userid1,'payer':'a'})['_id']) == getTransactionId(tid)
+        
+        
         
