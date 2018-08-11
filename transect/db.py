@@ -54,7 +54,11 @@ def get_user(username=None, id=None):
     return None
     
 def get_username(username=None, id=None):
-    get_user(username=username,id=id)['username']
+    username=get_user(username=username,id=id)
+    if username:
+        return username['username']
+    else:
+        return None
 
 
 def check_password_for_user(username, password=None):
