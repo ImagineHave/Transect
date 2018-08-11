@@ -9,12 +9,12 @@
     <body>
         <div>
             Menu:
-            <a class="action" href="{{ url_for('auth.login') }}">login</a>
             {% if g.username %}
-              <a class="action" href="{{ url_for('home.index') }}">home</a>
-              <a class="action" href="{{ url_for('auth.logout') }}">logout</a>
+                <a class="action" href="{{ url_for('home.index') }}">home</a>
+                <a class="action" href="{{ url_for('auth.logout') }}">logout</a>
             {% else %}
-              <a class="action" href="{{ url_for('auth.register') }}">register</a>
+                <a class="action" href="{{ url_for('auth.login') }}">login</a>
+                <a class="action" href="{{ url_for('auth.register') }}">register</a>
             {% endif %}
         </div>
         <hr>
