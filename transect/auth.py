@@ -8,6 +8,11 @@ from transect.db import (
     get_user, set_user, get_username, get_userid, check_password_for_user
 )
 
+
+from transect.form.register import (
+    RegistrationForm
+)
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=('POST','GET'))
@@ -30,7 +35,19 @@ def register():
         flash(error)
 
     return render_template('auth/register.html')
-    
+
+
+@app.route('/register2', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(form.username.data, form.email.data,
+                    form.password.data)
+        db_session.add(user)
+        flash('Thanks for registering')
+        return redirect(url_for('login'))
+    return render_template('auth/register2.html', form=form)
+ 
     
 @bp.route('/login', methods=('POST','GET'))
 def login():

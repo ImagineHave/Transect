@@ -4,3 +4,4 @@ pymongo
 flask-jwt-extended
 gunicorn
 requests
+wtforms=2.2.1
