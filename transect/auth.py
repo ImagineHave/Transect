@@ -58,6 +58,8 @@ def login():
 def load_logged_in_user():
     user_id = session.get('user_id')
 
+    print user_id
+
     if user_id is None:
         g.username = None
     else:
@@ -67,7 +69,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('auth/login.html'))
     
     
 def login_required(view):
