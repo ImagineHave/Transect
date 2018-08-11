@@ -21,7 +21,7 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif get_username(username=username) is not None:
+        elif get_username(username=username):
             error = 'User {} is already registered.'.format(username)
         if error is None:
             set_user(username, password)
