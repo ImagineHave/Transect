@@ -5,3 +5,4 @@ flask-jwt-extended
 gunicorn
 requests
 wtforms==2.2.1
+flask-wtf==0.14.2

@@ -8,7 +8,7 @@ from transect.db import (
     get_user, set_user, get_username, get_userid, check_password_for_user
 )
 
-from app.forms import LoginForm
+from transect.forms.auth.login import LoginForm
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
