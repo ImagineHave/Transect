@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="bulkTransactions" />
-    <input type="submit"/>
-  </form>
+  {% if g.username %}
+    <form method="post" enctype="multipart/form-data">
+      <input type="file" name="bulkTransactions" />
+      <input type="submit"/>
+    </form>
+  {% endif %}
 {% endblock %}
