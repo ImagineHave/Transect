@@ -1,4 +1,6 @@
 import functools
+import io
+import csv
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -73,7 +75,23 @@ def edit(id):
 def delete(id):
     getTransaction(id)
     delete_transaction(id)
-    return redirect(url_for('transactions.all'))    
+    return redirect(url_for('transactions.all'))  
     
-    
+
+def transform(text_file_contents):
+    return text_file_contents.replace("=", ",")
+
+
+@bp.route('/bulk', methods=('POST',))
+@login_required
+def bulk():
+    if request.method == 'POST':
+        file = request.files['bulkTransactions']
+        print(file)
+        stream = io.StringIO(f.stream.read().decode("UTF8"), newline=None)
+        csv_input = csv.reader(stream)
+        stream.seek(0)
+        result = transform(stream.read())
+        
+    return render_template('transactions/bulk.html')
     
