@@ -33,10 +33,10 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
         
-    from . import feeder
-    app.register_blueprint(feeder.bp)
+    from . import accounts
+    app.register_blueprint(accounts.bp)
     
-    from . import reader
-    app.register_blueprint(reader.bp)
+    from . import transactions
+    app.register_blueprint(transactions).bp)
     
     return app
