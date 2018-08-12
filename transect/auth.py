@@ -41,7 +41,7 @@ def register():
 @bp.route('/login', methods=('POST','GET'))
 def login():
     
-    form = LoginForm()
+    form = LoginForm(request.form)
     
     if form.validate_on_submit():
         username = request.form['username']
@@ -58,7 +58,7 @@ def login():
             
         flash(error)
             
-    return render_template('auth/login.html', title='login', form=form)
+    return render_template('auth/login.html', form=form)
 
 
 @bp.before_app_request
