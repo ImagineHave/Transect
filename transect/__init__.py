@@ -39,8 +39,9 @@ def create_app(test_config=None):
     from . import transactions
     app.register_blueprint(transactions.bp)
     
+    aap.register_error_handler(CSRFError, handle_csrf_error)
+    
     return app
     
-@app.errorhandler(CSRFError)
 def handle_csrf_error(e):
     return render_template('csrf_error.html', reason=e.description), 400
