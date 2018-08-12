@@ -1,153 +1,55 @@
 import pytest
 from flask import g, session
 from transect.db import get_db, update_transaction, getUserId, get_transactions_for_user, getTransactionId
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 def test_home(client, auth):
-    assert client.get('/').status_code == 302
+    index = '/'
+    response = auth.openAndFollow(index)
+    assert b"login" in response.data
+    assert b"register" in response.data
     
-    response = client.get('/auth/login')
+    login = '/auth/login'
+    response = auth.openAndFollow(login)
     assert b"login" in response.data
     assert b"register" in response.data
 
     auth.login()
-    response = client.get('/')
+    response = auth.openAndFollow(index)
     assert b'logout' in response.data
     assert b'home' in response.data
+
+
+def createTransactions(userid, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
+    transactions = []
+    for i in range(count):
+        dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i-1)
+        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':dt}
+        transactions.append(t)
+    return transactions
         
         
-def test_addingTransactions(client, app, auth):
-    assert client.get('/transactions/add').status_code == 302
+def test_addingTransactions(client, app, auth, testUser):
+    add = '/transactions/add'
+    response = auth.openAndFollow(add)
+    assert b"login" in response.data
+    assert b"register" in response.data
     
     auth.login()
-    assert client.get('/transactions/add').status_code == 200
-    with app.app_context():
-        user1 = get_db()['users'].find_one({'username':'test'})
-        user2 = get_db()['users'].find_one({'username':'test1'})
-        userid1 = getUserId(user1)
-        userid2 = getUserId(user2)
-        t = {'userid':userid2,'date':3,'payer':'c','amount':3,'payee':'a'}
-        get_db()['transactions'].insert_one(t)
+    response = auth.openAndFollow(add) 
     
-    date = 'date'
-    payer = 'payer'
-    amount = 'amount'
-    payee = 'payee'
-    transaction1 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":payee+'1'}
-    transaction2 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":payee+'2'}
+    loggedInId = testUser.getUserid()
+    otherId = testUser.getUserid('test1')
     
-    client.post('/transactions/add', data=transaction1)
-    client.post('/transactions/add', data=transaction2)
+    t1s = createTransactions(loggedInId, count=3)
+    t2s = createTransactions(otherId, count=2)
+    
+    for transaction in t1s:
+        client.post('/transactions/add', data=transaction)
+       
+    for transaction in t2s:
+        get_db()['transactions'].insert_one(transaction)
     
     with app.app_context():
-        assert get_transactions_for_user(userid=userid1).count() == 2
-
-
-def test_editingTransactions(client, app, auth):
-    assert client.get('/transactions/add').status_code == 302
-    
-    auth.login()
-    assert client.get('/transactions/add').status_code == 200
-    with app.app_context():
-        user1 = get_db()['users'].find_one({'username':'test'})
-        user2 = get_db()['users'].find_one({'username':'test1'})
-        
-        userid1 = getUserId(user1)
-        userid2 = getUserId(user2)
-        
-        t = {'userid':userid2,'date':3,'payer':'c','amount':3,'payee':'a'}
-        get_db()['transactions'].insert_one(t)
-    
-    
-    date = '1'
-    payer = 'payer'
-    amount = 'amount'
-    transaction1 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'1'}
-    transaction2 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'2'}
-    
-    client.post('/transactions/add', data=transaction1)
-    client.post('/transactions/add', data=transaction2)
-    
-    with app.app_context():
-        assert get_transactions_for_user(userid=userid1).count() == 2
-        t1 = getTransactionId(get_db()['transactions'].find_one({"userid":userid1, "payee":'1'}))
-        t3 = getTransactionId(get_db()['transactions'].find_one({"userid":userid2}))
-        
-    transaction3 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'3'}
-        
-    client.post('/transactions/'+t1+'/edit', data=transaction3)
-    assert client.post('/transactions/'+t3+'/edit').status_code == 403
-    
-    with app.app_context():
-        assert get_transactions_for_user(userid=userid1).count() == 2
-        
-def test_deletingTransactions(client, app, auth):
-    assert client.get('/transactions/add').status_code == 302
-    
-    auth.login()
-    assert client.get('/transactions/add').status_code == 200
-    with app.app_context():
-        user1 = get_db()['users'].find_one({'username':'test'})
-        user2 = get_db()['users'].find_one({'username':'test1'})
-        
-        userid1 = getUserId(user1)
-        userid2 = getUserId(user2)
-        
-        t = {'userid':userid2,'date':3,'payer':'c','amount':3,'payee':'a'}
-        get_db()['transactions'].insert_one(t)
-    
-    
-    date = 'date'
-    payer = 'payer'
-    amount = 'amount'
-    transaction1 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'1'}
-    transaction2 = {"userid":userid1, "date":date, "payer":payer, "amount":amount, "payee":'2'}
-    
-    client.post('/transactions/add', data=transaction1)
-    client.post('/transactions/add', data=transaction2)
-    
-    with app.app_context():
-        assert get_transactions_for_user(userid=userid1).count() == 2
-        t1 = getTransactionId(get_db()['transactions'].find_one({"userid":userid1, "payee":'1'}))
-        t3 = getTransactionId(get_db()['transactions'].find_one({"userid":userid2}))
-        
-    
-    client.post('/transactions/'+t1+'/delete')
-    assert client.post('/transactions/'+t3+'/delete').status_code == 403
-    
-    with app.app_context():
-        assert get_transactions_for_user(userid=userid1).count() == 1
-        assert get_transactions_for_user(userid=userid2).count() == 1
-
-
-def insertSomeTransactions(app):
-    with app.app_context():
-        user1 = get_db()['users'].find_one({'username':'test'})
-        user2 = get_db()['users'].find_one({'username':'test1'})
-        
-        userid1 = str(user1['_id'])
-        userid2 = str(user2['_id'])
-        
-        t1 = {'userid':userid1,'date':1,'payer':'a','amount':5,'payee':'chicken'}
-        t2 = {'userid':userid1,'date':2,'payer':'b','amount':4,'payee':'lamb'}
-        t3 = {'userid':userid2,'date':3,'payer':'c','amount':3,'payee':'bumface'}
-        
-        get_db()['transactions'].insert_one(t1)
-        get_db()['transactions'].insert_one(t2)
-        get_db()['transactions'].insert_one(t3)
-        
-
-def test_allTransactions(client, app, auth):
-    
-    insertSomeTransactions(app)
-    assert client.get('/transactions/all').status_code == 302
-    
-    auth.login()
-    
-    response = client.get('/transactions/all')
-    assert response.status_code == 200
-    assert b'chicken' in response.data
-    assert b'lamb' in response.data
-    assert b'bumface' not in response.data
-    
-    
-    
+        assert get_transactions_for_user(userid=userid1).count() == 3

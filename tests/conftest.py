@@ -3,6 +3,8 @@ import pytest
 from transect import create_app
 from transect.db import get_db, init_db
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 @pytest.fixture
@@ -51,6 +53,13 @@ class AuthActions(object):
             data={'username': username, 'password': password, 'email': email, 'confirm':confirm},
             follow_redirects=True
         )
+        
+    def openAndFollow(self,url,data=None):
+        return self._client.post(
+            url, 
+            data, 
+            follow_redirects=True
+        )
 
 @pytest.fixture
 def auth(client):
@@ -62,12 +71,37 @@ class TestUser(object):
         
     def getUserid(self, username='test'):
         with self.app.app_context():
-            return str(get_db()['users'].find_one({"username":'test'})['_id'])
+            return str(get_db()['users'].find_one({"username":username})['_id'])
             
     def getUsername(self, username='test'):
         with self.app.app_context():
-            return get_db()['users'].find_one({"username":'test'})['username']
+            return get_db()['users'].find_one({"username":username})['username']
+            
+    def getUserFromUsername(self, username='test'):
+        with self.app.app_context():
+            return get_db()['user'].find_one({"username":username})
+            
+    def getUserFromUserid(self, userid):
+        with self.app.app_context():
+            return get_db()['user'].find_one({"username":ObjectId(userid)})
     
 @pytest.fixture
 def testUser(app):
     return TestUser(app)
+    
+
+class TestTransactions(object):
+    def __init__(self, app):
+        self.app = app
+        
+    def createTransaction(self, userid, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
+        with self.app.app_context():
+            for i in count:
+                dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i-1)
+                t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':dt}
+                get_db()['transaction'].insert_one(t)
+            
+@pytest.fixture
+def testTransactions(app):
+    return TestTransactions(app)
+    
