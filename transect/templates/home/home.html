@@ -1,17 +1,10 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Welcome home{% endblock %}</h1>
+  {% block title %}home:
+  <a href="{{ url_for('transactions.all') }}">Transactions</a>
+  {% endblock %}
 {% endblock %}
 
 {% block content %}
-  <ul>
-    {% if g.username %}
-      <li><span>{{ g.username }}</span>
-      <li><a href="{{ url_for('transactions.all') }}">Transactions</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
-  </ul>   
 {% endblock %}

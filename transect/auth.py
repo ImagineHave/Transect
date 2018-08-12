@@ -48,12 +48,9 @@ def login():
         password = request.form['password']
         error = None
 
-        if not get_username(username=username):
-            error='Incorrect username.'
+        if not get_username(username=username) and not check_password_for_user(username,password):
+            error='invalid details.'
         
-        if error is None and not check_password_for_user(username,password):
-            error='Password required or incorrect.'
-
         if error is None:
             session.clear()
             session['user_id'] = get_userid(username=username)
