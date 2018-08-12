@@ -39,7 +39,7 @@ def create_app(test_config=None):
     from . import transactions
     app.register_blueprint(transactions.bp)
     
-    aap.register_error_handler(CSRFError, handle_csrf_error)
+    app.register_error_handler(CSRFError, handle_csrf_error)
     
     return app
     
