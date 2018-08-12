@@ -48,6 +48,8 @@ def login():
         password = request.form['password']
 
         print('hello')
+        
+        session['test'] = 'poop'
 
         if validateUserPassword(username,password):
             print('hello?')

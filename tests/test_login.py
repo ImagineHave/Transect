@@ -19,6 +19,7 @@ def test_login(client, app, auth, testUser):
     with client:
         ''' home page with logout '''
         response = client.get('/')
+        response.status_code == 200
         print(session)
         assert session['userid'] == testUser.getUserid()
         assert g.username == 'test'
