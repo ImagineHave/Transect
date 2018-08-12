@@ -3,16 +3,50 @@ from flask import g, session
 from transect.db import get_db
 
 
-def test_register(client, app, auth):
-    assert client.get('/auth/register').status_code == 200
-    
-    username = "t3st"
-    password = "somePassword"
-    email = "some@email.com"
-    
-    response = auth.register(username,password,email)
-    
-    print(response.data)
+def test_register(client, app, auth, testUser):
+    with client:
+        username = "t3st"
+        password = "somePassword"
+        email = "some@email.com"
+        ''' attemp login '''
+        response = auth.login(username, password)
+        message = b'invalid logon details.'
+        assert message in response.data
+        
+        ''' exists '''
+        response = client.get('/auth/register')
+        assert response.status_code == 200
+        assert b'value="register"' in response.data
+        
+        ''' register '''
+        response = auth.register(username,password,password,email)
+        assert response.status_code == 200
+        assert b'login' in response.data
+        assert b'register' in response.data
+        print(response.data)
+        
+        with app.app_context():
+            user = get_db()['users'].find_one({'username':username})
+            assert user is not None
+            userid = str(user['_id'])
+            
+        
+        response = auth.login(username, password)
+        assert response.status_code == 200
+        assert b'home' in response.data
+        assert b'login' not in response.data
+        assert b'register' not in response.data
+        assert session['userid'] == userid
+        assert g.username == username
+        
 
-    with app.app_context():
-        assert get_db()['users'].find_one({'username':username}) is not None
+@pytest.mark.parametrize(('username', 'password', 'confirm', 'email', 'message'), (
+    ('', 'test', 'test', 'email@email.com', b'username required.'),
+    ('test', '', 'test', 'email@email.com', b'password required.'),
+    ('test', 'test', 'test1', 'email@email.com', b'passwords must match.'),
+    ('test', 'test', 'test', '', b'email address required.'),
+    ('test', 'test', 'test', '3453', b'email address required.'),
+))
+def test_login_validate_input(auth, username, password, confirm, email, message):
+    response = auth.register(username, password, confirm, email)
+    assert message in response.data

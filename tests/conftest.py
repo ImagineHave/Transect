@@ -45,10 +45,10 @@ class AuthActions(object):
             follow_redirects=True
         )
 
-    def register(self, username, password, email):
+    def register(self, username, password, confirm, email):
         return self._client.post(
             '/auth/register',
-            data={'username': username, 'password': password, 'email': email},
+            data={'username': username, 'password': password, 'email': email, 'confirm':confirm},
             follow_redirects=True
         )
 

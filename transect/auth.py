@@ -18,10 +18,16 @@ def register():
     
     form = RegisterForm()
     
+    
+    
     if form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
+
+        print(username)
+        print(password)
+        print(email)
 
         if getUseridFromUsername(username=username) is None:
             createUser(username, password, email)
