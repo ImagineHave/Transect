@@ -1,19 +1,17 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Add transaction{% endblock %}</h1>
+  <h1>{% block title %}add transaction{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="date">Date</label>
-    <input name="date" id="date" required>
-    <label for="payer">Payer</label>
-    <input name="payer" id="payer" required>
-    <label for="amount">Amount</label>
-    <input name="amount" id="amount" required>
-    <label for="payee">Payee</label>
-    <input name="payee" id="payee" required>
-    <input type="submit" value="Submit">
-  </form>
+<form method=post>
+  <dl>
+    {{ render_field(form.payer) }}
+    {{ render_field(form.payee) }}
+    {{ render_field(form.amount) }}
+    {{ render_field(form.date) }}
+  </dl>
+  <p>{{ form.submit() }}</p>
+</form>
 {% endblock %}

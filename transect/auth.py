@@ -18,8 +18,6 @@ def register():
     
     form = RegisterForm()
     
-    
-    
     if form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']

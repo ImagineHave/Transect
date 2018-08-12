@@ -10,6 +10,8 @@ from transect.db import (
     get_transactions_for_user, insert_transaction, get_transaction, update_transaction, delete_transaction
 )
 
+from transect.forms.transactions import AddForm
+
 from werkzeug.exceptions import abort
 from transect.auth import login_required
 
@@ -27,7 +29,10 @@ def all():
 @bp.route('/add', methods=('POST','GET'))
 @login_required
 def add():
-    if request.method == 'POST':
+    
+    form = AddForm()
+    
+    if form.validate_on_submit():
         userid = session.get('user_id')
         date = request.form['date']
         payer = request.form['payer']
@@ -36,7 +41,8 @@ def add():
         transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
         insert_transaction(transaction)
         return redirect(url_for('transactions.all'))
-    return render_template('transactions/add.html')
+    
+    return render_template('transactions/add.html', form=form)
     
     
 
