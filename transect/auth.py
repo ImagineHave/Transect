@@ -1,4 +1,5 @@
 import functools
+from flask_wtf.csrf import CSRFError
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -76,3 +77,7 @@ def login_required(view):
             return redirect(url_for('auth.login'))
         return view(**kwargs)
     return wrapped_view
+    
+@csrf.error_handler
+def csrf_error(reason):
+    return render_template('error.html', reason=reason)
