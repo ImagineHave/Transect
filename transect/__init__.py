@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFError
 
 def create_app(test_config=None):
     # create and configure the app
@@ -40,3 +41,6 @@ def create_app(test_config=None):
     
     return app
     
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return render_template('csrf_error.html', reason=e.description), 400
