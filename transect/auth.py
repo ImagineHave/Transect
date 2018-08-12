@@ -46,7 +46,7 @@ def login():
     if request.method == "POST" and form.validate():
         username = request.form['username']
         password = request.form['password']
-        error = None
+        error = 'wiggle'
 
         if not get_username(username=username) and not check_password_for_user(username,password):
             error='invalid details.'
