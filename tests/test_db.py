@@ -2,8 +2,8 @@ import pytest
 import pymongo
 from werkzeug.security import check_password_hash, generate_password_hash
 from transect.db import (
-    get_db, set_user, getByUsername, getByUserId, get_user, get_username, get_userid, check_password_for_user, getUserId, get_transactions_for_user, insert_transaction,
-    update_transaction, delete_transaction, getTransactionId
+    get_db, set_user, getByUsername, getByUserId, get_user, get_username, get_userid, doesPasswordMatchUser, getUserId, get_transactions_for_user, insert_transaction,
+    update_transaction, delete_transaction, getTransactionId, doesUsernameExist, validateUserPassword
     )
 
 def test_get_close_db(app):
@@ -18,7 +18,7 @@ def test_set_user(app):
         assert get_db()['users'].find_one({'username':'a'}) is not None
         
 
-def test_set_user(app):
+def test_getByUsername(app):
     with app.app_context():
         assert getByUsername('test') is not None
         
@@ -51,7 +51,7 @@ def test_get_username(app):
         assert get_username(username='test',id=userid) == 'test'
         assert get_username(id=None,username=None) is None
         
-def test_get_username(app):
+def test_get_userid(app):
     with app.app_context():
         user = get_db()['users'].find_one({'username':'test'})
         userid = str(user['_id'])
@@ -64,10 +64,9 @@ def test_get_username(app):
         
 def test_check_password_for_user(app):
     with app.app_context():
-        user = get_db()['users'].find_one({'username':'test'})
-        assert check_password_for_user('test','test')
-        assert check_password_for_user('test') is None
-        assert check_password_for_user('test','notpasswrd') is False
+        assert doesPasswordMatchUser('test','test')
+        assert doesPasswordMatchUser('test') is None
+        assert doesPasswordMatchUser('test','notpasswrd') is False
         
 def test_getUserId(app):
     with app.app_context():
@@ -183,6 +182,7 @@ def test_delete_transaction(app):
         assert ts1.count() == 1
         assert ts2.count() == 1  
         
+        
 def test_getTransactionId(app):
     with app.app_context():
         user1 = get_db()['users'].find_one({'username':'test'})
@@ -194,4 +194,15 @@ def test_getTransactionId(app):
         assert str(get_db()['transactions'].find_one({"userid":userid1,'payer':'a'})['_id']) == getTransactionId(tid)
         
         
+def test_doesUsernameExist(app):
+    with app.app_context():
+        assert doesUsernameExist('test')
+        assert not doesUsernameExist('as98fsd987045h0hd89f98h45b')
+        assert not doesUsernameExist(None)
         
+def test_validateUserPassword(app):
+    with app.app_context():
+        assert validateUserPassword('test','test')
+        assert not validateUserPassword('test','somethingelse')
+        assert not validateUserPassword('test', None)
+        assert not validateUserPassword(None,'test')

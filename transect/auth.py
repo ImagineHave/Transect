@@ -5,7 +5,7 @@ from flask import (
 )
 
 from transect.db import ( 
-    get_user, set_user, get_username, get_userid, check_password_for_user
+    get_user, set_user, get_username, get_userid, validateUserPassword
 )
 
 from transect.forms.auth.login import LoginForm
@@ -46,10 +46,10 @@ def login():
     if request.method == "POST" and form.validate():
         username = request.form['username']
         password = request.form['password']
-        error = 'wiggle'
+        error = None
 
-        if not get_username(username=username) and not check_password_for_user(username,password):
-            error='invalid details.'
+        if not validateUserPassword(username,password):
+            error='invalid logon details.'
         
         if error is None:
             session.clear()

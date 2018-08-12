@@ -33,6 +33,15 @@ def init_db():
     for collection in collections:
         db[collection].drop()
 
+def doesUsernameExist(username):
+    if username == None:
+        return False
+    return get_db()['users'].find_one({"username":username}) is not None
+
+
+def validateUserPassword(username, password):
+    return doesUsernameExist(username) and doesPasswordMatchUser(username, password)
+
 
 def set_user(username, password):
     get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password)})
@@ -70,7 +79,7 @@ def get_userid(username=None, id=None):
         return None
 
 
-def check_password_for_user(username, password=None):
+def doesPasswordMatchUser(username, password=None):
     ''' make sure you cannot match none against none '''
     if not password:
         return None
