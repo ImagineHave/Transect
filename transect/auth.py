@@ -51,7 +51,7 @@ def login():
             session.clear()
             session['userid'] = getUseridFromUsername(username)
             print(session)
-            
+            print("why the fuck won't this work?!?!?!")
             print("hello anyone out there?")
             # return redirect(url_for('home.index'))
             
