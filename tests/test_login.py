@@ -3,7 +3,7 @@ from flask import g, session
 from transect.db import get_db
 
 
-def test_login(client, app, auth):
+def test_login(client, app, auth, testUser):
     ''' redirect '''
     assert client.get('/').status_code == 302
     
@@ -16,8 +16,18 @@ def test_login(client, app, auth):
     response = auth.login()
     assert response.status_code == 200
     
-    ''' home page with logout '''
-    response = client.get('/')
-    assert client.get('/').status_code == 200
+    with client:
+        ''' home page with logout '''
+        response = client.get('/')
+        print(session)
+        assert session['userid'] == testUser.getUserid()
+        assert g.username == 'test'
+    
+    
+    
+    print(response.status_code)
+    print(response.data)
+    
+    assert response.status_code == 200
     assert b'logout' in response.data
     

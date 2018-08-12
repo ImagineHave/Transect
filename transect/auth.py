@@ -5,7 +5,7 @@ from flask import (
 )
 
 from transect.db import ( 
-    get_user, set_user, get_username, get_userid, validateUserPassword
+    get_user, set_user, getUsernameFromUserid, getUseridFromUsername, validateUserPassword
 )
 
 from transect.forms.auth.login import LoginForm
@@ -27,7 +27,7 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif get_username(username=username):
+        elif getUseridFromUsername(username=username):
             error = 'User {} is already registered.'.format(username)
         if error is None:
             set_user(username, password)
@@ -46,28 +46,28 @@ def login():
     if request.method == "POST" and form.validate():
         username = request.form['username']
         password = request.form['password']
-        error = None
 
-        if not validateUserPassword(username,password):
-            error='invalid logon details.'
-        
-        if error is None:
+        print('hello')
+
+        if validateUserPassword(username,password):
+            print('hello?')
             session.clear()
-            session['user_id'] = get_userid(username=username)
+            session['userid'] = getUseridFromUsername(username)
+            print(session)
             return redirect(url_for('home.index'))
             
-        flash(error)
+        flash('invalid logon details.')
             
     return render_template('auth/login.html', form=form)
 
 
 @bp.before_app_request
 def load_logged_in_user():
-    user_id = session.get('user_id')
-    if user_id is None:
+    userid = session.get('userid')
+    if userid is None:
         g.username = None
     else:
-        g.username = get_username(id=user_id)
+        g.username = getUsernameFromUserid(userid)
         
         
 @bp.route('/logout')

@@ -48,11 +48,17 @@ def set_user(username, password):
     
 
 def getByUsername(username):
-    return get_db()['users'].find_one({"username":username})
+    if username:
+        return get_db()['users'].find_one({"username":username})
+    else:
+        return None
     
     
 def getByUserId(id):
-    return get_db()['users'].find_one({"_id":ObjectId(id)})
+    if id:
+        return get_db()['users'].find_one({"_id":ObjectId(id)})
+    else:
+        return None
 
 
 def get_user(username=None, id=None):
@@ -63,16 +69,16 @@ def get_user(username=None, id=None):
     return None
     
     
-def get_username(username=None, id=None):
-    user=get_user(username=username,id=id)
+def getUsernameFromUserid(id):
+    user=getByUserId(id)
     if user:
         return user['username']
     else:
         return None
 
 
-def get_userid(username=None, id=None):
-    user=get_user(username=username,id=id)
+def getUseridFromUsername(username):
+    user=getByUsername(username)
     if user:
         return str(user['_id'])
     else:

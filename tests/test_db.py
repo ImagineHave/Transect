@@ -2,7 +2,7 @@ import pytest
 import pymongo
 from werkzeug.security import check_password_hash, generate_password_hash
 from transect.db import (
-    get_db, set_user, getByUsername, getByUserId, get_user, get_username, get_userid, doesPasswordMatchUser, getUserId, get_transactions_for_user, insert_transaction,
+    get_db, set_user, getByUsername, getByUserId, get_user, getUsernameFromUserid, getUseridFromUsername, doesPasswordMatchUser, getUserId, get_transactions_for_user, insert_transaction,
     update_transaction, delete_transaction, getTransactionId, doesUsernameExist, validateUserPassword
     )
 
@@ -40,27 +40,20 @@ def test_get_user(app):
         assert get_user(username='test',id=userid) == user
         assert get_user(id=None,username=None) is None
     
-def test_get_username(app):
+def test_getUsernameFromId(app, testUser):
     with app.app_context():
-        user = get_db()['users'].find_one({'username':'test'})
-        userid = str(user['_id'])
-        assert get_username(username='test') == 'test'
-        assert get_username(id=userid) == 'test'
-        assert get_username(id=None,username='test') == 'test'
-        assert get_username(username=None,id=userid) == 'test'
-        assert get_username(username='test',id=userid) == 'test'
-        assert get_username(id=None,username=None) is None
+        userid = testUser.getUserid()
+        assert getUsernameFromUserid(userid) == testUser.getUsername()
+        notid = testUser.getUserid()
+        notid = notid[-1:] + notid[1:-1] + notid[:1]
+        assert getUsernameFromUserid(notid) is not testUser.getUsername()
+        assert getUsernameFromUserid(None) is not testUser.getUsername()
         
-def test_get_userid(app):
+def test_getUseridFromUsername(app, testUser):
     with app.app_context():
-        user = get_db()['users'].find_one({'username':'test'})
-        userid = str(user['_id'])
-        assert get_userid(username='test') == userid
-        assert get_userid(id=userid) == userid
-        assert get_userid(id=None,username='test') == userid
-        assert get_userid(username=None,id=userid) == userid
-        assert get_userid(username='test',id=userid) == userid
-        assert get_userid(id=None,username=None) is None
+        assert getUseridFromUsername('test') == testUser.getUserid()
+        assert getUseridFromUsername('test1') is not testUser.getUserid()
+        assert getUseridFromUsername(None) is not testUser.getUserid()
         
 def test_check_password_for_user(app):
     with app.app_context():
