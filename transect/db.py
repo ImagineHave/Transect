@@ -41,11 +41,9 @@ def doesUsernameExist(username):
 
 def validateUserPassword(username, password):
     return doesUsernameExist(username) and doesPasswordMatchUser(username, password)
-
-
-def set_user(username, password):
-    get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password)})
     
+def createUser(username, password, email):
+    get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password),"email":email})
 
 def getByUsername(username):
     if username:

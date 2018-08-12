@@ -5,7 +5,7 @@ from flask import (
 )
 
 from transect.db import ( 
-    get_user, set_user, getUsernameFromUserid, getUseridFromUsername, validateUserPassword
+    get_user, createUser, getUsernameFromUserid, getUseridFromUsername, validateUserPassword
 )
 
 from transect.forms.auth.login import LoginForm
@@ -21,19 +21,13 @@ def register():
     if form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']
-        error = None
-        
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        elif getUseridFromUsername(username=username):
-            error = 'User {} is already registered.'.format(username)
-        if error is None:
-            set_user(username, password)
+        email = request.form['email']
+
+        if getUseridFromUsername(username=username) is None:
+            createUser(username, password, email)
             return redirect(url_for('auth.login'))
 
-        flash(error)
+        flash('username already taken')
 
     return render_template('auth/register.html', title='register', form=form)
  

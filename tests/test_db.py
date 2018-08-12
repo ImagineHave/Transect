@@ -2,7 +2,7 @@ import pytest
 import pymongo
 from werkzeug.security import check_password_hash, generate_password_hash
 from transect.db import (
-    get_db, set_user, getByUsername, getByUserId, get_user, getUsernameFromUserid, getUseridFromUsername, doesPasswordMatchUser, getUserId, get_transactions_for_user, insert_transaction,
+    get_db, createUser, getByUsername, getByUserId, get_user, getUsernameFromUserid, getUseridFromUsername, doesPasswordMatchUser, getUserId, get_transactions_for_user, insert_transaction,
     update_transaction, delete_transaction, getTransactionId, doesUsernameExist, validateUserPassword
     )
 
@@ -14,7 +14,7 @@ def test_get_close_db(app):
 
 def test_set_user(app):
     with app.app_context():
-        set_user('a','a')
+        createUser('a','a','a')
         assert get_db()['users'].find_one({'username':'a'}) is not None
         
 
