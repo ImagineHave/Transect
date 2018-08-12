@@ -51,7 +51,7 @@ def login():
             session.clear()
             session['userid'] = getUseridFromUsername(username)
             print(session)
-            return redirect(url_for('home.index'))
+            # return redirect(url_for('home.index'))
             
         flash('invalid logon details.')
             

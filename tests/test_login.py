@@ -4,19 +4,20 @@ from transect.db import get_db
 
 
 def test_login(client, app, auth, testUser):
-    ''' redirect '''
-    assert client.get('/').status_code == 302
-    
-    ''' login '''
-    response = client.get('/auth/login')
-    assert response.status_code == 200
-    assert b'login' in response.data
-    assert b'register' in response.data
-    
-    response = auth.login()
-    assert response.status_code == 200
-    
     with client:
+        ''' redirect '''
+        assert client.get('/').status_code == 302
+        
+        ''' login '''
+        response = client.get('/auth/login')
+        assert response.status_code == 200
+        assert b'login' in response.data
+        assert b'register' in response.data
+        
+        response = client.post('/auth/login',data={'username': 'test', 'password': 'test'})
+        assert response.status_code == 200
+        print(session)
+        
         ''' home page with logout '''
         response = client.get('/')
         response.status_code == 200
