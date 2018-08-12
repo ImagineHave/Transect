@@ -47,12 +47,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        print('hello')
-        
-        session['test'] = 'poop'
-
         if validateUserPassword(username,password):
-            print('hello?')
             session.clear()
             session['userid'] = getUseridFromUsername(username)
             print(session)
