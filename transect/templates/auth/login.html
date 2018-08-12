@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block content %}
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
+    <form method="post">
+        {{ form.hidden_tag }}
         <p>
             {{ form.username.label }}<br>
             {{ form.username(size=32) }}

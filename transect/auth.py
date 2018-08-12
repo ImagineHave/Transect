@@ -42,17 +42,16 @@ def register():
 def login():
     
     form = LoginForm(request.form)
-    
-    if request.method == "POST" and form.validate():
+
+    if form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']
+        
+        print('post and form.validate')
 
         if validateUserPassword(username,password):
-            session.clear()
             session['userid'] = getUseridFromUsername(username)
-            print(session)
-            print("why the fuck won't this work?!?!?!")
-            # return redirect(url_for('home.index'))
+            return redirect(url_for('home.index'))
             
         flash('invalid logon details.')
             

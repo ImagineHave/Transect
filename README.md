@@ -15,3 +15,4 @@ export JWT_SECRET_KEY=bloh
 export MONGO_URI=bluh
 export DOMAIN=transect-cwih.c9users.io
 export FLASK_DEBUG=1
+export SERVER_NAME=transect-cwih.c9users.io 

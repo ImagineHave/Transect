@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 @pytest.fixture
 def app():
     
-    app = create_app({'TESTING': True})
+    app = create_app({'TESTING': True, 'WTF_CSRF_ENABLED':False})
     
     with app.app_context():
         init_db()
