@@ -35,11 +35,15 @@ class AuthActions(object):
     def login(self, username='test', password='test'):
         return self._client.post(
             '/auth/login',
-            data={'username': username, 'password': password}
+            data={'username': username, 'password': password},
+            follow_redirects=True
         )
 
     def logout(self):
-        return self._client.get('/auth/logout')
+        return self._client.get(
+            '/auth/logout',
+            follow_redirects=True
+        )
 
 @pytest.fixture
 def auth(client):

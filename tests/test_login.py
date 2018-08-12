@@ -16,23 +16,20 @@ def test_login(client, app, auth, testUser):
         assert b'register' in response.data
         print(response.data)
         
-        response = client.post('/auth/login', data={'username':'test','password':'test'}, follow_redirects=True)
+        response = auth.login()
         assert response.status_code == 200
         assert b'home' in response.data
         assert b'login' not in response.data
         assert b'register' not in response.data
-        
-        ''' home page with logout '''
-        response = client.get('/')
-        response.status_code == 200
         assert session['userid'] == testUser.getUserid()
         assert g.username == 'test'
-    
-    
-    
-    print(response.status_code)
-    print(response.data)
-    
-    assert response.status_code == 200
-    assert b'logout' in response.data
+        
+
+@pytest.mark.parametrize(('username', 'password', 'message'), (
+    ('a', 'test', b'invalid logon details.'),
+    ('test', 'a', b'invalid logon details.'),
+))
+def test_login_validate_input(auth, username, password, message):
+    response = auth.login(username, password)
+    assert message in response.data
     
