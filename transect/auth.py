@@ -43,7 +43,7 @@ def login():
     
     form = LoginForm(request.form)
     
-    if form.validate_on_submit():
+    if request.method == "POST" and form.validate():
         username = request.form['username']
         password = request.form['password']
         error = None
