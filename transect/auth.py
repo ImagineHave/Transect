@@ -47,8 +47,6 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        print('post and form.validate')
-
         if validateUserPassword(username,password):
             session['userid'] = getUseridFromUsername(username)
             return redirect(url_for('home.index'))
