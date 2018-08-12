@@ -114,22 +114,24 @@ def get_transaction(id):
     return get_db()['transactions'].find_one({"_id":ObjectId(id)})
 
 
-def insert_transaction(transaction):
+def insertTransaction(transaction):
     return get_db()['transactions'].insert_one(transaction)
 
 
-def update_transaction(id, transaction):
+def updateTransaction(id, transaction):
     return get_db()['transactions'].update({"_id":ObjectId(id)}, transaction)
     
 
-def delete_transaction(id):
+def deleteTransaction(id):
     get_db()['transactions'].remove({"_id":ObjectId(id)})
     
     
 def getTransactionId(transaction):
     return str(get_db()['transactions'].find_one(transaction)['_id'])
 
-
+def getTransaction(transaction):
+    return get_db()['transactions'].find_one(transaction)
+    
 @click.command('init-db')
 @with_appcontext
 def init_db_command():

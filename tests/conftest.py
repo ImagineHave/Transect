@@ -62,11 +62,23 @@ class AuthActions(object):
             follow_redirects=True
         )
         
+    def post(self,url,data=None):
+        return self._client.post(
+            url, 
+            data
+        )
+        
     def getAndFollow(self,url,data=None):
         return self._client.get(
             url, 
             data, 
             follow_redirects=True
+        )
+        
+    def get(self,url,data=None):
+        return self._client.get(
+            url, 
+            data
         )
 
 @pytest.fixture
@@ -106,7 +118,8 @@ class TestTransactions(object):
         with self.app.app_context():
             for i in range(count):
                 dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-                t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':dt}
+                date = dt.strftime("%Y-%m-%d")
+                t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':date}
                 get_db()['transactions'].insert_one(t)
                 
 

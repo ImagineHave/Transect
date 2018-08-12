@@ -7,11 +7,10 @@ from flask import (
 )
 
 from transect.db import ( 
-    getTransactionsForUsername, getTransactionsForUserid, insert_transaction, get_transaction, update_transaction, delete_transaction
+    getTransactionsForUsername, getTransactionsForUserid, insertTransaction, get_transaction, updateTransaction, deleteTransaction
 )
 
 from transect.forms.transactions.add import AddForm
-
 from werkzeug.exceptions import abort
 from transect.auth import login_required
 
@@ -33,13 +32,13 @@ def add():
     form = AddForm()
     
     if form.validate_on_submit():
-        userid = session.get('user_id')
+        userid = session.get('userid')
         date = request.form['date']
         payer = request.form['payer']
         amount = request.form['amount']
         payee = request.form['payee']
         transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
-        insert_transaction(transaction)
+        insertTransaction(transaction)
         return redirect(url_for('transactions.all'))
     
     return render_template('transactions/add.html', form=form)
@@ -52,7 +51,7 @@ def getTransaction(id):
     if transaction is None:
         abort(404, "Transaction doesn't exist.")
         
-    if transaction['userid'] != session.get('user_id'):
+    if transaction['userid'] != session.get('userid'):
         abort(403)    
         
     return transaction
@@ -62,25 +61,26 @@ def getTransaction(id):
 def edit(id):
     
     transaction = getTransaction(id)
+    form = AddForm()
     
-    if request.method == 'POST':
-        userid = session.get('user_id')
+    if form.validate_on_submit():
+        userid = session.get('userid')
         date = request.form['date']
         payer = request.form['payer']
         amount = request.form['amount']
         payee = request.form['payee']
         transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
-        update_transaction(id, transaction)
+        updateTransaction(userid, transaction)
         return redirect(url_for('transactions.all'))
 
-    return render_template('transactions/edit.html', transaction=transaction)   
+    return render_template('transactions/edit.html', transaction=transaction, form=form)   
     
     
 @bp.route('/<id>/delete', methods=('POST',))
 @login_required
 def delete(id):
     getTransaction(id)
-    delete_transaction(id)
+    deleteTransaction(id)
     return redirect(url_for('transactions.all'))  
     
 

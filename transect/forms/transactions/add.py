@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DecimalField
+from wtforms import StringField, PasswordField, SubmitField, DecimalField, DateField
 from wtforms.validators import DataRequired
-from wtforms.fields.html5 import DateField
 
 class AddForm(FlaskForm):
     payer = StringField('payer', [DataRequired()])
