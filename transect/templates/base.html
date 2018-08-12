@@ -1,33 +1,22 @@
-<html>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <head>
-        {% if title %}
-        <title>{{ title }} - transect</title>
-        {% else %}
-        <title>transect</title>
-        {% endif %}
-    </head>
-    <body>
-        <div>
-            Menu:
-            {% if g.username %}
-                <a class="action" href="{{ url_for('home.index') }}">home</a>
-                <a class="action" href="{{ url_for('auth.logout') }}">logout</a>
-            {% else %}
-                <a class="action" href="{{ url_for('auth.login') }}">login</a>
-                <a class="action" href="{{ url_for('auth.register') }}">register</a>
-            {% endif %}
-        </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </body>
-</html>
+<!doctype html>
+<title>{% block title %}{% endblock %} - transect</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>
+    <h1>menu</h1>
+    {% if g.username %}
+        <a class="action" href="{{ url_for('home.index') }}">home</a>
+        <a class="action" href="{{ url_for('auth.logout') }}">logout</a>
+    {% else %}
+        <a class="action" href="{{ url_for('auth.login') }}">login</a>
+        <a class="action" href="{{ url_for('auth.register') }}">register</a>
+    {% endif %}
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>
