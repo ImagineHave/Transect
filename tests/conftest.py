@@ -5,6 +5,7 @@ from transect.db import get_db, init_db
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from bson.objectid import ObjectId
 
 
 @pytest.fixture
@@ -54,8 +55,15 @@ class AuthActions(object):
             follow_redirects=True
         )
         
-    def openAndFollow(self,url,data=None):
+    def postAndFollow(self,url,data=None):
         return self._client.post(
+            url, 
+            data, 
+            follow_redirects=True
+        )
+        
+    def getAndFollow(self,url,data=None):
+        return self._client.get(
             url, 
             data, 
             follow_redirects=True
@@ -94,13 +102,14 @@ class TestTransactions(object):
     def __init__(self, app):
         self.app = app
         
-    def createTransaction(self, userid, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
+    def createTransactions(self, userid, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
         with self.app.app_context():
-            for i in count:
-                dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i-1)
+            for i in range(count):
+                dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
                 t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':dt}
-                get_db()['transaction'].insert_one(t)
-            
+                get_db()['transactions'].insert_one(t)
+                
+
 @pytest.fixture
 def testTransactions(app):
     return TestTransactions(app)

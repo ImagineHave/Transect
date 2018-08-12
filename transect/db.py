@@ -96,10 +96,15 @@ def getUserId(user):
     return str(ObjectId(user['_id']))
 
 
-def get_transactions_for_user(username=None, userid=None):
-    user=get_user(username=username,id=userid)
-    if user:
-        userid = getUserId(user)
+def getTransactionsForUsername(username=None):
+    if username:
+        userid = getUseridFromUsername(username)
+        return get_db()['transactions'].find({"userid":userid})
+    else:
+        return None
+        
+def getTransactionsForUserid(userid=None):
+    if userid:
         return get_db()['transactions'].find({"userid":userid})
     else:
         return None

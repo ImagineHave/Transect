@@ -7,7 +7,7 @@ from flask import (
 )
 
 from transect.db import ( 
-    get_transactions_for_user, insert_transaction, get_transaction, update_transaction, delete_transaction
+    getTransactionsForUsername, getTransactionsForUserid, insert_transaction, get_transaction, update_transaction, delete_transaction
 )
 
 from transect.forms.transactions.add import AddForm
@@ -21,7 +21,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.route('/all')
 @login_required
 def all():
-    transactionsCursor = get_transactions_for_user(username=g.username)
+    transactionsCursor = getTransactionsForUsername(g.username)
     transactions = list(transactionsCursor)
     return render_template('transactions/all.html', transactions=transactions)
     
@@ -94,7 +94,7 @@ def bulk():
     if request.method == 'POST':
         file = request.files['bulkTransactions']
         print(file)
-        stream = io.StringIO(f.stream.read().decode("UTF8"), newline=None)
+        stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
         csv_input = csv.reader(stream)
         stream.seek(0)
         result = transform(stream.read())
