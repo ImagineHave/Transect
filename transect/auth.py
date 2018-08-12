@@ -18,7 +18,7 @@ def register():
     
     form = RegisterForm()
     
-    if request.method == 'POST':
+    if form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']
         error = None
