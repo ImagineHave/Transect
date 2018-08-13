@@ -1,6 +1,7 @@
 import functools
 import io
 import csv
+import pymongo
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -22,7 +23,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @login_required
 def all():
     transactionsCursor = getTransactionsForUsername(g.username)
-    transactions = list(transactionsCursor)
+    transactions = list(transactionsCursor.sort('date', pymongo.ASCENDING))
     return render_template('transactions/all.html', transactions=transactions)
     
 
