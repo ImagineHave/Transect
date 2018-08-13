@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}all{% endblock %}</h1>
+  {% block title %}all{% endblock %}
   {% if g.username %}
-    <a class="action" href="{{ url_for('home.index') }}">home</a>
     <a class="action" href="{{ url_for('transactions.add') }}">add</a>
     <a class="action" href="{{ url_for('transactions.bulk') }}">bulk</a>
   {% endif %}
@@ -23,9 +22,9 @@
       <tbody> 
         {% for transaction in transactions %}
           <tr>
-            <td>{{ transaction['date'] }}</td>
-            <td>{{ transaction['payer'] }}</td>
-            <td>{{ transaction['payee'] }}</td>
+            <td>{{ transaction['date']   }}</td>
+            <td>{{ transaction['payer']  }}</td>
+            <td>{{ transaction['payee']  }}</td>
             <td>{{ transaction['amount'] }}</td>
           </tr>
         {% endfor %}

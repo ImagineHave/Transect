@@ -19,8 +19,8 @@ def createTransactions(userid, payer='A', payee='B', amount=100.0, date='1982-05
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        date = dt.strftime("%Y-%m-%d")
-        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount+(i*10), 'date':date}
+        date1 = dt.strftime("%Y-%m-%d")
+        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount+(i*10), 'date':date1}
         transactions.append(t)
     return transactions
         

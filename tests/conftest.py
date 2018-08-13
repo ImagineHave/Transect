@@ -120,8 +120,8 @@ class TestTransactions(object):
         with self.app.app_context():
             for i in range(count):
                 dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-                date = dt.strftime("%Y-%m-%d")
-                t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount+(i*10), 'date':date}
+                date1 = dt.strftime("%Y-%m-%d")
+                t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount+(i*10), 'date':date1}
                 get_db()['transactions'].insert_one(t)
                 
     def getTransactionsForUserid(self, userid):
