@@ -64,6 +64,9 @@ def edit(id):
     transaction = getTransaction(id)
     form = EditForm()
     
+    print(form.errors)
+    print(form.validate_on_submit())
+    
     if form.validate_on_submit():
         userid = session.get('userid')
         date = request.form['date']
@@ -71,7 +74,8 @@ def edit(id):
         amount = request.form['amount']
         payee = request.form['payee']
         transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
-        updateTransaction(userid, transaction)
+        print(transaction)
+        updateTransaction(id, transaction)
         return redirect(url_for('transactions.all'))
 
     return render_template('transactions/edit.html', transaction=transaction, form=form)   

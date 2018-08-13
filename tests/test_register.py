@@ -9,7 +9,8 @@ def test_register(client, app, auth, testUser):
         password = "somePassword"
         email = "some@email.com"
         ''' attemp login '''
-        response = auth.login(username, password)
+        data = {'username':username, 'password':password}
+        response = auth.login(data)
         message = b'invalid logon details.'
         assert message in response.data
         
@@ -19,7 +20,8 @@ def test_register(client, app, auth, testUser):
         assert b'value="register"' in response.data
         
         ''' register '''
-        response = auth.register(username,password,password,email)
+        data = {'username':username, 'password':password, 'confirm':password, 'email':email}
+        response = auth.register(data)
         assert response.status_code == 200
         assert b'login' in response.data
         assert b'register' in response.data
@@ -30,8 +32,8 @@ def test_register(client, app, auth, testUser):
             assert user is not None
             userid = str(user['_id'])
             
-        
-        response = auth.login(username, password)
+        data = {'username':username, 'password':password}
+        response = auth.login(data)
         assert response.status_code == 200
         assert b'home' in response.data
         assert b'login' not in response.data
@@ -48,5 +50,6 @@ def test_register(client, app, auth, testUser):
     ('test', 'test', 'test', '3453', b'email address required.'),
 ))
 def test_login_validate_input(auth, username, password, confirm, email, message):
-    response = auth.register(username, password, confirm, email)
+    data = {'username':username, 'password':password, 'confirm':confirm, 'email':email}
+    response = auth.register(data)
     assert message in response.data

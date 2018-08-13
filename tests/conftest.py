@@ -35,10 +35,12 @@ class AuthActions(object):
     def __init__(self, client):
         self._client = client
 
-    def login(self, username='test', password='test'):
+    def login(self, data=None):
+        if data is None:
+            data = {'username':'test','password':'test'}
         return self._client.post(
             '/auth/login',
-            data={'username': username, 'password': password},
+            data=data,
             follow_redirects=True
         )
 
@@ -48,37 +50,37 @@ class AuthActions(object):
             follow_redirects=True
         )
 
-    def register(self, username, password, confirm, email):
+    def register(self, data):
         return self._client.post(
             '/auth/register',
-            data={'username': username, 'password': password, 'email': email, 'confirm':confirm},
+            data=data,
             follow_redirects=True
         )
         
     def postAndFollow(self,url,data=None):
         return self._client.post(
             url, 
-            data, 
+            data=data,
             follow_redirects=True
         )
         
     def post(self,url,data=None):
         return self._client.post(
             url, 
-            data
+            data=data,
         )
         
     def getAndFollow(self,url,data=None):
         return self._client.get(
             url, 
-            data, 
+            data=data, 
             follow_redirects=True
         )
         
     def get(self,url,data=None):
         return self._client.get(
             url, 
-            data
+            data=data,
         )
 
 @pytest.fixture
@@ -122,6 +124,29 @@ class TestTransactions(object):
                 t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':date}
                 get_db()['transactions'].insert_one(t)
                 
+    def getTransactionsForUserid(self, userid):
+        with self.app.app_context():
+            cursor = get_db()['transactions'].find({"userid":userid})
+            if cursor.count() > 0:
+                return list(cursor)
+            else:
+                return []
+          
+    def getTransaction(self, transaction):
+        with self.app.app_context():
+            cursor = get_db()['transactions'].find(transaction)
+            if cursor.count() > 0:
+                return list(cursor)
+            else:
+                return []
+             
+    def getTransactionId(self, transaction):
+        with self.app.app_context():
+            item = get_db()['transactions'].find_one(transaction)['_id']
+            if item is not None:
+                return str(item)
+            else:
+                return ""
 
 @pytest.fixture
 def testTransactions(app):

@@ -30,6 +30,6 @@ def test_login(client, app, auth, testUser):
     ('test', 'a', b'invalid logon details.'),
 ))
 def test_login_validate_input(auth, username, password, message):
-    response = auth.login(username, password)
+    response = auth.login({'username':username, 'password':password})
     assert message in response.data
     
