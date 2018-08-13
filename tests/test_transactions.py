@@ -43,9 +43,8 @@ def test_addingTransactions(client, app, auth, testUser, testTransactions):
         testTransactions.createTransactions(otherId, count=2)
         
         for transaction in t1s:
-            response = client.post('/transactions/add', data=transaction)
+            response = auth.post('/transactions/add', data=transaction)
             
-        assert b'all' in response.data
         assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 3
         for transaction in t1s:
             assert len(testTransactions.getTransaction({'date':transaction['date'], 'userid':transaction['userid']})) == 1
@@ -145,12 +144,12 @@ def test_deletingTransactions(client, app, auth, testUser, testTransactions):
 def test_allTransactions(client, app, auth, testUser, testTransactions):
     with app.app_context():
         all = '/transactions/all'
-        response = auth.postAndFollow(all)
+        response = auth.getAndFollow(all)
         assert b"login" in response.data
         assert b"register" in response.data
         
         auth.login()
-        response = auth.postAndFollow(all) 
+        response = auth.getAndFollow(all) 
         assert b"home" in response.data
         assert b"add" in response.data
         assert b"bulk" in response.data
@@ -162,10 +161,10 @@ def test_allTransactions(client, app, auth, testUser, testTransactions):
         testTransactions.createTransactions(otherId, count=2)
         
         for transaction in t1s:
-            response = client.post('/transactions/add', data=transaction)
+            response = auth.postAndFollow('/transactions/add', data=transaction)
         assert b'all' in response.data
         
         assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 100
         for transaction in t1s:
-            assert b''+transaction['date'] in response.data
-            assert b''+transaction['amount'] in response.data
+            assert transaction['date'].encode() in response.data
+            assert str(transaction['amount']).encode() in response.data

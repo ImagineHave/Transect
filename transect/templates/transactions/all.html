@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Transactions{% endblock %}</h1>
+  <h1>{% block title %}all{% endblock %}</h1>
   {% if g.username %}
     <a class="action" href="{{ url_for('home.index') }}">home</a>
     <a class="action" href="{{ url_for('transactions.add') }}">add</a>
