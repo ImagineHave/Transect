@@ -20,7 +20,7 @@ def createTransactions(userid, payer='A', payee='B', amount=100.0, date='1982-05
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
         date = dt.strftime("%Y-%m-%d")
-        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':date}
+        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount+(i*10), 'date':date}
         transactions.append(t)
     return transactions
         
@@ -141,3 +141,31 @@ def test_deletingTransactions(client, app, auth, testUser, testTransactions):
             print(t)
         
         assert testTransactions.getTransaction({'userid':loggedInId,'date':'1982-05-14'}) == []
+        
+def test_allTransactions(client, app, auth, testUser, testTransactions):
+    with app.app_context():
+        all = '/transactions/all'
+        response = auth.postAndFollow(all)
+        assert b"login" in response.data
+        assert b"register" in response.data
+        
+        auth.login()
+        response = auth.postAndFollow(all) 
+        assert b"home" in response.data
+        assert b"add" in response.data
+        assert b"bulk" in response.data
+        
+        loggedInId = testUser.getUserid()
+        otherId = testUser.getUserid('test1')
+        
+        t1s = createTransactions(loggedInId, count=100)
+        testTransactions.createTransactions(otherId, count=2)
+        
+        for transaction in t1s:
+            response = client.post('/transactions/add', data=transaction)
+        assert b'all' in response.data
+        
+        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 100
+        for transaction in t1s:
+            assert b''+transaction['date'] in response.data
+            assert b''+transaction['amount'] in response.data
