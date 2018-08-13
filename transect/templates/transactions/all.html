@@ -3,9 +3,9 @@
 {% block header %}
   <h1>{% block title %}Transactions{% endblock %}</h1>
   {% if g.username %}
-    <a class="action" href="{{ url_for('home.index') }}">Home</a>
-    <a class="action" href="{{ url_for('transactions.add') }}">Add</a>
-    <a class="action" href="{{ url_for('transactions.bulk') }}">Bulk</a>
+    <a class="action" href="{{ url_for('home.index') }}">home</a>
+    <a class="action" href="{{ url_for('transactions.add') }}">add</a>
+    <a class="action" href="{{ url_for('transactions.bulk') }}">bulk</a>
   {% endif %}
 {% endblock %}
 
@@ -21,13 +21,10 @@
                 <div class="amount"> Amount: {{ transaction['amount'] }}</div>
                 <div class="payee">  Payee: {{ transaction['payee'] }}</div>
               </div>
-              <a class="action" href="{{ url_for('transactions.edit', id=transaction['_id']) }}">Edit</a>
+              <a class="action" href="{{ url_for('transactions.edit', id=transaction['_id']) }}">edit</a>
             </header>
           </article>
         {% endfor %}
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
     {% endif %}
   </ul>   
 {% endblock %}
