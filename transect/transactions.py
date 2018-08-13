@@ -10,7 +10,8 @@ from transect.db import (
     getTransactionsForUsername, getTransactionsForUserid, insertTransaction, get_transaction, updateTransaction, deleteTransaction
 )
 
-from transect.forms.transactions.add import AddForm
+from transect.forms.transactions.add import AddForm 
+from transect.forms.transactions.edit import EditForm
 from werkzeug.exceptions import abort
 from transect.auth import login_required
 
@@ -61,7 +62,7 @@ def getTransaction(id):
 def edit(id):
     
     transaction = getTransaction(id)
-    form = AddForm()
+    form = EditForm()
     
     if form.validate_on_submit():
         userid = session.get('userid')
