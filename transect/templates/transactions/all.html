@@ -10,21 +10,25 @@
 {% endblock %}
 
 {% block content %}
-  <ul>
     {% if g.username %}
+    
+      <table>
+      <thead>
+        <th>date</th>
+        <th>payer</th>
+        <th>payee</th>
+        <th>amount</th>
+      </thead>
+
+      <tbody> 
         {% for transaction in transactions %}
-          <article class="transaction">
-            <header>
-              <div>
-                <h1>{{ transaction['date'] }}</h1>
-                <div class="payer">  Payer: {{ transaction['payer'] }}</div>
-                <div class="amount"> Amount: {{ transaction['amount'] }}</div>
-                <div class="payee">  Payee: {{ transaction['payee'] }}</div>
-              </div>
-              <a class="action" href="{{ url_for('transactions.edit', id=transaction['_id']) }}">edit</a>
-            </header>
-          </article>
+          <tr>
+            <td>{{ transaction['date'] }}</td>
+            <td>{{ transaction['payer'] }}</td>
+            <td>{{ transaction['payee'] }}</td>
+            <td>{{ transaction['amount'] }}</td>
+          </tr>
         {% endfor %}
+      </tbody>
     {% endif %}
-  </ul>   
 {% endblock %}
