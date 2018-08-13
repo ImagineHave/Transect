@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 @pytest.fixture
 def app():
     
-    app = create_app({'TESTING': True, 'WTF_CSRF_ENABLED':False})
+    app = create_app({'TESTING': True, 'WTF_CSRF_ENABLED':False, 'DEBUG':True})
     
     with app.app_context():
         init_db()

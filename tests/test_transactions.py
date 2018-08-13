@@ -7,17 +7,9 @@ from dateutil.relativedelta import relativedelta
 def test_home(client, auth):
     index = '/'
     response = auth.getAndFollow(index)
-    
-    #response = client.post('/', follow_redirects=True)
-    
     assert b"login" in response.data
     assert b"register" in response.data
     
-    login = '/auth/login'
-    response = auth.postAndFollow(login)
-    assert b"login" in response.data
-    assert b"register" in response.data
-
     auth.login()
     response = auth.getAndFollow(index)
     assert b'logout' in response.data
