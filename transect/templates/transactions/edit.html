@@ -16,7 +16,7 @@
   </dl>
   <p>{{ form.submit() }}</p>
 </form>
-<form action="{{ url_for('transactions.delete', id=transaction['_id']) }}" method="post">
+<form action="{{ url_for('transactions.delete', _id=transaction['_id']) }}" method="post">
   <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
 </form>
 

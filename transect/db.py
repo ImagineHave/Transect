@@ -5,17 +5,18 @@ from flask.cli import with_appcontext
 from bson.objectid import ObjectId
 from werkzeug.security import check_password_hash, generate_password_hash
 
-def getClient():
+
+def get_client():
     """get MongoClient."""
     if not hasattr(g, 'db_client'):
         g.db_client = pymongo.MongoClient(current_app.config['MONGO_URI'])
     return g.db_client
-    
-    
+
+
 def get_db():
     """get DB"""
     if not hasattr(g, 'db'):
-        g.db = getClient().get_default_database()
+        g.db = get_client().get_database()
     return g.db
 
 
@@ -24,8 +25,8 @@ def close_db(e=None):
     db_client = g.pop('db_client', None)
     if db_client is not None:
         db_client.close()
-        
-        
+
+
 def init_db():
     """wipe the database"""
     db = get_db()
@@ -33,58 +34,60 @@ def init_db():
     for collection in collections:
         db[collection].drop()
 
-def doesUsernameExist(username):
-    if username == None:
+
+def does_username_exist(username):
+    if username is None:
         return False
-    return get_db()['users'].find_one({"username":username}) is not None
+    return get_db()['users'].find_one({"username": username}) is not None
 
 
-def validateUserPassword(username, password):
-    return doesUsernameExist(username) and doesPasswordMatchUser(username, password)
-    
-def createUser(username, password, email):
-    get_db()['users'].insert_one({"username":username,"password":generate_password_hash(password),"email":email})
+def validate_user_password(username, password):
+    return does_username_exist(username) and does_password_match_user(username, password)
 
-def getByUsername(username):
+
+def create_user(username, password, email):
+    get_db()['users'].insert_one({"username": username, "password": generate_password_hash(password), "email": email})
+
+
+def get_by_username(username):
     if username:
-        return get_db()['users'].find_one({"username":username})
-    else:
-        return None
-    
-    
-def getByUserId(id):
-    if id:
-        return get_db()['users'].find_one({"_id":ObjectId(id)})
+        return get_db()['users'].find_one({"username": username})
     else:
         return None
 
 
-def get_user(username=None, id=None):
-    if username: 
-        return getByUsername(username)
-    if id:
-        return getByUserId(id)
+def get_by_user_id(_id):
+    if _id:
+        return get_db()['users'].find_one({"_id": ObjectId(_id)})
+    else:
+        return None
+
+
+def get_user(username=None, _id=None):
+    if username:
+        return get_by_username(username)
+    if _id:
+        return get_by_user_id(_id)
     return None
-    
-    
-def getUsernameFromUserid(id):
-    user=getByUserId(id)
+
+
+def get_username_from_user_id(_id):
+    user = get_by_user_id(_id)
     if user:
         return user['username']
     else:
         return None
 
 
-def getUseridFromUsername(username):
-    user=getByUsername(username)
+def get_user_id_from_username(username):
+    user = get_by_username(username)
     if user:
         return str(user['_id'])
     else:
         return None
 
 
-def doesPasswordMatchUser(username, password=None):
-    ''' make sure you cannot match none against none '''
+def does_password_match_user(username, password=None):
     if not password:
         return None
     else:
@@ -92,54 +95,57 @@ def doesPasswordMatchUser(username, password=None):
         return check_password_hash(user['password'], password)
 
 
-def getUserId(user):
+def get_user_id(user):
     return str(ObjectId(user['_id']))
 
 
-def getTransactionsForUsername(username=None):
+def get_transactions_for_username(username=None):
     if username:
-        userid = getUseridFromUsername(username)
-        return get_db()['transactions'].find({"userid":userid})
-    else:
-        return None
-        
-def getTransactionsForUserid(userid=None):
-    if userid:
-        return get_db()['transactions'].find({"userid":userid})
+        user_id = get_user_id_from_username(username)
+        return get_db()['transactions'].find({"user_id": user_id})
     else:
         return None
 
 
-def get_transaction(id):
-    return get_db()['transactions'].find_one({"_id":ObjectId(id)})
+def get_transactions_for_user_id(user_id=None):
+    if user_id:
+        return get_db()['transactions'].find({"user_id": user_id})
+    else:
+        return None
 
 
-def insertTransaction(transaction):
+def get_transaction_from_transaction_id(_id):
+    return get_db()['transactions'].find_one({"_id": ObjectId(_id)})
+
+
+def insert_transaction(transaction):
     return get_db()['transactions'].insert_one(transaction)
 
 
-def updateTransaction(id, transaction):
-    return get_db()['transactions'].update({"_id":ObjectId(id)}, transaction)
-    
+def update_transaction(_id, transaction):
+    return get_db()['transactions'].update({"_id": ObjectId(_id)}, transaction)
 
-def deleteTransaction(id):
-    get_db()['transactions'].remove({"_id":ObjectId(id)})
-    
-    
-def getTransactionId(transaction):
+
+def delete_transaction(_id):
+    get_db()['transactions'].remove({"_id": ObjectId(_id)})
+
+
+def get_transaction_id(transaction):
     return str(get_db()['transactions'].find_one(transaction)['_id'])
 
-def getTransaction(transaction):
+
+def get_transaction(transaction):
     return get_db()['transactions'].find_one(transaction)
-    
+
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
     """Clear the existing data."""
     init_db()
     click.echo('Initialized the database.')
-        
-        
+
+
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)

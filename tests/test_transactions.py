@@ -1,170 +1,177 @@
-import pytest
-from flask import g, session
 from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
+
 
 def test_home(client, auth):
     index = '/'
-    response = auth.getAndFollow(index)
+    response = auth.get_and_redirect(index)
     assert b"login" in response.data
     assert b"register" in response.data
-    
+
     auth.login()
-    response = auth.getAndFollow(index)
+    response = auth.get_and_redirect(index)
     assert b'logout' in response.data
     assert b'home' in response.data
 
 
-def createTransactions(userid, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
+def create_transactions(user_id, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
         date1 = dt.strftime("%Y-%m-%d")
-        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount+(i*10), 'date':date1}
+        t = {'user_id': user_id, 'payer': payer, 'payee': payee, 'amount': amount + (i * 10), 'date': date1}
         transactions.append(t)
     return transactions
-        
-        
-def test_addingTransactions(client, app, auth, testUser, testTransactions):
-    with app.app_context():
-        add = '/transactions/add'
-        response = auth.postAndFollow(add)
-        assert b"login" in response.data
-        assert b"register" in response.data
-        
-        auth.login()
-        response = auth.postAndFollow(add) 
-        assert b"add" in response.data
-        
-        loggedInId = testUser.getUserid()
-        otherId = testUser.getUserid('test1')
-        
-        t1s = createTransactions(loggedInId, count=3)
-        testTransactions.createTransactions(otherId, count=2)
-        
-        for transaction in t1s:
-            response = auth.post('/transactions/add', data=transaction)
-            
-        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 3
-        for transaction in t1s:
-            assert len(testTransactions.getTransaction({'date':transaction['date'], 'userid':transaction['userid']})) == 1
-            assert testTransactions.getTransaction({'date':transaction['date'], 'userid':transaction['userid']})[0]['date'] == transaction['date']
 
-def test_editingTransactions(client, app, auth, testUser, testTransactions):
-    with app.app_context():
-        add = '/transactions/add'
-        response = auth.postAndFollow(add)
-        assert b"login" in response.data
-        assert b"register" in response.data
-        
-        auth.login()
-        response = auth.postAndFollow(add) 
-        assert b"add" in response.data
-        
-        loggedInId = testUser.getUserid()
-        otherId = testUser.getUserid('test1')
-        
-        testTransactions.createTransactions(loggedInId, count=6)
-        testTransactions.createTransactions(otherId, count=7)
-        
-        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 6
-    
-        t1 = {'userid':loggedInId,'date':'1982-05-14'}
-        t2 = {'userid':otherId,'date':'1982-05-14'}
-        t1id = testTransactions.getTransactionId(t1)
-        t2id = testTransactions.getTransactionId(t2)
-        t7 = createTransactions(loggedInId, payee='C', date='1975-05-31')[0]
-    
-        
-        changeLoggedInUsersTransaction = '/transactions/'+t1id+'/edit'
-        changeNonLoggedInUsersTransaction = '/transactions/'+t2id+'/edit'
-        
-        
-        response = auth.postAndFollow(changeLoggedInUsersTransaction, data=t7)
-        
-        assert response.status_code == 200
-        
-        response = auth.post(changeNonLoggedInUsersTransaction, data=t7)
-        
-        assert response.status_code == 403
-        
-        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 6
-        
-        for t in testTransactions.getTransactionsForUserid(loggedInId):
-            print(t)
-        
-        assert testTransactions.getTransaction({'userid':loggedInId,'payee':'C'}) != []
-        assert testTransactions.getTransaction({'userid':loggedInId,'payee':'C'})[0]['date'] == t7['date']
-        assert testTransactions.getTransaction({'userid':otherId,'payee':'C'}) == []
-        
-def test_deletingTransactions(client, app, auth, testUser, testTransactions):
-    with app.app_context():
-        add = '/transactions/add'
-        response = auth.postAndFollow(add)
-        assert b"login" in response.data
-        assert b"register" in response.data
-        
-        auth.login()
-        response = auth.postAndFollow(add) 
-        assert b"add" in response.data
-        
-        loggedInId = testUser.getUserid()
-        otherId = testUser.getUserid('test1')
-        
-        testTransactions.createTransactions(loggedInId, count=6)
-        testTransactions.createTransactions(otherId, count=7)
-        
-        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 6
-    
-        t1 = {'userid':loggedInId,'date':'1982-05-14'}
-        t2 = {'userid':otherId,'date':'1982-05-14'}
-        t1id = testTransactions.getTransactionId(t1)
-        t2id = testTransactions.getTransactionId(t2)
 
-        
-        changeLoggedInUsersTransaction = '/transactions/'+t1id+'/delete'
-        changeNonLoggedInUsersTransaction = '/transactions/'+t2id+'/delete'
-        
-        
-        response = auth.postAndFollow(changeLoggedInUsersTransaction)
-        
-        assert response.status_code == 200
-        
-        response = auth.post(changeNonLoggedInUsersTransaction)
-        
-        assert response.status_code == 403
-        
-        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 5
-        
-        for t in testTransactions.getTransactionsForUserid(loggedInId):
-            print(t)
-        
-        assert testTransactions.getTransaction({'userid':loggedInId,'date':'1982-05-14'}) == []
-        
-def test_allTransactions(client, app, auth, testUser, testTransactions):
+def test_adding_transactions(client, app, auth, test_user, test_transactions):
     with app.app_context():
-        all = '/transactions/all'
-        response = auth.getAndFollow(all)
+        add = '/transactions/add'
+        response = auth.post_and_redirect(add)
         assert b"login" in response.data
         assert b"register" in response.data
-        
+
         auth.login()
-        response = auth.getAndFollow(all) 
+        response = auth.post_and_redirect(add)
+        assert b"add" in response.data
+
+        logged_in_id = test_user.get_user_id()
+        other_id = test_user.get_user_id('test1')
+
+        t1s = create_transactions(logged_in_id, count=3)
+        test_transactions.create_transactions(other_id, count=2)
+
+        for transaction in t1s:
+            auth.post('/transactions/add', data=transaction)
+
+        assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 3
+        for transaction in t1s:
+            assert len(
+                test_transactions.get_transaction({'date': transaction['date'],
+                                                   'user_id': transaction['user_id']})) == 1
+            assert test_transactions.get_transaction({'date': transaction['date'],
+                                                      'user_id': transaction['user_id']})[0][
+                       'date'] == transaction['date']
+
+
+def test_editing_transactions(client, app, auth, test_user, test_transactions):
+    with app.app_context():
+        add = '/transactions/add'
+        response = auth.post_and_redirect(add)
+        assert b"login" in response.data
+        assert b"register" in response.data
+
+        auth.login()
+        response = auth.post_and_redirect(add)
+        assert b"add" in response.data
+
+        logged_in_id = test_user.get_user_id()
+        other_id = test_user.get_user_id('test1')
+
+        test_transactions.create_transactions(logged_in_id, count=6)
+        test_transactions.create_transactions(other_id, count=7)
+
+        assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 6
+
+        t1 = {'user_id': logged_in_id, 'date': '1982-05-14'}
+        t2 = {'user_id': other_id, 'date': '1982-05-14'}
+        t1id = test_transactions.get_transaction_id(t1)
+        t2id = test_transactions.get_transaction_id(t2)
+        t7 = create_transactions(logged_in_id, payee='C', date='1975-05-31')[0]
+
+        change_logged_in_users_transaction = '/transactions/' + t1id + '/edit'
+        change_non_logged_in_users_transaction = '/transactions/' + t2id + '/edit'
+
+        response = auth.post_and_redirect(change_logged_in_users_transaction, data=t7)
+
+        assert response.status_code == 200
+
+        response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t7)
+
+        print(response.data)
+
+        assert response.status_code == 403
+
+        assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 6
+
+        for t in test_transactions.get_transactions_for_user_id(logged_in_id):
+            print(t)
+
+        assert test_transactions.get_transaction({'user_id': logged_in_id, 'payee': 'C'}) != []
+        assert test_transactions.get_transaction({'user_id': logged_in_id, 'payee': 'C'})[0]['date'] == t7['date']
+        assert test_transactions.get_transaction({'user_id': other_id, 'payee': 'C'}) == []
+
+
+def test_deleting_transactions(client, app, auth, test_user, test_transactions):
+    with app.app_context():
+        add = '/transactions/add'
+        response = auth.post_and_redirect(add)
+        assert b"login" in response.data
+        assert b"register" in response.data
+
+        auth.login()
+        response = auth.post_and_redirect(add)
+        assert b"add" in response.data
+
+        logged_in_id = test_user.get_user_id()
+        other_id = test_user.get_user_id('test1')
+
+        test_transactions.create_transactions(logged_in_id, count=6)
+        test_transactions.create_transactions(other_id, count=7)
+
+        assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 6
+
+        t1 = {'user_id': logged_in_id, 'date': '1982-05-14'}
+        t2 = {'user_id': other_id, 'date': '1982-05-14'}
+        t1id = test_transactions.get_transaction_id(t1)
+        t2id = test_transactions.get_transaction_id(t2)
+
+        change_logged_in_users_transaction = '/transactions/' + t1id + '/delete'
+        change_non_logged_in_users_transaction = '/transactions/' + t2id + '/delete'
+
+        response = auth.post_and_redirect(change_logged_in_users_transaction)
+
+        assert response.status_code == 200
+
+        response = auth.post_and_redirect(change_non_logged_in_users_transaction)
+
+        print(response.data)
+
+        assert response.status_code == 404
+
+        assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 5
+
+        for t in test_transactions.get_transactions_for_user_id(logged_in_id):
+            print(t)
+
+        assert test_transactions.get_transaction({'user_id': logged_in_id, 'date': '1982-05-14'}) == []
+
+
+def test_all_transactions(client, app, auth, test_user, test_transactions):
+    with app.app_context():
+        all_transactions = '/transactions/all'
+        response = auth.get_and_redirect(all_transactions)
+        assert b"login" in response.data
+        assert b"register" in response.data
+
+        auth.login()
+        response = auth.get_and_redirect(all_transactions)
         assert b"home" in response.data
         assert b"add" in response.data
         assert b"bulk" in response.data
-        
-        loggedInId = testUser.getUserid()
-        otherId = testUser.getUserid('test1')
-        
-        t1s = createTransactions(loggedInId, count=100)
-        testTransactions.createTransactions(otherId, count=2)
-        
+
+        logged_in_id = test_user.get_user_id()
+        other_id = test_user.get_user_id('test1')
+
+        t1s = create_transactions(logged_in_id, count=100)
+        test_transactions.create_transactions(other_id, count=2)
+
         for transaction in t1s:
-            response = auth.postAndFollow('/transactions/add', data=transaction)
+            response = auth.post_and_redirect('/transactions/add', data=transaction)
         assert b'all' in response.data
-        
-        assert len(testTransactions.getTransactionsForUserid(loggedInId)) == 100
+
+        assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 100
         for transaction in t1s:
             assert transaction['date'].encode() in response.data
             assert str(transaction['amount']).encode() in response.data

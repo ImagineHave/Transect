@@ -1,10 +1,9 @@
-import pytest
-import pymongo
-from werkzeug.security import check_password_hash, generate_password_hash
 from transect.db import (
-    get_db, createUser, getByUsername, getByUserId, get_user, getUsernameFromUserid, getUseridFromUsername, doesPasswordMatchUser, getUserId, getTransactionsForUsername, getTransactionsForUserid, insertTransaction,
-    updateTransaction, deleteTransaction, getTransactionId, doesUsernameExist, validateUserPassword, getTransaction
-    )
+    get_db, create_user, get_by_username, get_by_user_id, get_user, get_username_from_user_id,
+    get_user_id_from_username, does_password_match_user, get_user_id, get_transactions_for_username,
+    get_transactions_for_user_id, insert_transaction, update_transaction, delete_transaction, get_transaction_id,
+    does_username_exist, validate_user_password, get_transaction
+)
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -13,239 +12,241 @@ def test_get_close_db(app):
     with app.app_context():
         db = get_db()
         assert db is get_db()
-        
+
 
 def test_set_user(app):
     with app.app_context():
-        createUser('a','a','a')
-        assert get_db()['users'].find_one({'username':'a'}) is not None
-        
+        create_user('a', 'a', 'a')
+        assert get_db()['users'].find_one({'username': 'a'}) is not None
 
-def test_getByUsername(app):
+
+def test_get_by_username(app):
     with app.app_context():
-        assert getByUsername('test') is not None
-        
-        
-def test_getByUserId(app):
+        assert get_by_username('test') is not None
+
+
+def test_get_by_user_id(app):
     with app.app_context():
-        user = get_db()['users'].find_one({'username':'test'})
-        getByUserId(str(user['_id']))
+        user = get_db()['users'].find_one({'username': 'test'})
+        get_by_user_id(str(user['_id']))
 
 
 def test_get_user(app):
     with app.app_context():
-        user = get_db()['users'].find_one({'username':'test'})
-        userid = str(user['_id'])
+        user = get_db()['users'].find_one({'username': 'test'})
+        user_id = str(user['_id'])
         assert get_user(username='test') == user
-        assert get_user(id=userid) == user
-        assert get_user(id=None,username='test') == user
-        assert get_user(username=None,id=userid) == user
-        assert get_user(username='test',id=userid) == user
-        assert get_user(id=None,username=None) is None
-    
-    
-def test_getUsernameFromId(app, testUser):
+        assert get_user(_id=user_id) == user
+        assert get_user(_id=None, username='test') == user
+        assert get_user(username=None, _id=user_id) == user
+        assert get_user(username='test', _id=user_id) == user
+        assert get_user(_id=None, username=None) is None
+
+
+def test_get_username_from_id(app, test_user):
     with app.app_context():
-        userid = testUser.getUserid()
-        assert getUsernameFromUserid(userid) == testUser.getUsername()
-        notid = testUser.getUserid()
+        user_id = test_user.get_user_id()
+        assert get_username_from_user_id(user_id) == test_user.get_username()
+        notid = test_user.get_user_id()
         notid = notid[-1:] + notid[1:-1] + notid[:1]
-        assert getUsernameFromUserid(notid) is not testUser.getUsername()
-        assert getUsernameFromUserid(None) is not testUser.getUsername()
-        
-        
-def test_getUseridFromUsername(app, testUser):
+        assert get_username_from_user_id(notid) is not test_user.get_username()
+        assert get_username_from_user_id(None) is not test_user.get_username()
+
+
+def test_get_user_id_from_username(app, test_user):
     with app.app_context():
-        assert getUseridFromUsername('test') == testUser.getUserid()
-        assert getUseridFromUsername('test1') is not testUser.getUserid()
-        assert getUseridFromUsername(None) is not testUser.getUserid()
-        
-        
+        assert get_user_id_from_username('test') == test_user.get_user_id()
+        assert get_user_id_from_username('test1') is not test_user.get_user_id()
+        assert get_user_id_from_username(None) is not test_user.get_user_id()
+
+
 def test_check_password_for_user(app):
     with app.app_context():
-        assert doesPasswordMatchUser('test','test')
-        assert doesPasswordMatchUser('test') is None
-        assert doesPasswordMatchUser('test','notpasswrd') is False
-        
-        
-def test_getUserId(app):
+        assert does_password_match_user('test', 'test')
+        assert does_password_match_user('test') is None
+        assert does_password_match_user('test', 'notpasswrd') is False
+
+
+def test_get_user_id(app):
     with app.app_context():
-        user = get_db()['users'].find_one({'username':'test'})
-        userid = str(user['_id'])
-        assert userid == getUserId(user)
+        user = get_db()['users'].find_one({'username': 'test'})
+        user_id = str(user['_id'])
+        assert user_id == get_user_id(user)
 
 
-def createTransactions(userid, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
+def create_transactions(user_id, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'userid':userid, 'payer':payer, 'payee':payee, 'amount':amount, 'date':dt}
+        t = {'user_id': user_id, 'payer': payer, 'payee': payee, 'amount': amount, 'date': dt}
         transactions.append(t)
     return transactions
-        
-        
-def test_insertTransaction(app, testUser):
+
+
+def test_insert_transaction(app, test_user):
     with app.app_context():
         username1 = 'test'
         username2 = 'test1'
-        userid1 = testUser.getUserid(username1)
-        userid2 = testUser.getUserid(username2)
-        
-        t1s = createTransactions(userid1,count=5)
-        t2s = createTransactions(userid2,count=3)
-        
+        user_id1 = test_user.get_user_id(username1)
+        user_id2 = test_user.get_user_id(username2)
+
+        t1s = create_transactions(user_id1, count=5)
+        t2s = create_transactions(user_id2, count=3)
+
         for transaction in t1s:
-            insertTransaction(transaction)
-            
+            insert_transaction(transaction)
+
         for transaction in t2s:
-            insertTransaction(transaction)
-        
-        ts1 = get_db()['transactions'].find({"userid":userid1})
-        ts2 = get_db()['transactions'].find({"userid":userid2})
-        
+            insert_transaction(transaction)
+
+        ts1 = get_db()['transactions'].find({"user_id": user_id1})
+        ts2 = get_db()['transactions'].find({"user_id": user_id2})
+
         assert ts1.count() == 5
-        assert ts2.count() == 3 
-        
-        
-def test_getTransaction(app, testUser):
+        assert ts2.count() == 3
+
+
+def test_get_transaction(app, test_user):
     username1 = 'test'
-    userid1 = testUser.getUserid(username1)
-    t1 = createTransactions(userid1)[0];
+    user_id1 = test_user.get_user_id(username1)
+    t1 = create_transactions(user_id1)[0]
     with app.app_context():
-        insertTransaction(t1)
-        t2 = getTransaction(t1)
+        insert_transaction(t1)
+        t2 = get_transaction(t1)
         assert t2 is not None
         assert t1['date'] == t2['date']
-        
-        
-def test_updateTransaction(app, testUser, testTransactions):
+
+
+def test_update_transaction(app, test_user, test_transactions):
     with app.app_context():
         username1 = 'test'
         username2 = 'test1'
-        userid1 = testUser.getUserid(username1)
-        userid2 = testUser.getUserid(username2)
-        
-        t1s = createTransactions(userid1,count=5)
-        t2s = createTransactions(userid2,count=3)
-        
+        user_id1 = test_user.get_user_id(username1)
+        user_id2 = test_user.get_user_id(username2)
+
+        t1s = create_transactions(user_id1, count=5)
+        t2s = create_transactions(user_id2, count=3)
+
         for transaction in t1s:
-            insertTransaction(transaction)
-            
+            insert_transaction(transaction)
+
         for transaction in t2s:
-            insertTransaction(transaction)
-        
-        ts1 = get_db()['transactions'].find({"userid":userid1})
-        ts2 = get_db()['transactions'].find({"userid":userid2})
-        
+            insert_transaction(transaction)
+
+        ts1 = get_db()['transactions'].find({"user_id": user_id1})
+        ts2 = get_db()['transactions'].find({"user_id": user_id2})
+
         assert ts1.count() == 5
-        assert ts2.count() == 3 
-        
-        t = get_db()['transactions'].find_one({"userid":userid1,'payer':'A'})
+        assert ts2.count() == 3
+
+        t = get_db()['transactions'].find_one({"user_id": user_id1, 'payer': 'A'})
         tid = t['_id']
 
-        t4 = createTransactions(userid1, payer='Z', payee='X')[0]
-        
-        updateTransaction(tid,t4)
-        
-        ts1 = get_db()['transactions'].find({"userid":userid1})
-        ts2 = get_db()['transactions'].find({"userid":userid2})
-        
+        t4 = create_transactions(user_id1, payer='Z', payee='X')[0]
+
+        update_transaction(tid, t4)
+
+        ts1 = get_db()['transactions'].find({"user_id": user_id1})
+        ts2 = get_db()['transactions'].find({"user_id": user_id2})
+
         assert ts1.count() == 5
-        assert ts2.count() == 3    
-        
-        t = get_db()['transactions'].find_one({"userid":userid1,'payer':'Z'})
-        
+        assert ts2.count() == 3
+
+        t = get_db()['transactions'].find_one({"user_id": user_id1, 'payer': 'Z'})
+
         assert t['payee'] == 'X'
-        
 
-def test_deleteTransaction(app, testUser, testTransactions):
+
+def test_delete_transaction(app, test_user, test_transactions):
     with app.app_context():
         username1 = 'test'
         username2 = 'test1'
-        userid1 = testUser.getUserid(username1)
-        userid2 = testUser.getUserid(username2)
-        
-        t1s = createTransactions(userid1,count=5)
-        t2s = createTransactions(userid2,count=3)
-        
+        user_id1 = test_user.get_user_id(username1)
+        user_id2 = test_user.get_user_id(username2)
+
+        t1s = create_transactions(user_id1, count=5)
+        t2s = create_transactions(user_id2, count=3)
+
         for transaction in t1s:
-            insertTransaction(transaction)
-            
+            insert_transaction(transaction)
+
         for transaction in t2s:
-            insertTransaction(transaction)
-        
-        ts1 = get_db()['transactions'].find({"userid":userid1})
-        ts2 = get_db()['transactions'].find({"userid":userid2})
-        
+            insert_transaction(transaction)
+
+        ts1 = get_db()['transactions'].find({"user_id": user_id1})
+        ts2 = get_db()['transactions'].find({"user_id": user_id2})
+
         assert ts1.count() == 5
-        assert ts2.count() == 3 
-        
-        t = get_db()['transactions'].find_one({"userid":userid1,'payer':'A'})
+        assert ts2.count() == 3
+
+        t = get_db()['transactions'].find_one({"user_id": user_id1, 'payer': 'A'})
         tid = t['_id']
 
-        deleteTransaction(tid)
-        
-        ts1 = get_db()['transactions'].find({"userid":userid1})
-        ts2 = get_db()['transactions'].find({"userid":userid2})
-        
-        assert ts1.count() == 4
-        assert ts2.count() == 3    
-        
+        delete_transaction(tid)
 
-def test_getTransactionId(app):
+        ts1 = get_db()['transactions'].find({"user_id": user_id1})
+        ts2 = get_db()['transactions'].find({"user_id": user_id2})
+
+        assert ts1.count() == 4
+        assert ts2.count() == 3
+
+
+def test_get_transaction_id(app):
     with app.app_context():
-        user1 = get_db()['users'].find_one({'username':'test'})
-        userid1 = getUserId(user1)
-        t1 = {'userid':userid1,'date':1,'payer':'a','amount':5,'payee':'c'}
+        user1 = get_db()['users'].find_one({'username': 'test'})
+        user_id1 = get_user_id(user1)
+        t1 = {'user_id': user_id1, 'date': 1, 'payer': 'a', 'amount': 5, 'payee': 'c'}
         get_db()['transactions'].insert_one(t1)
-        tid = get_db()['transactions'].find_one({"userid":userid1,'payer':'a'})['_id']
-        
-        assert str(get_db()['transactions'].find_one({"userid":userid1,'payer':'a'})['_id']) == getTransactionId(tid)
-        
-        
-def test_doesUsernameExist(app):
+        tid = get_db()['transactions'].find_one({"user_id": user_id1, 'payer': 'a'})['_id']
+
+        assert str(get_db()['transactions'].find_one({"user_id": user_id1, 'payer': 'a'})['_id']) == get_transaction_id(
+            tid)
+
+
+def test_does_username_exist(app):
     with app.app_context():
-        assert doesUsernameExist('test')
-        assert not doesUsernameExist('as98fsd987045h0hd89f98h45b')
-        assert not doesUsernameExist(None)
-        
-def test_validateUserPassword(app):
+        assert does_username_exist('test')
+        assert not does_username_exist('as98fsd987045h0hd89f98h45b')
+        assert not does_username_exist(None)
+
+
+def test_validate_user_password(app):
     with app.app_context():
-        assert validateUserPassword('test','test')
-        assert not validateUserPassword('test','somethingelse')
-        assert not validateUserPassword('test', None)
-        assert not validateUserPassword(None,'test')
-        
-        
-def test_getTransactionsForUsername(app, testUser, testTransactions):
+        assert validate_user_password('test', 'test')
+        assert not validate_user_password('test', 'somethingelse')
+        assert not validate_user_password('test', None)
+        assert not validate_user_password(None, 'test')
+
+
+def test_get_transactions_for_username(app, test_user, test_transactions):
     with app.app_context():
         username1 = 'test'
         username2 = 'test1'
-        userid1 = testUser.getUserid(username1)
-        userid2 = testUser.getUserid(username2)
-        
-        testTransactions.createTransactions(userid1,count=3)
-        testTransactions.createTransactions(userid2,count=4)
-        
-        ts1 = getTransactionsForUsername(username1)
-        ts2 = getTransactionsForUsername(username2)
-        
+        user_id1 = test_user.get_user_id(username1)
+        user_id2 = test_user.get_user_id(username2)
+
+        test_transactions.create_transactions(user_id1, count=3)
+        test_transactions.create_transactions(user_id2, count=4)
+
+        ts1 = get_transactions_for_username(username1)
+        ts2 = get_transactions_for_username(username2)
+
         assert ts1.count() == 3
         assert ts2.count() == 4
-        
-        
-def test_getTransactionsForUserid(app, testUser, testTransactions):
+
+
+def test_get_transactions_for_user_id(app, test_user, test_transactions):
     with app.app_context():
         username1 = 'test'
         username2 = 'test1'
-        userid1 = testUser.getUserid(username1)
-        userid2 = testUser.getUserid(username2)
-        
-        testTransactions.createTransactions(userid1,count=3)
-        testTransactions.createTransactions(userid2,count=4)
-        
-        ts1 = getTransactionsForUserid(userid1)
-        ts2 = getTransactionsForUserid(userid2)
-        
+        user_id1 = test_user.get_user_id(username1)
+        user_id2 = test_user.get_user_id(username2)
+
+        test_transactions.create_transactions(user_id1, count=3)
+        test_transactions.create_transactions(user_id2, count=4)
+
+        ts1 = get_transactions_for_user_id(user_id1)
+        ts2 = get_transactions_for_user_id(user_id2)
+
         assert ts1.count() == 3
         assert ts2.count() == 4

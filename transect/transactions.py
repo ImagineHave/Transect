@@ -1,14 +1,14 @@
-import functools
 import io
 import csv
 import pymongo
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, g, redirect, render_template, request, session, url_for
 )
 
-from transect.db import ( 
-    getTransactionsForUsername, getTransactionsForUserid, insertTransaction, get_transaction, updateTransaction, deleteTransaction
+from transect.db import (
+    get_transactions_for_username, insert_transaction, get_transaction_from_transaction_id, update_transaction,
+    delete_transaction
 )
 
 from transect.forms.transactions.add import AddForm 
@@ -18,76 +18,77 @@ from transect.auth import login_required
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
+
 # list all transactions
 @bp.route('/all')
 @login_required
-def all():
-    transactionsCursor = getTransactionsForUsername(g.username)
-    transactions = list(transactionsCursor.sort('date', pymongo.ASCENDING))
+def all_transactions():
+    transactions_cursor = get_transactions_for_username(g.username)
+    transactions = list(transactions_cursor.sort('date', pymongo.ASCENDING))
     return render_template('transactions/all.html', transactions=transactions)
     
 
-@bp.route('/add', methods=('POST','GET'))
+@bp.route('/add', methods=('POST', 'GET'))
 @login_required
 def add():
     
     form = AddForm()
     
     if form.validate_on_submit():
-        userid = session.get('userid')
+        user_id = session.get('user_id')
         date = request.form['date']
         payer = request.form['payer']
         amount = request.form['amount']
         payee = request.form['payee']
-        transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
-        insertTransaction(transaction)
-        return redirect(url_for('transactions.all'))
+        transaction = {"user_id": user_id, "date": date, "payer": payer, "amount": amount, "payee": payee}
+        insert_transaction(transaction)
+        return redirect(url_for('transactions.all_transactions'))
     
     return render_template('transactions/add.html', form=form)
     
-    
 
-def getTransaction(id):
-    transaction = get_transaction(id)
+def get_transaction(_id):
+    transaction = get_transaction_from_transaction_id(_id)
     
     if transaction is None:
         abort(404, "Transaction doesn't exist.")
         
-    if transaction['userid'] != session.get('userid'):
+    if transaction['user_id'] != session.get('user_id'):
         abort(403)    
         
     return transaction
-    
-@bp.route('/<id>/edit', methods=('POST','GET'))
+
+
+@bp.route('/<_id>/edit', methods=('POST', 'GET'))
 @login_required
-def edit(id):
+def edit(_id):
     
-    transaction = getTransaction(id)
+    transaction = get_transaction_from_transaction_id(_id)
     form = EditForm()
     
     print(form.errors)
     print(form.validate_on_submit())
     
     if form.validate_on_submit():
-        userid = session.get('userid')
+        user_id = session.get('user_id')
         date = request.form['date']
         payer = request.form['payer']
         amount = request.form['amount']
         payee = request.form['payee']
-        transaction = {"userid":userid, "date":date, "payer":payer, "amount":amount, "payee":payee}
+        transaction = {"user_id": user_id, "date": date, "payer": payer, "amount": amount, "payee": payee}
         print(transaction)
-        updateTransaction(id, transaction)
-        return redirect(url_for('transactions.all'))
+        update_transaction(_id, transaction)
+        return redirect(url_for('transactions.all_transactions'))
 
     return render_template('transactions/edit.html', transaction=transaction, form=form)   
     
     
-@bp.route('/<id>/delete', methods=('POST',))
+@bp.route('/<_id>/delete', methods=('POST',))
 @login_required
-def delete(id):
-    getTransaction(id)
-    deleteTransaction(id)
-    return redirect(url_for('transactions.all'))  
+def delete(_id):
+    get_transaction_from_transaction_id(_id)
+    delete_transaction(_id)
+    return redirect(url_for('transactions.all_transactions'))
     
 
 def transform(text_file_contents):
@@ -106,4 +107,3 @@ def bulk():
         result = transform(stream.read())
         
     return render_template('transactions/bulk.html')
-    

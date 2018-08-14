@@ -1,20 +1,18 @@
-import pytest
 from flask import g, session
-from transect.db import get_db
 
 
-def test_logout(client, auth, testUser):
+def test_logout(client, auth, test_user):
     with client:
         response = auth.login()
         assert response.status_code == 200
         assert b'home' in response.data
         assert b'login' not in response.data
         assert b'register' not in response.data
-        assert session['userid'] == testUser.getUserid()
+        assert session['user_id'] == test_user.get_user_id()
         assert g.username == 'test'
         response = auth.logout()
         assert b'home' not in response.data
         assert b'login' in response.data
         assert b'register' in response.data
-        assert 'userid' not in session
+        assert 'user_id' not in session
         assert g.username != 'test'

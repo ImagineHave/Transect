@@ -1,16 +1,16 @@
 import os
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
-from flask_wtf.csrf import CSRFError
+
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    csrf = CSRFProtect(app)
+    CSRFProtect(app)
     
     app.config.from_mapping(
-            SECRET_KEY = os.environ['SECRET_KEY'],
-            MONGO_URI = os.environ['MONGO_URI']
+            SECRET_KEY=os.environ['SECRET_KEY'],
+            MONGO_URI=os.environ['MONGO_URI']
         )
     
     if test_config:
@@ -39,9 +39,6 @@ def create_app(test_config=None):
     from . import transactions
     app.register_blueprint(transactions.bp)
     
-    app.register_error_handler(CSRFError, handle_csrf_error)
-    
     return app
-    
-def handle_csrf_error(e):
-    return render_template('csrf_error.html', reason=e.description)
+
+

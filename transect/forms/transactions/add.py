@@ -1,8 +1,10 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DecimalField, DateField
-from wtforms.validators import InputRequired
 import datetime
 from decimal import ROUND_HALF_UP
+
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, DecimalField, DateField
+from wtforms.validators import InputRequired
+
 
 class AddForm(FlaskForm):
     payer = StringField('payer', [InputRequired()])
