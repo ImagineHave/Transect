@@ -85,13 +85,13 @@ def test_editing_transactions(client, app, auth, test_user, test_transactions):
 
         response = auth.post_and_redirect(change_logged_in_users_transaction, data=t7)
 
-        assert response.status_code == 200
+        assert 200 == response.status_code
 
-        response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t7)
+        response = auth.post(change_non_logged_in_users_transaction, data=t7)
 
         print(response.data)
 
-        assert response.status_code == 403
+        assert 403 == response.status_code
 
         assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 6
 
@@ -132,13 +132,13 @@ def test_deleting_transactions(client, app, auth, test_user, test_transactions):
 
         response = auth.post_and_redirect(change_logged_in_users_transaction)
 
-        assert response.status_code == 200
+        assert 200 == response.status_code
 
-        response = auth.post_and_redirect(change_non_logged_in_users_transaction)
+        response = auth.post(change_non_logged_in_users_transaction)
 
         print(response.data)
 
-        assert response.status_code == 404
+        assert 403 == response.status_code
 
         assert len(test_transactions.get_transactions_for_user_id(logged_in_id)) == 5
 
