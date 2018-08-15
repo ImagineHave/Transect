@@ -50,12 +50,8 @@ def add():
 def get_transaction(_id):
     transaction = get_transaction_from_transaction_id(_id)
 
-    print(transaction)
-
     if transaction is None:
         abort(404, "Transaction doesn't exist.")
-
-    print(session.get('user_id'))
 
     if transaction['user_id'] != session.get('user_id'):
         abort(403)    
@@ -70,9 +66,6 @@ def edit(_id):
     transaction = get_transaction(_id)
     form = EditForm()
     
-    print(form.errors)
-    print(form.validate_on_submit())
-    
     if form.validate_on_submit():
         user_id = session.get('user_id')
         date = request.form['date']
@@ -80,7 +73,6 @@ def edit(_id):
         amount = request.form['amount']
         payee = request.form['payee']
         transaction = {"user_id": user_id, "date": date, "payer": payer, "amount": amount, "payee": payee}
-        print(transaction)
         update_transaction(_id, transaction)
         return redirect(url_for('transactions.all_transactions'))
 

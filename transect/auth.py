@@ -24,10 +24,6 @@ def register():
         password = request.form['password']
         email = request.form['email']
 
-        print(username)
-        print(password)
-        print(email)
-
         if get_user_id_from_username(username=username) is None:
             create_user(username, password, email)
             return redirect(url_for('auth.login'))
