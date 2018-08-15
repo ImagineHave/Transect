@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}edit:"{{ transaction['_id'] }}"{% endblock %}</h1>
+  {% block title %}edit:{{transaction['payer']}} to {{transaction['payer']}} on {{transaction['date']}}{% endblock %}
 {% endblock %}
 
 {% block content %}
