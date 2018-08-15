@@ -47,9 +47,9 @@ def test_get_username_from_id(app, test_user):
     with app.app_context():
         user_id = test_user.get_user_id()
         assert get_username_from_user_id(user_id) == test_user.get_username()
-        notid = test_user.get_user_id()
-        notid = notid[-1:] + notid[1:-1] + notid[:1]
-        assert get_username_from_user_id(notid) is not test_user.get_username()
+        not_id = test_user.get_user_id()
+        not_id = not_id[-1:] + not_id[1:-1] + not_id[:1]
+        assert get_username_from_user_id(not_id) is not test_user.get_username()
         assert get_username_from_user_id(None) is not test_user.get_username()
 
 

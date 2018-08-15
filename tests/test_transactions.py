@@ -67,7 +67,7 @@ def test_editing_transactions(client, app, auth, test_user, test_transactions):
         assert b"add" in response.data
 
         logged_in_id = test_user.get_user_id()
-        other_id = test_user.get_user_id('test1')
+        other_id = test_user.get_user_id(username='test1')
 
         test_transactions.create_transactions(logged_in_id, count=6)
         test_transactions.create_transactions(other_id, count=7)
@@ -87,7 +87,7 @@ def test_editing_transactions(client, app, auth, test_user, test_transactions):
 
         assert 200 == response.status_code
 
-        response = auth.post(change_non_logged_in_users_transaction, data=t7)
+        response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t7)
 
         print(response.data)
 
@@ -115,7 +115,7 @@ def test_deleting_transactions(client, app, auth, test_user, test_transactions):
         assert b"add" in response.data
 
         logged_in_id = test_user.get_user_id()
-        other_id = test_user.get_user_id('test1')
+        other_id = test_user.get_user_id(username='test1')
 
         test_transactions.create_transactions(logged_in_id, count=6)
         test_transactions.create_transactions(other_id, count=7)
@@ -134,7 +134,7 @@ def test_deleting_transactions(client, app, auth, test_user, test_transactions):
 
         assert 200 == response.status_code
 
-        response = auth.post(change_non_logged_in_users_transaction)
+        response = auth.post_and_redirect(change_non_logged_in_users_transaction)
 
         print(response.data)
 

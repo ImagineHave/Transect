@@ -49,10 +49,14 @@ def add():
 
 def get_transaction(_id):
     transaction = get_transaction_from_transaction_id(_id)
-    
+
+    print(transaction)
+
     if transaction is None:
         abort(404, "Transaction doesn't exist.")
-        
+
+    print(session.get('user_id'))
+
     if transaction['user_id'] != session.get('user_id'):
         abort(403)    
         
@@ -63,7 +67,7 @@ def get_transaction(_id):
 @login_required
 def edit(_id):
     
-    transaction = get_transaction_from_transaction_id(_id)
+    transaction = get_transaction(_id)
     form = EditForm()
     
     print(form.errors)
@@ -86,7 +90,7 @@ def edit(_id):
 @bp.route('/<_id>/delete', methods=('POST',))
 @login_required
 def delete(_id):
-    get_transaction_from_transaction_id(_id)
+    get_transaction(_id)
     delete_transaction(_id)
     return redirect(url_for('transactions.all_transactions'))
     
