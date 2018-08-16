@@ -64,10 +64,10 @@ def get_user_id_from_username(username):
 
 
 def does_password_match_user(username, password=None):
-    if not password:
+    user = get_user(username=username)
+    if not password or not user:
         return None
     else:
-        user = get_user(username=username)
         return check_password_hash(user['password'], password)
 
 

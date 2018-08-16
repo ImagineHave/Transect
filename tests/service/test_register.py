@@ -11,7 +11,7 @@ def test_register(client, app, auth, test_user):
         ''' attempt login '''
         data = {'username': username, 'password': password}
         response = auth.login(data)
-        message = b'invalid logon details.'
+        message = b'invalid details.'
         assert message in response.data
 
         ''' exists '''

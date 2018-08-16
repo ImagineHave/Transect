@@ -25,8 +25,8 @@ def test_login(client, app, auth, test_user):
 
 
 @pytest.mark.parametrize(('username', 'password', 'message'), (
-        ('a', 'test', b'invalid logon details.'),
-        ('test', 'a', b'invalid logon details.'),
+        ('a', 'test', b'username unknown.'),
+        ('test', 'a', b'invalid details.'),
 ))
 def test_login_validate_input(auth, username, password, message):
     response = auth.login({'username': username, 'password': password})

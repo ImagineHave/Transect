@@ -1,6 +1,6 @@
 from transect.db import get_db
 from transect.domain.users import create_user, get_by_username, get_by_user_id, get_user, get_username_from_user_id, \
-    get_user_id_from_username, does_password_match_user, get_user_id, does_username_exist, validate_user_password
+    get_user_id_from_username, does_password_match_user, get_user_id, does_username_exist
 
 
 def test_set_user(app):
@@ -69,11 +69,4 @@ def test_does_username_exist(app):
         assert not does_username_exist('as98fsd987045h0hd89f98h45b')
         assert not does_username_exist(None)
 
-
-def test_validate_user_password(app):
-    with app.app_context():
-        assert validate_user_password('test', 'test')
-        assert not validate_user_password('test', 'somethingelse')
-        assert not validate_user_password('test', None)
-        assert not validate_user_password(None, 'test')
 

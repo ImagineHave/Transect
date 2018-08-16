@@ -4,9 +4,9 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from transect.domain.users import get_user_id_from_username
 
 
-def does_username_exist(username):
-    if get_user_id_from_username(username=username) is not None:
-        raise ValidationError('Username already used')
+def does_username_exist(form, field):
+    if get_user_id_from_username(username=field.data) is not None:
+        raise ValidationError('username already used')
 
 
 class RegisterForm(FlaskForm):
