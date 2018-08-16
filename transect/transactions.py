@@ -6,12 +6,9 @@ from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
 
-from transect.db import (
-    get_transactions_for_username, insert_transaction, get_transaction_from_transaction_id, update_transaction,
-    delete_transaction
-)
-
-from transect.forms.transactions.add import AddForm 
+from transect.domain.transactions import get_transactions_for_username, insert_transaction, \
+    get_transaction_from_transaction_id, update_transaction, delete_transaction
+from transect.forms.transactions.add import AddForm
 from transect.forms.transactions.edit import EditForm
 from werkzeug.exceptions import abort
 from transect.auth import login_required

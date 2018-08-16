@@ -1,1 +1,4 @@
-"""populate with domain classes"""
+class Domain:
+
+    def get_id(self, _id):
+        return str(_id)

@@ -4,10 +4,8 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 
-from transect.db import (
-    create_user, get_username_from_user_id, get_user_id_from_username, validate_user_password
-)
-
+from transect.domain.users import get_user_id_from_username, create_user, validate_user_password, \
+    get_username_from_user_id
 from transect.forms.auth.login import LoginForm
 from transect.forms.auth.register import RegisterForm
 
