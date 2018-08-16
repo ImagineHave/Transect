@@ -26,17 +26,17 @@ def create_app(test_config=None):
     # database connections get torn down after each request
     from . import db
     db.init_app(app)
-    
-    from . import auth
+
+    from transect.service import auth
     app.register_blueprint(auth.bp)
-    
-    from . import home
+
+    from transect.service import home
     app.register_blueprint(home.bp)
-        
-    from . import accounts
+
+    from transect.service import accounts
     app.register_blueprint(accounts.bp)
-    
-    from . import transactions
+
+    from transect.service import transactions
     app.register_blueprint(transactions.bp)
     
     return app

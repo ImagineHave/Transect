@@ -1,7 +1,7 @@
 from flask import (
     Blueprint, render_template,
 )
-from transect.auth import login_required
+from transect.service.auth import login_required
 
 bp = Blueprint('home', __name__, url_prefix='/')
 

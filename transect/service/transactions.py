@@ -11,7 +11,7 @@ from transect.domain.transactions import get_transactions_for_username, insert_t
 from transect.forms.transactions.add import AddForm
 from transect.forms.transactions.edit import EditForm
 from werkzeug.exceptions import abort
-from transect.auth import login_required
+from transect.service.auth import login_required
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
