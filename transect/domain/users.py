@@ -21,10 +21,6 @@ def does_username_exist(username):
     return get_db()['users'].find_one({"username": username}) is not None
 
 
-def validate_user_password(username, password):
-    return does_username_exist(username) and does_password_match_user(username, password)
-
-
 def create_user(username, password, email):
     get_db()['users'].insert_one({"username": username, "password": generate_password_hash(password), "email": email})
 
