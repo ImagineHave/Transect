@@ -1,12 +1,7 @@
 from flask_wtf import FlaskForm, Form
 from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError
 
-from transect.domain.users import validate_user_password, does_username_exist, does_password_match_user
-
-
-def has_valid_login_details(username, password):
-    if not validate_user_password(username, password):
-        raise ValidationError('invalid logon details.')
+from transect.domain.users import does_username_exist, does_password_match_user
 
 
 class LoginForm(FlaskForm):
