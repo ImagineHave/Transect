@@ -1,4 +1,4 @@
-import pymongo
+from mongoengine import connect
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
@@ -7,7 +7,7 @@ from flask.cli import with_appcontext
 def get_client():
     """get MongoClient."""
     if not hasattr(g, 'db_client'):
-        g.db_client = pymongo.MongoClient(current_app.config['MONGO_URI'])
+        g.db_client = connect(host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
     return g.db_client
 
 

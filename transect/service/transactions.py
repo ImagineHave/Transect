@@ -50,7 +50,7 @@ def get_transaction(_id):
     if transaction is None:
         abort(404, "Transaction doesn't exist.")
 
-    if transaction['user_id'] != session.get('user_id'):
+    if transaction.user.get_id() != session.get('user_id'):
         abort(403)    
         
     return transaction

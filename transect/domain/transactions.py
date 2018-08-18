@@ -1,55 +1,81 @@
 from bson import ObjectId
 from transect.db import get_db
-from transect.domain.domain import Domain
-from transect.domain.users import get_user_id_from_username
+from transect.domain.users import get_user
+from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
+from transect.domain.users import Users
+import datetime
 
 
-class Transactions(Domain):
+class Transactions(Document):
 
-    def __init__(self, payer=None, payee=None, date=None, amount=None, series_id=None, _id=None):
-        self.table_name = 'transactions'
-        self.properties = {'payer': payer,
-                           'payee': payee,
-                           'date': date,
-                           'amount': amount,
-                           'series_id': series_id,
-                           '_id': _id}
+    payer = StringField(max_length=200, required=True)
+    payee = StringField(max_length=200, required=True)
+    amount = DecimalField(required=True, places=2, default=0.0)
+    date_due = DateTimeField(required=True, format='%Y-%m-%d', default=datetime.datetime.utcnow)
+    user = ReferenceField(Users)
+    date_modified = DateTimeField(default=datetime.datetime.utcnow)
+
+    def get_id(self):
+        return str(self.id)
+
+
+def get_transactions_for_user(user):
+    return Transactions.objects(user=user)
 
 
 def get_transactions_for_username(username=None):
     if username:
-        user_id = get_user_id_from_username(username)
-        return get_db()['transactions'].find({"user_id": user_id})
+        user = get_user(username=username)
+        return Transactions.objects(user=user.id)
     else:
         return None
 
 
 def get_transactions_for_user_id(user_id=None):
     if user_id:
-        return get_db()['transactions'].find({"user_id": user_id})
+        user = get_user(_id=user_id)
+        return Transactions.objects(user=user)
     else:
         return None
 
 
 def get_transaction_from_transaction_id(_id):
-    return get_db()['transactions'].find_one({"_id": ObjectId(_id)})
+    return Transactions.objects(id=_id).first()
 
 
-def insert_transaction(transaction):
-    return get_db()['transactions'].insert_one(transaction)
+def insert_transaction(username, payer, payee, amount, date_due):
+    user = get_user(username=username)
+    transaction = Transactions(user=user, payer=payer, payee=payee, amount=amount, date_due=date_due)
+    transaction.save()
 
 
-def update_transaction(_id, transaction):
-    return get_db()['transactions'].update({"_id": ObjectId(_id)}, transaction)
+def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date_due=None):
+    transaction = get_transaction_from_transaction_id(_id)
+    if username is not None:
+        user = get_user(username=username)
+        transaction.update(user=user)
+    if payer is not None:
+        transaction.update(payer=payer)
+    if payee is not None:
+        transaction.update(payee=payee)
+    if amount is not None:
+        transaction.update(amount=amount)
+    if date_due is not None:
+        transaction.update(date_due=date_due)
+    transaction.update(date_modified=datetime.datetime.utcnow)
 
 
 def delete_transaction(_id):
-    get_db()['transactions'].remove({"_id": ObjectId(_id)})
+    transaction = get_transaction_from_transaction_id(_id)
+    transaction.delete()
 
 
-def get_transaction_id(transaction):
-    return str(get_db()['transactions'].find_one(transaction)['_id'])
+def get_transaction(_id):
+    transaction = Transactions.objects(id=_id).first()
+    return transaction
 
 
-def get_transaction(transaction):
-    return get_db()['transactions'].find_one(transaction)
+def get_transactions(data):
+    user = get_user(username=data['user'])
+    transactions = Transactions.objects(user=user, __raw__=data)
+    return transactions

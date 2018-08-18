@@ -1,4 +1,5 @@
 import pytest
+import os
 from transect import create_app
 from transect.db import get_db, init_db
 from werkzeug.security import generate_password_hash
@@ -9,10 +10,13 @@ from bson.objectid import ObjectId
 
 @pytest.fixture
 def app():
-    
+
     app = create_app({'TESTING': True,
                       'WTF_CSRF_ENABLED': False,
-                      'DEBUG': True})
+                      'DEBUG': True,
+                      'SECRET_KEY': 'someSecret5hizz',
+                      'MONGODB_SETTINGS': {'MONGO_URI': os.environ['MONGO_URI']}
+                      })
     
     with app.app_context():
         init_db()
@@ -118,46 +122,5 @@ class TestUser(object):
 @pytest.fixture
 def test_user(app):
     return TestUser(app)
-    
 
-class TestTransactions(object):
-    def __init__(self, app):
-        self.app = app
-        
-    def create_transactions(self, user_id, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
-        with self.app.app_context():
-            for i in range(count):
-                dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-                date1 = dt.strftime("%Y-%m-%d")
-                t = {'user_id': user_id, 'payer': payer, 'payee': payee, 'amount': amount + (i * 10), 'date': date1}
-                get_db()['transactions'].insert_one(t)
-                
-    def get_transactions_for_user_id(self, user_id):
-        with self.app.app_context():
-            cursor = get_db()['transactions'].find({"user_id": user_id})
-            if cursor.count() > 0:
-                return list(cursor)
-            else:
-                return []
-          
-    def get_transaction(self, transaction):
-        with self.app.app_context():
-            cursor = get_db()['transactions'].find(transaction)
-            if cursor.count() > 0:
-                return list(cursor)
-            else:
-                return []
-             
-    def get_transaction_id(self, transaction):
-        with self.app.app_context():
-            item = get_db()['transactions'].find_one(transaction)['_id']
-            if item is not None:
-                return str(item)
-            else:
-                return ""
-
-
-@pytest.fixture
-def test_transactions(app):
-    return TestTransactions(app)
 

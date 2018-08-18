@@ -13,13 +13,12 @@ def test_login(client, app, auth, test_user):
         assert response.status_code == 200
         assert b'login' in response.data
         assert b'register' in response.data
-        print(response.data)
 
         response = auth.login()
         assert response.status_code == 200
-        assert b'home' in response.data
         assert b'login' not in response.data
         assert b'register' not in response.data
+        assert b'home' in response.data
         assert session['user_id'] == test_user.get_user_id()
         assert g.username == 'test'
 

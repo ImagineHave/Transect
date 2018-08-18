@@ -4,28 +4,22 @@ from flask_wtf.csrf import CSRFProtect
 
 
 def create_app(test_config=None):
-    # create and configure the app
+    """create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
     CSRFProtect(app)
-    
-    app.config.from_mapping(
-            SECRET_KEY=os.environ['SECRET_KEY'],
-            MONGO_URI=os.environ['MONGO_URI']
-        )
-    
+
     if test_config:
         app.config.from_mapping(test_config)
-        
-    # a simple page that says hello
+    else:
+        app.config.from_mapping(
+            SECRET_KEY=os.environ['SECRET_KEY'],
+            MONGODB_SETTINGS={'MONGO_URI': os.environ['MONGO_URI']},
+        )
+
+    """ a simple page that says hello """
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
-        
-    # register the database commands on the app
-    # we can initialise the database
-    # database connections get torn down after each request
-    from . import db
-    db.init_app(app)
 
     from transect.service import auth
     app.register_blueprint(auth.bp)
