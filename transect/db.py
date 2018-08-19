@@ -7,7 +7,7 @@ from flask.cli import with_appcontext
 def get_client():
     """get MongoClient."""
     if not hasattr(g, 'db_client'):
-        g.db_client = connect('transect', host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
+        g.db_client = connect(alias='default', host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
     return g.db_client
 
 
