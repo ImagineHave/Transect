@@ -21,6 +21,12 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
+    # register the database commands on the app
+    # we can initialise the database
+    # database connections get torn down after each request
+    from . import db
+    db.init_app(app)
+
     from transect.service import auth
     app.register_blueprint(auth.bp)
 
