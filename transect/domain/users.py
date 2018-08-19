@@ -4,6 +4,7 @@ import datetime
 
 
 class Users(Document):
+    meta = {"db_alias": "default"}
 
     username = StringField(max_length=200, required=True)
     password = StringField(max_length=200, required=True)
