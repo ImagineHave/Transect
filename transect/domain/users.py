@@ -48,9 +48,7 @@ def get_username_from_user_id(_id):
 
 
 def get_user_id_from_username(username):
-    print(username)
     user = get_by_username(username)
-    print(user)
     if user:
         return user.get_id()
     else:

@@ -3,8 +3,6 @@ import os
 from transect import create_app
 from transect.db import get_db, init_db
 from werkzeug.security import generate_password_hash
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from bson.objectid import ObjectId
 
 
