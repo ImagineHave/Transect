@@ -10,7 +10,6 @@ def get_client():
         g.db_client = connect(alias='default',
                               host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'],
                               db=current_app.config['MONGODB_SETTINGS']['MONGO_URI'].split("/")[-1])
-        print(g.db_client)
     return g.db_client
 
 

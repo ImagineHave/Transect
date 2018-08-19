@@ -11,4 +11,4 @@ gunicorn
 requests
 wtforms==2.2.1
 flask-wtf==0.14.2
-mongoengine
+mongoengine==0.15.3
