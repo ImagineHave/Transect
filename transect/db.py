@@ -2,12 +2,20 @@ from mongoengine import connect
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
+import re
 
 
 def get_client():
     """get MongoClient."""
     if not hasattr(g, 'db_client'):
-        g.db_client = connect(host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
+        regex = re.compile(r'^mongodb\:\/\/(?P<username>[_\w]+):(?P<password>[\w]+)@(?P<host>[\.\w]+):(?P<port>\d+)/(?P<database>[_\w]+)$')
+
+        mongolab_url = current_app.config['MONGODB_SETTINGS']['MONGO_URI']
+
+        match = regex.search(mongolab_url)
+        data = match.groupdict()
+
+        g.db_client = connect(data['database'], host=data['host'], port=int(data['port']), username=data['username'], password=data['password'])
     return g.db_client
 
 
