@@ -5,6 +5,9 @@ from flask_wtf.csrf import CSRFProtect
 
 def create_app(test_config=None):
     """create and configure the app"""
+
+    print(os.environ['MONGO_URI'])
+
     app = Flask(__name__, instance_relative_config=True)
     CSRFProtect(app)
 
