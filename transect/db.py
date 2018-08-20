@@ -15,7 +15,12 @@ def get_client():
         match = regex.search(mongolab_url)
         data = match.groupdict()
 
-        g.db_client = connect(data['database'], host=data['host'], port=int(data['port']), username=data['username'], password=data['password'])
+        g.db_client = connect('default',
+                              data['database'],
+                              host=data['host'],
+                              port=int(data['port']),
+                              username=data['username'],
+                              password=data['password'])
     return g.db_client
 
 
