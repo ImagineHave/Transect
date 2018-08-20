@@ -7,8 +7,6 @@ import datetime
 
 
 class Transactions(Document):
-    meta = {"db_alias": "default"}
-
     payer = StringField(max_length=200, required=True)
     payee = StringField(max_length=200, required=True)
     amount = DecimalField(required=True, places=2, default=0.0)
