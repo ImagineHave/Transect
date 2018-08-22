@@ -1,6 +1,5 @@
 python-dateutil
 pytest
-click
 bson
 werkzeug
 flask==1.0
