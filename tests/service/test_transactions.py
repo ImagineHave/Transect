@@ -171,22 +171,20 @@ def test_deleting_transactions(client, app, auth, test_user):
         t1id = get_transactions(d1).first().get_id()
         t2id = get_transactions(d2).first().get_id()
 
-        t = create_transactions(username1, payee='C', date='1975-05-31')[0]
-
         change_logged_in_users_transaction = '/transactions/' + t1id + '/delete'
         change_non_logged_in_users_transaction = '/transactions/' + t2id + '/delete'
 
-        response = auth.post_and_redirect(change_logged_in_users_transaction, data=t)
+        response = auth.post_and_redirect(change_logged_in_users_transaction)
 
         assert 200 == response.status_code
 
-        response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t)
+        response = auth.post_and_redirect(change_non_logged_in_users_transaction)
 
         print(response.data)
 
         assert 403 == response.status_code
 
-        assert len(get_transactions_for_user_id(user_id1)) == 5
+        assert len(get_transactions_for_user_id(user_id1)) == 4
 
         assert get_transactions({'user': username1, 'payee': 'C'}).count() != 0
         assert get_transactions({'user': username1, 'payee': 'C'}).first().date_due == t['date_due']
@@ -226,8 +224,11 @@ def test_all_transactions(client, app, auth, test_user):
                                amount=transaction['amount'],
                                date_due=transaction['date_due'])
 
-        assert len(get_transactions_for_user_id(user_id1)) == 100
+        for transaction in t1s:
+            response = auth.post_and_redirect('/transactions/add', data=transaction)
+        assert b'all' in response.data
 
-        assert get_transactions({'user': username1, 'payee': 'C'}).count() != 0
-        assert get_transactions({'user': username1, 'payee': 'C'}).first().date_due == t['date_due']
-        assert get_transactions({'user': username2, 'payee': 'C'}) == []
+        assert len(get_transactions_for_user_id(user_id1)) == 100
+        for transaction in t1s:
+            assert transaction['date'].encode() in response.data
+            assert str(transaction['amount']).encode() in response.data
