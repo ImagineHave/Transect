@@ -3,6 +3,7 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 import re
+import time
 
 
 def get_client():
@@ -15,11 +16,23 @@ def get_client():
         match = regex.search(mongolab_url)
         data = match.groupdict()
 
-        g.db_client = connect(db=data['database'],
-                              host=data['host'],
-                              port=int(data['port']),
-                              username=data['username'],
-                              password=data['password'])
+        print(data)
+
+        for _ in range(30):
+            try:
+                print("Attempting to connect to %s at %s...", data['database'],
+                      current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
+                g.db_client = connect(db=data['database'], host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
+            except Exception as exc:
+                print("Error connecting to mongo, will retry in 1 sec: %r", exc)
+                time.sleep(1)
+            else:
+                print("Connected...")
+                break
+        else:
+            print("Unable to connect to %s at %s: %r", data['database'], current_app.config['MONGODB_SETTINGS']['MONGO_URI'], exc)
+            raise exc
+
     return g.db_client
 
 
