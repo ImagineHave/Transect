@@ -18,11 +18,14 @@ def get_client():
 
         print(data)
 
+        db = data['database']
+        host = current_app.config['MONGODB_SETTINGS']['MONGO_URI']
+
         for _ in range(30):
             try:
-                print("Attempting to connect to %s at %s...", data['database'],
-                      current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
-                g.db_client = connect(db=data['database'], host=current_app.config['MONGODB_SETTINGS']['MONGO_URI'])
+                print("Attempting to connect to " + db + " @ " + host)
+                g.db_client = connect(alias='default', db=db, host=host)
+                return g.db_client
             except Exception as exc:
                 print("Error connecting to mongo, will retry in 1 sec: %r", exc)
                 time.sleep(1)
@@ -30,8 +33,7 @@ def get_client():
                 print("Connected...")
                 break
         else:
-            print("Unable to connect to %s at %s: %r", data['database'], current_app.config['MONGODB_SETTINGS']['MONGO_URI'], exc)
-            raise exc
+            print("Unable to connect to "+db+" @ " + host)
 
     return g.db_client
 
