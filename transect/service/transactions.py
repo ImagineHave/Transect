@@ -20,8 +20,8 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.route('/all')
 @login_required
 def all_transactions():
-    transactions_cursor = get_transactions_for_username(g.username)
-    transactions = list(transactions_cursor.sort('date', pymongo.ASCENDING))
+    transactions = get_transactions_for_username(g.username)
+    transactions = list(transactions.order_by('date_due'))
     return render_template('transactions/all.html', transactions=transactions)
     
 
