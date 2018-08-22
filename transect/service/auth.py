@@ -49,12 +49,6 @@ def load_logged_in_user():
         g.username = get_username_from_user_id(user_id)
 
 
-@bp.before_app_request
-def init_db():
-    if not hasattr(g, 'db'):
-        db.init_db()
-
-
 @bp.route('/logout')
 def logout():
     session.clear()
