@@ -69,5 +69,6 @@ def init_db_command():
 
 
 def init_app(app):
+    print('initialise db')
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
