@@ -8,6 +8,8 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CSRFProtect(app)
 
+    print("starting up...")
+
     if test_config:
         app.config.from_mapping(test_config)
     else:
