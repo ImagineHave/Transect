@@ -8,6 +8,7 @@ import time
 
 def get_client():
     """get MongoClient."""
+    print('...getting client...')
     if not hasattr(g, 'db_client'):
         regex = re.compile(r'^mongodb\:\/\/(?P<username>[_\w]+):(?P<password>[\w]+)@(?P<host>[\.\w]+):(?P<port>\d+)/(?P<database>[_\w]+)$')
 
@@ -40,7 +41,9 @@ def get_client():
 
 def get_db():
     """get DB"""
+    print('getting database...')
     if not hasattr(g, 'db'):
+        print('...start client connection...')
         g.db = get_client().get_database()
     return g.db
 
@@ -54,6 +57,7 @@ def close_db(e=None):
 
 def init_db():
     """wipe the database"""
+    print('initialising')
     db = get_db()
     collections = db.collection_names(include_system_collections=False)
     for collection in collections:
