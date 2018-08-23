@@ -1,7 +1,6 @@
 import io
 import csv
-import pymongo
-
+from transect.domain.users import get_user
 from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
@@ -32,13 +31,11 @@ def add():
     form = AddForm()
     
     if form.validate_on_submit():
-        user_id = session.get('user_id')
-        date = request.form['date']
-        payer = request.form['payer']
-        amount = request.form['amount']
-        payee = request.form['payee']
-        transaction = {"user_id": user_id, "date": date, "payer": payer, "amount": amount, "payee": payee}
-        insert_transaction(transaction)
+        insert_transaction(username=g.username,
+                           payer=form.payer.data,
+                           payee=form.payee.data,
+                           amount=form.amount.data,
+                           date_due=form.date.data)
         return redirect(url_for('transactions.all_transactions'))
     
     return render_template('transactions/add.html', form=form)
@@ -77,7 +74,7 @@ def edit(_id):
 
     data = {'payer': transaction.payer,
             'payee': transaction.payee,
-            'date': transaction.date_due.strftime('%Y-%m-%d'),
+            'date': transaction.date_due.date(),
             'amount': transaction.amount}
 
     print(data)
