@@ -7,7 +7,7 @@ def create_transactions(username, payer='A', payee='B', amount=100.0, date='1982
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date_due': dt}
+        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date': dt.date()}
         transactions.append(t)
     return transactions
 
@@ -43,20 +43,18 @@ def test_adding_transactions(client, app, auth, test_user):
         t2s = create_transactions(username2, count=3)
 
         for transaction in t1s:
-            response = auth.post('/transactions/add', data=transaction)
-            print(response.data)
+            auth.post('/transactions/add', data=transaction)
 
         for transaction in t2s:
-            response = auth.post('/transactions/add', data=transaction)
-            print(response.data)
+            auth.post('/transactions/add', data=transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
         for transaction in t1s:
-            assert len(get_transactions({'date_due': transaction['date_due'], 'user': transaction['username']})) == 1
+            assert len(get_transactions({'date_due': transaction['date'], 'user': transaction['username']})) == 1
             assert get_transactions({
-                'date_due': transaction['date_due'],
-                'user': transaction['username']})[0]['date_due'] == transaction['date_due']
+                'date_due': transaction['date'],
+                'user': transaction['username']})[0]['date'] == transaction['date']
 
 
 def test_editing_transactions(client, app, auth, test_user):
