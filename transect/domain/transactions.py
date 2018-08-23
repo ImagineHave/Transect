@@ -10,7 +10,7 @@ class Transactions(Document):
     payer = StringField(max_length=200, required=True)
     payee = StringField(max_length=200, required=True)
     amount = DecimalField(required=True, places=2, default=0.0)
-    date_due = DateTimeField(required=True, format='%Y-%m-%d', default=datetime.datetime.utcnow)
+    date_due = DateTimeField(required=True, default=datetime.datetime.utcnow)
     user = ReferenceField(Users)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
 
@@ -49,6 +49,7 @@ def insert_transaction(username, payer, payee, amount, date_due):
 
 
 def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date_due=None):
+    print("happens")
     transaction = get_transaction_from_transaction_id(_id)
     if username is not None:
         user = get_user(username=username)

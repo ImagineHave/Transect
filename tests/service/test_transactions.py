@@ -118,9 +118,9 @@ def test_editing_transactions(client, app, auth, test_user):
 
         assert 200 == response.status_code
 
-        response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t)
-
         print(response.data)
+
+        response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t)
 
         assert 403 == response.status_code
 

@@ -1,5 +1,4 @@
 from decimal import ROUND_HALF_UP
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DecimalField, DateField
 from wtforms.validators import InputRequired

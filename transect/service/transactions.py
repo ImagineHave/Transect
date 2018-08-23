@@ -62,18 +62,27 @@ def edit(_id):
     
     transaction = get_transaction(_id)
     form = EditForm()
-    
+
+    print(form.errors)
+    print(form.validate_on_submit())
+    print(form.date.data)
+
     if form.validate_on_submit():
-        user_id = session.get('user_id')
-        date = request.form['date']
-        payer = request.form['payer']
-        amount = request.form['amount']
-        payee = request.form['payee']
-        transaction = {"user_id": user_id, "date": date, "payer": payer, "amount": amount, "payee": payee}
-        update_transaction(_id, transaction)
+        update_transaction(_id,
+                           payer=form.payer.data,
+                           payee=form.payee.data,
+                           amount=form.amount.data,
+                           date_due=form.date.data)
         return redirect(url_for('transactions.all_transactions'))
 
-    return render_template('transactions/edit.html', transaction=transaction, form=form)   
+    data = {'payer': transaction.payer,
+            'payee': transaction.payee,
+            'date': transaction.date_due.strftime('%Y-%m-%d'),
+            'amount': transaction.amount}
+
+    print(data)
+
+    return render_template('transactions/edit.html', transaction=data, form=form)
     
     
 @bp.route('/<_id>/delete', methods=('POST',))

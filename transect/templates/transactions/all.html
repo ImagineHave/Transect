@@ -26,7 +26,7 @@
             <td>{{ transaction['payer']  }}</td>
             <td>{{ transaction['payee']  }}</td>
             <td>{{ transaction['amount'] }}</td>
-              <td><a class="action" href="{{ url_for('transactions.edit', _id=transaction.get_id()) }}">edit</a></td>
+            <td><a class="action" href="{{ url_for('transactions.edit', _id=transaction.get_id()) }}">edit</a></td>
           </tr>
         {% endfor %}
       </tbody>
