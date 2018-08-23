@@ -29,7 +29,10 @@ def all_transactions():
 def add():
     
     form = AddForm()
-    
+
+    print(form.errors)
+    print(form.validate_on_submit())
+
     if form.validate_on_submit():
         insert_transaction(username=g.username,
                            payer=form.payer.data,

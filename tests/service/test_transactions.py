@@ -38,27 +38,17 @@ def test_adding_transactions(client, app, auth, test_user):
         username1 = 'test'
         username2 = 'test1'
         user_id1 = test_user.get_user_id(username1)
-        user_id2 = test_user.get_user_id(username2)
 
         t1s = create_transactions(username1, count=5)
         t2s = create_transactions(username2, count=3)
 
         for transaction in t1s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+            response = auth.post('/transactions/add', data=transaction)
+            print(response.data)
 
         for transaction in t2s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date_due=transaction['date_due'])
-
-        for transaction in t1s:
-            auth.post('/transactions/add', data=transaction)
+            response = auth.post('/transactions/add', data=transaction)
+            print(response.data)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
