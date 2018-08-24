@@ -22,7 +22,7 @@
       <tbody> 
         {% for transaction in transactions %}
           <tr>
-            <td>{{ transaction.date_due   }}</td>
+            <td>{{ transaction.date_due.date() }}</td>
             <td>{{ transaction.payer  }}</td>
             <td>{{ transaction.payee  }}</td>
             <td>{{ transaction.amount }}</td>

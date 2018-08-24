@@ -9,10 +9,10 @@
 <form method=post>
   <dl>
     {{ form.csrf_token }}
-    {{ render_field(form.payer or transaction.payer)}}
-    {{ render_field(form.payee or transaction.payee)}}
-    {{ render_field(form.amount or transaction.amount)}}
-    {{ render_field(form.date or transaction.date_due)}}
+    {{ render_field(form.payer) }}
+    {{ render_field(form.payee)}}
+    {{ render_field(form.amount)}}
+    {{ render_field(form.date)}}
       <td>{{ form.date.data   }}</td>
   </dl>
   <p>{{ form.submit() }}</p>

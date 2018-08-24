@@ -180,8 +180,6 @@ def test_get_transaction_id(app, test_user):
 
         ts = create_transactions(username1, count=1)
 
-        print(ts)
-
         for transaction in ts:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
