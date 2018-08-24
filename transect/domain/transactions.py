@@ -49,7 +49,6 @@ def insert_transaction(username, payer, payee, amount, date_due):
 
 
 def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date_due=None):
-    print("happens")
     transaction = get_transaction_from_transaction_id(_id)
     if username is not None:
         user = get_user(username=username)
@@ -75,7 +74,7 @@ def get_transaction(_id):
     return transaction
 
 
-def get_transactions(data):
-    user = get_user(username=data['user'])
+def get_transactions(username, data):
+    user = get_user(username=username)
     transactions = Transactions.objects(user=user, __raw__=data)
     return transactions

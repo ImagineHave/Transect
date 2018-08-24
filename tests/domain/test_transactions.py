@@ -11,7 +11,7 @@ def create_transactions(username, payer='A', payee='B', amount=100.0, date='1982
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date_due': dt}
+        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date_due': dt.date()}
         transactions.append(t)
     return transactions
 
@@ -48,7 +48,7 @@ def test_insert_transaction(app, test_user):
         assert 3 == ts2.count()
 
 
-def test_get_transaction(app, test_user):
+def test_get_transactions_for_username(app, test_user):
     username1 = 'test'
     t1 = create_transactions(username1)[0]
     with app.app_context():
@@ -59,7 +59,23 @@ def test_get_transaction(app, test_user):
                            date_due=t1['date_due'])
         t2 = get_transactions_for_username(username1).first()
         assert t2 is not None
-        assert t1['date_due'] == t2['date_due']
+        assert t1['date_due'] == t2['date_due'].date()
+
+
+def test_get_transactions(app, test_user):
+    username1 = 'test'
+    t1 = create_transactions(username1)[0]
+    with app.app_context():
+        insert_transaction(username=t1['username'],
+                           payer=t1['payer'],
+                           payee=t1['payee'],
+                           amount=t1['amount'],
+                           date_due=t1['date_due'])
+        t2 = get_transactions_for_username(username1).first()
+        dt = datetime.combine(t1['date_due'], datetime.min.time())
+        t2 = get_transactions(username1, {'date_due': dt}).first()
+        assert t2 is not None
+        assert t1['date_due'] == t2['date_due'].date()
 
 
 def test_update_transaction(app, test_user):

@@ -36,25 +36,20 @@ def test_adding_transactions(client, app, auth, test_user):
         assert b"add" in response.data
 
         username1 = 'test'
-        username2 = 'test1'
         user_id1 = test_user.get_user_id(username1)
 
         t1s = create_transactions(username1, count=5)
-        t2s = create_transactions(username2, count=3)
 
         for transaction in t1s:
-            auth.post('/transactions/add', data=transaction)
-
-        for transaction in t2s:
             auth.post('/transactions/add', data=transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
         for transaction in t1s:
-            assert len(get_transactions({'date_due': transaction['date'], 'user': transaction['username']})) == 1
-            assert get_transactions({
-                'date_due': transaction['date'],
-                'user': transaction['username']})[0]['date'] == transaction['date']
+            print(transaction)
+            dt = datetime.combine(transaction['date'], datetime.min.time())
+            assert len(get_transactions(transaction['username'], {'date_due': dt})) == 1
+            assert get_transactions(transaction['username'], {'date_due': dt}).first().date_due.date() == transaction['date']
 
 
 def test_editing_transactions(client, app, auth, test_user):
@@ -81,21 +76,21 @@ def test_editing_transactions(client, app, auth, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date_due=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date_due=transaction['date'])
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        d1 = {'user': username1, 'payer': 'A'}
-        d2 = {'user': username2, 'payer': 'A'}
-        t1id = get_transactions(d1).first().get_id()
-        t2id = get_transactions(d2).first().get_id()
+        d1 = {'payer': 'A'}
+        d2 = {'payer': 'A'}
+        t1id = get_transactions(username1, d1).first().get_id()
+        t2id = get_transactions(username2, d2).first().get_id()
 
         t = create_transactions(username1, payee='C', date='1975-05-31')[0]
 
@@ -114,9 +109,9 @@ def test_editing_transactions(client, app, auth, test_user):
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        assert get_transactions({'user': username1, 'payee': 'C'}).count() != 0
-        assert get_transactions({'user': username1, 'payee': 'C'}).first().date_due == t['date_due']
-        assert get_transactions({'user': username2, 'payee': 'C'}) == []
+        assert get_transactions(username1, {'payee': 'C'}).count() != 0
+        assert get_transactions(username1, {'payee': 'C'}).first().date_due.date() == t['date']
+        assert get_transactions(username2, {'payee': 'C'}).count() == 0
 
 
 def test_deleting_transactions(client, app, auth, test_user):
@@ -135,29 +130,31 @@ def test_deleting_transactions(client, app, auth, test_user):
         user_id1 = test_user.get_user_id(username1)
         user_id2 = test_user.get_user_id(username2)
 
-        t1s = create_transactions(username1, count=5)
-        t2s = create_transactions(username2, count=3)
+        t1s = create_transactions(username1, count=4)
+        t2s = create_transactions(username2, count=2)
+        t1s = t1s + create_transactions(username1, payee='C')
+        t2s = t2s + create_transactions(username2, payee='C')
 
         for transaction in t1s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date_due=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date_due=transaction['date'])
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        d1 = {'user': username1, 'payer': 'A'}
-        d2 = {'user': username2, 'payer': 'A'}
-        t1id = get_transactions(d1).first().get_id()
-        t2id = get_transactions(d2).first().get_id()
+        d1 = {'payee': 'C'}
+        d2 = {'payee': 'C'}
+        t1id = get_transactions(username1, d1).first().get_id()
+        t2id = get_transactions(username2, d2).first().get_id()
 
         change_logged_in_users_transaction = '/transactions/' + t1id + '/delete'
         change_non_logged_in_users_transaction = '/transactions/' + t2id + '/delete'
@@ -173,10 +170,10 @@ def test_deleting_transactions(client, app, auth, test_user):
         assert 403 == response.status_code
 
         assert len(get_transactions_for_user_id(user_id1)) == 4
+        assert len(get_transactions_for_user_id(user_id2)) == 3
 
-        assert get_transactions({'user': username1, 'payee': 'C'}).count() != 0
-        assert get_transactions({'user': username1, 'payee': 'C'}).first().date_due == t['date_due']
-        assert get_transactions({'user': username2, 'payee': 'C'}) == []
+        assert get_transactions(username1, {'payee': 'C'}).count() == 0
+        assert get_transactions(username2, {'payee': 'C'}).count() != 0
 
 
 def test_all_transactions(client, app, auth, test_user):
@@ -193,24 +190,16 @@ def test_all_transactions(client, app, auth, test_user):
         username1 = 'test'
         username2 = 'test1'
         user_id1 = test_user.get_user_id(username1)
-        user_id2 = test_user.get_user_id(username2)
 
         t1s = create_transactions(username1, count=100)
         t2s = create_transactions(username2, count=3)
-
-        for transaction in t1s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date_due=transaction['date_due'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date_due=transaction['date'])
 
         for transaction in t1s:
             response = auth.post_and_redirect('/transactions/add', data=transaction)
@@ -218,5 +207,4 @@ def test_all_transactions(client, app, auth, test_user):
 
         assert len(get_transactions_for_user_id(user_id1)) == 100
         for transaction in t1s:
-            assert transaction['date'].encode() in response.data
             assert str(transaction['amount']).encode() in response.data

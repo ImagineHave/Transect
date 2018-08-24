@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  {% block title %}edit:{{transaction['payer']}} to {{transaction['payer']}} on {{transaction['date']}}{% endblock %}
+  {% block title %}edit:{{transaction.payer}} to {{transaction.payee}} on {{transaction.date_due}}{% endblock %}
 {% endblock %}
 
 {% block content %}
@@ -16,5 +16,8 @@
       <td>{{ form.date.data   }}</td>
   </dl>
   <p>{{ form.submit() }}</p>
+</form>
+<form action="{{ url_for('transactions.delete', _id=transaction.get_id()) }}" method="post">
+  <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
 </form>
 {% endblock %}

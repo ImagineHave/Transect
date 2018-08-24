@@ -30,9 +30,6 @@ def add():
     
     form = AddForm()
 
-    print(form.errors)
-    print(form.validate_on_submit())
-
     if form.validate_on_submit():
         insert_transaction(username=g.username,
                            payer=form.payer.data,
@@ -63,10 +60,6 @@ def edit(_id):
     transaction = get_transaction(_id)
     form = EditForm()
 
-    print(form.errors)
-    print(form.validate_on_submit())
-    print(form.date.data)
-
     if form.validate_on_submit():
         update_transaction(_id,
                            payer=form.payer.data,
@@ -79,8 +72,6 @@ def edit(_id):
             'payee': transaction.payee,
             'date': transaction.date_due.date(),
             'amount': transaction.amount}
-
-    print(data)
 
     return render_template('transactions/edit.html', transaction=data, form=form)
     
