@@ -68,12 +68,7 @@ def edit(_id):
                            date_due=form.date.data)
         return redirect(url_for('transactions.all_transactions'))
 
-    data = {'payer': transaction.payer,
-            'payee': transaction.payee,
-            'date': transaction.date_due.date(),
-            'amount': transaction.amount}
-
-    return render_template('transactions/edit.html', transaction=data, form=form)
+    return render_template('transactions/edit.html', transaction=transaction, form=form)
     
     
 @bp.route('/<_id>/delete', methods=('POST',))
