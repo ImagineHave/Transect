@@ -1,7 +1,7 @@
 from transect.domain.users import get_user
 from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
 from transect.domain.users import Users
-from flask_wtf import FlaskForm
+from transect.domain.series import Series
 import datetime
 
 
@@ -11,6 +11,7 @@ class Transactions(Document):
     amount = DecimalField(required=True, places=2, default=0.0)
     date = DateTimeField(required=True, default=datetime.datetime.utcnow)
     user = ReferenceField(Users)
+    series = ReferenceField(Series)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
 
     def get_id(self):

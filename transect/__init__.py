@@ -38,6 +38,9 @@ def create_app(test_config=None):
 
     from transect.service import transactions
     app.register_blueprint(transactions.bp)
+
+    from transect.service import series
+    app.register_blueprint(series.bp)
     
     return app
 
