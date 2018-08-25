@@ -10,7 +10,7 @@ class Transactions(Document):
     payer = StringField(max_length=200, required=True)
     payee = StringField(max_length=200, required=True)
     amount = DecimalField(required=True, places=2, default=0.0)
-    date_due = DateTimeField(required=True, default=datetime.datetime.utcnow)
+    date = DateTimeField(required=True, default=datetime.datetime.utcnow)
     user = ReferenceField(Users)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
 
@@ -42,13 +42,13 @@ def get_transaction_from_transaction_id(_id):
     return Transactions.objects(id=_id).first()
 
 
-def insert_transaction(username, payer, payee, amount, date_due):
+def insert_transaction(username, payer, payee, amount, date):
     user = get_user(username=username)
-    transaction = Transactions(user=user, payer=payer, payee=payee, amount=amount, date_due=date_due)
+    transaction = Transactions(user=user, payer=payer, payee=payee, amount=amount, date=date)
     transaction.save()
 
 
-def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date_due=None):
+def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date=None):
     transaction = get_transaction_from_transaction_id(_id)
     if username is not None:
         user = get_user(username=username)
@@ -59,8 +59,8 @@ def update_transaction(_id, username=None, payer=None, payee=None, amount=None, 
         transaction.update(payee=payee)
     if amount is not None:
         transaction.update(amount=amount)
-    if date_due is not None:
-        transaction.update(date_due=date_due)
+    if date is not None:
+        transaction.update(date=date)
     transaction.update(date_modified=datetime.datetime.utcnow)
 
 

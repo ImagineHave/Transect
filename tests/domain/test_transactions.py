@@ -11,7 +11,7 @@ def create_transactions(username, payer='A', payee='B', amount=100.0, date='1982
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date_due': dt.date()}
+        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date': dt.date()}
         transactions.append(t)
     return transactions
 
@@ -29,14 +29,14 @@ def test_insert_transaction(app, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         user_id1 = test_user.get_user_id(username1)
         user_id2 = test_user.get_user_id(username2)
@@ -56,10 +56,10 @@ def test_get_transactions_for_username(app, test_user):
                            payer=t1['payer'],
                            payee=t1['payee'],
                            amount=t1['amount'],
-                           date_due=t1['date_due'])
+                           date=t1['date'])
         t2 = get_transactions_for_username(username1).first()
         assert t2 is not None
-        assert t1['date_due'] == t2['date_due'].date()
+        assert t1['date'] == t2['date'].date()
 
 
 def test_get_transactions(app, test_user):
@@ -70,12 +70,12 @@ def test_get_transactions(app, test_user):
                            payer=t1['payer'],
                            payee=t1['payee'],
                            amount=t1['amount'],
-                           date_due=t1['date_due'])
+                           date=t1['date'])
         t2 = get_transactions_for_username(username1).first()
-        dt = datetime.combine(t1['date_due'], datetime.min.time())
-        t2 = get_transactions(username1, {'date_due': dt}).first()
+        dt = datetime.combine(t1['date'], datetime.min.time())
+        t2 = get_transactions(username1, {'date': dt}).first()
         assert t2 is not None
-        assert t1['date_due'] == t2['date_due'].date()
+        assert t1['date'] == t2['date'].date()
 
 
 def test_update_transaction(app, test_user):
@@ -93,14 +93,14 @@ def test_update_transaction(app, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         ts1 = get_db()['transactions'].find({"user": ObjectId(user_id1)})
         ts2 = get_db()['transactions'].find({"user": ObjectId(user_id2)})
@@ -118,7 +118,7 @@ def test_update_transaction(app, test_user):
                            payer=t4['payer'],
                            payee=t4['payee'],
                            amount=t4['amount'],
-                           date_due=t4['date_due'])
+                           date=t4['date'])
 
         ts1 = get_db()['transactions'].find({"user": ObjectId(user_id1)})
         ts2 = get_db()['transactions'].find({"user": ObjectId(user_id2)})
@@ -146,14 +146,14 @@ def test_delete_transaction(app, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         ts1 = get_db()['transactions'].find({"user": user_id1})
         ts2 = get_db()['transactions'].find({"user": user_id2})
@@ -185,7 +185,7 @@ def test_get_transaction_id(app, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         tid = get_db()['transactions'].find_one({"user": user_id1})['_id']
 
@@ -206,14 +206,14 @@ def test_get_transactions_for_username(app, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         ts1 = get_transactions_for_username(username1)
         ts2 = get_transactions_for_username(username2)
@@ -237,14 +237,14 @@ def test_get_transactions_for_user_id(app, test_user):
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         for transaction in t2s:
             insert_transaction(username=transaction['username'],
                                payer=transaction['payer'],
                                payee=transaction['payee'],
                                amount=transaction['amount'],
-                               date_due=transaction['date_due'])
+                               date=transaction['date'])
 
         ts1 = get_transactions_for_user_id(user_id1)
         ts2 = get_transactions_for_user_id(user_id2)

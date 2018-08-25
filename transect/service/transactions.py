@@ -20,7 +20,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @login_required
 def all_transactions():
     transactions = get_transactions_for_username(g.username)
-    transactions = list(transactions.order_by('date_due'))
+    transactions = list(transactions.order_by('date'))
     return render_template('transactions/all.html', transactions=transactions)
     
 
@@ -35,7 +35,7 @@ def add():
                            payer=form.payer.data,
                            payee=form.payee.data,
                            amount=form.amount.data,
-                           date_due=form.date.data)
+                           date=form.date.data)
         return redirect(url_for('transactions.all_transactions'))
     
     return render_template('transactions/add.html', form=form)
@@ -60,24 +60,26 @@ def edit(_id):
     transaction = get_transaction(_id)
     form = EditForm()
 
-    if form.payer.data is None:
-        form.payer.data = transaction.payer
+    form.populate_obj(transaction)
 
-    if form.payee.data is None:
-        form.payee.data = transaction.payee
-
-    if form.date.data is None:
-        form.date.data = transaction.date_due
-
-    if form.amount.data is None:
-        form.amount.data = transaction.amount
+    # if form.payer.data is None:
+    #     form.payer.data = transaction.payer
+    #
+    # if form.payee.data is None:
+    #     form.payee.data = transaction.payee
+    #
+    # if form.date.data is None:
+    #     form.date.data = transaction.date
+    #
+    # if form.amount.data is None:
+    #     form.amount.data = transaction.amount
 
     if form.validate_on_submit():
         update_transaction(_id,
                            payer=form.payer.data,
                            payee=form.payee.data,
                            amount=form.amount.data,
-                           date_due=form.date.data)
+                           date=form.date.data)
         return redirect(url_for('transactions.all_transactions'))
 
     return render_template('transactions/edit.html', transaction=transaction, form=form)
