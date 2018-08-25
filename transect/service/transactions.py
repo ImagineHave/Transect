@@ -69,7 +69,7 @@ def edit(_id):
     print(request.method == 'POST')
     print(form.validate())
 
-    if request.method == 'POST' and form.validate():
+    if form.validate_on_submit():
 
         print(form.payee)
 

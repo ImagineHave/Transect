@@ -2,6 +2,7 @@ from transect.domain.users import get_user
 from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
 from flask_mongoengine.wtf import model_form
 from transect.domain.users import Users
+from flask_wtf import FlaskForm
 import datetime
 
 
@@ -79,4 +80,4 @@ def get_transactions(username, data):
     return transactions
 
 
-TransactionsForm = model_form(Transactions)
+TransactionsForm = model_form(Transactions, FlaskForm)
