@@ -80,4 +80,4 @@ def get_transactions(username, data):
     return transactions
 
 
-TransactionsForm = model_form(Transactions, FlaskForm)
+TransactionsForm = model_form(Transactions, base_class=FlaskForm)
