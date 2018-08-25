@@ -1,6 +1,5 @@
 import io
 import csv
-from transect.domain.transactions import TransactionsForm
 from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
@@ -58,21 +57,10 @@ def get_transaction(_id):
 def edit(_id):
     
     transaction = get_transaction(_id)
-    form = TransactionsForm()
-    print(form.payee)
+    form = EditForm()
     form.process(formdata=request.form, obj=transaction)
 
-    print(transaction.payee)
-    print(form.payee)
-
-    print(form.errors)
-    print(request.method == 'POST')
-    print(form.validate())
-
     if form.validate_on_submit():
-
-        print(form.payee)
-
         update_transaction(_id,
                            payer=form.payer.data,
                            payee=form.payee.data,
