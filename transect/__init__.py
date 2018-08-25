@@ -8,13 +8,9 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CSRFProtect(app)
 
-    print("starting up...")
-
     if test_config:
-        print('test mode')
         app.config.from_mapping(test_config)
     else:
-        print('production mode')
         app.config.from_mapping({
             'SECRET_KEY': os.environ['SECRET_KEY'],
             'MONGODB_SETTINGS': {'MONGO_URI': os.environ['MONGO_URI']}

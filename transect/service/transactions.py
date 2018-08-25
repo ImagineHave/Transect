@@ -60,6 +60,9 @@ def edit(_id):
     transaction = get_transaction(_id)
     form = EditForm()
 
+    if form.payee.data is None:
+        form.payee.data = transaction.payee
+
     if form.validate_on_submit():
         update_transaction(_id,
                            payer=form.payer.data,

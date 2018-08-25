@@ -46,7 +46,6 @@ def test_adding_transactions(client, app, auth, test_user):
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
         for transaction in t1s:
-            print(transaction)
             dt = datetime.combine(transaction['date'], datetime.min.time())
             assert len(get_transactions(transaction['username'], {'date_due': dt})) == 1
             assert get_transactions(transaction['username'], {'date_due': dt}).first().date_due.date() == transaction['date']
