@@ -7,7 +7,7 @@ def create_transactions(username, payer='A', payee='B', amount=100.0, date='1982
     transactions = []
     for i in range(count):
         dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date': dt.date()}
+        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount, 'date': dt}
         transactions.append(t)
     return transactions
 
@@ -48,7 +48,7 @@ def test_adding_transactions(client, app, auth, test_user):
         for transaction in t1s:
             dt = datetime.combine(transaction['date'], datetime.min.time())
             assert len(get_transactions(transaction['username'], {'date': dt})) == 1
-            assert get_transactions(transaction['username'], {'date': dt}).first().date.date() == transaction['date']
+            assert get_transactions(transaction['username'], {'date': dt}).first().date == transaction['date']
 
 
 def test_editing_transactions(client, app, auth, test_user):
@@ -100,6 +100,8 @@ def test_editing_transactions(client, app, auth, test_user):
 
         assert 200 == response.status_code
 
+        print(response.data)
+
         response = auth.post_and_redirect(change_non_logged_in_users_transaction, data=t)
 
         assert 403 == response.status_code
@@ -107,7 +109,7 @@ def test_editing_transactions(client, app, auth, test_user):
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
         assert get_transactions(username1, {'payee': 'C'}).count() != 0
-        assert get_transactions(username1, {'payee': 'C'}).first().date.date() == t['date']
+        assert get_transactions(username1, {'payee': 'C'}).first().date == t['date']
         assert get_transactions(username2, {'payee': 'C'}).count() == 0
 
 

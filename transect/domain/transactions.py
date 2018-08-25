@@ -1,5 +1,6 @@
 from bson import ObjectId
 from transect.db import get_db
+from flask.ext.mongoengine.wtf import model_form
 from transect.domain.users import get_user
 from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
 from transect.domain.users import Users
@@ -78,3 +79,6 @@ def get_transactions(username, data):
     user = get_user(username=username)
     transactions = Transactions.objects(user=user, __raw__=data)
     return transactions
+
+
+TransactionsForm = model_form(Transactions)

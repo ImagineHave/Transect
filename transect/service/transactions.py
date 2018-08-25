@@ -1,6 +1,6 @@
 import io
 import csv
-from transect.domain.users import get_user
+from transect.domain.transactions import TransactionsForm
 from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
@@ -58,23 +58,21 @@ def get_transaction(_id):
 def edit(_id):
     
     transaction = get_transaction(_id)
-    form = EditForm()
+    form = TransactionsForm()
+    print(form.payee)
+    form.process(formdata=request.form, obj=transaction)
 
-    form.populate_obj(transaction)
+    print(transaction.payee)
+    print(form.payee)
 
-    # if form.payer.data is None:
-    #     form.payer.data = transaction.payer
-    #
-    # if form.payee.data is None:
-    #     form.payee.data = transaction.payee
-    #
-    # if form.date.data is None:
-    #     form.date.data = transaction.date
-    #
-    # if form.amount.data is None:
-    #     form.amount.data = transaction.amount
+    print(form.errors)
+    print(request.method == 'POST')
+    print(form.validate())
 
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate():
+
+        print(form.payee)
+
         update_transaction(_id,
                            payer=form.payer.data,
                            payee=form.payee.data,
