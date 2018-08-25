@@ -25,7 +25,6 @@ def test_register(client, app, auth, test_user):
         assert response.status_code == 200
         assert b'login' in response.data
         assert b'register' in response.data
-        print(response.data)
 
         with app.app_context():
             user = get_db()['users'].find_one({'username': username})
