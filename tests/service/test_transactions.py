@@ -65,7 +65,6 @@ def test_editing_transactions(client, app, auth, test_user):
         username1 = 'test'
         username2 = 'test1'
         user_id1 = test_user.get_user_id(username1)
-        user_id2 = test_user.get_user_id(username2)
 
         t1s = create_transactions(username1, count=5)
         t2s = create_transactions(username2, count=3)

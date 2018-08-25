@@ -1,10 +1,11 @@
-from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
+from mongoengine import (
+    StringField, DecimalField, DateTimeField, ReferenceField, Document, ListField, DictField, CASCADE
+    )
 from transect.domain.users import Users, get_user
-from transect.domain.transactions import insert_transaction
+from transect.domain.frequencies import Frequency
+from transect.domain.transactions import insert_transaction, Transactions
 import datetime
 from dateutil.relativedelta import relativedelta
-
-FREQ_CHOICES = [('Weekly', {'weeks': 1}), ('Monthly', {'months': 1}), ('Annually', {'years': 1})]
 
 
 class Series(Document):
@@ -14,8 +15,9 @@ class Series(Document):
     start_date = DateTimeField(required=True, default=datetime.datetime.utcnow)
     end_date = DateTimeField(required=True, default=datetime.datetime.utcnow)
     user = ReferenceField(Users)
-    frequency = StringField(required=True, default='Monthly')
+    frequency = ReferenceField(Frequency, required=True)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
+    transactions = ListField(ReferenceField(Transactions, reverse_delete_rule=CASCADE))
 
     def get_id(self):
         return str(self.id)
@@ -23,21 +25,36 @@ class Series(Document):
 
 def create_transactions(username, payer, payee, amount, start_date, end_date, frequency):
     transactions = []
-    for i in range(count):
-        dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount+(i*10), 'date': dt.date()}
-        insert_transaction(t)
+    while start_date <= end_date:
+        transaction = insert_transaction(username=username, payer=payer, payee=payee, amount=amount, date=start_date)
+        start_date += relativedelta(**frequency)
+        transactions.append(transaction)
     return transactions
 
 
-def insert_series(username, payer, payee, amount, start_date, frequency):
+def insert_series(username, payer, payee, amount, start_date, end_date, frequency):
     user = get_user(username=username)
+    transactions = create_transactions(username, payer, payee, amount, start_date, end_date, frequency.value)
     series = Series(
         user=user,
         payer=payer,
         payee=payee,
         amount=amount,
         start_date=start_date,
-        frequency=frequency
+        end_date=end_date,
+        frequency=frequency,
+        transactions=transactions
     )
     series.save()
+    return series
+
+
+def get_series_by_id(_id):
+    return Series.objects(id=_id).first()
+
+
+def delete_series(_id):
+    series = get_series_by_id(_id)
+    for transaction in series.transactions:
+        transaction.delete()
+    series.delete()

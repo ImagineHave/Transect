@@ -1,7 +1,6 @@
 from transect.domain.users import get_user
 from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
 from transect.domain.users import Users
-from transect.domain.series import Series
 import datetime
 
 
@@ -11,7 +10,6 @@ class Transactions(Document):
     amount = DecimalField(required=True, places=2, default=0.0)
     date = DateTimeField(required=True, default=datetime.datetime.utcnow)
     user = ReferenceField(Users)
-    series = ReferenceField(Series)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
 
     def get_id(self):
@@ -46,6 +44,7 @@ def insert_transaction(username, payer, payee, amount, date):
     user = get_user(username=username)
     transaction = Transactions(user=user, payer=payer, payee=payee, amount=amount, date=date)
     transaction.save()
+    return transaction
 
 
 def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date=None):
@@ -70,8 +69,7 @@ def delete_transaction(_id):
 
 
 def get_transaction(_id):
-    transaction = Transactions.objects(id=_id).first()
-    return transaction
+    return Transactions.objects(id=_id).first()
 
 
 def get_transactions(username, data):

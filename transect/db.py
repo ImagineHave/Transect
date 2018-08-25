@@ -2,6 +2,7 @@ from mongoengine import connect
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
+from transect.domain.frequencies import create_standard_frequencies
 
 
 def get_client():
@@ -33,6 +34,7 @@ def init_db():
     collections = db.collection_names(include_system_collections=False)
     for collection in collections:
         db[collection].drop()
+    create_standard_frequencies()
 
 
 @click.command('init-db')

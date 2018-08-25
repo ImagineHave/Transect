@@ -5,6 +5,7 @@ from flask import (
 from transect.domain.series import insert_series
 from transect.forms.series.add import AddForm
 from transect.service.auth import login_required
+from transect.domain.frequencies import get_by_label
 
 bp = Blueprint('series', __name__, url_prefix='/series')
 
@@ -20,7 +21,9 @@ def add():
                       payee=form.payee.data,
                       amount=form.amount.data,
                       start_date=form.date.data,
-                      frequency=form.frequency.data)
+                      end_data=form.date.data,
+                      frequency=get_by_label(form.frequency.data)
+                      )
         return redirect(url_for('series.add'))
 
     return render_template('series/add.html', form=form)

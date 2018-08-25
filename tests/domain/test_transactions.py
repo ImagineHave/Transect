@@ -1,7 +1,6 @@
 from datetime import datetime
 from bson import ObjectId
 from dateutil.relativedelta import relativedelta
-from transect.domain.users import Users, get_user
 from transect.db import get_db
 from transect.domain.transactions import insert_transaction, get_transactions, update_transaction, delete_transaction, \
     get_transactions_for_username, get_transactions_for_user_id, get_transaction
@@ -48,20 +47,6 @@ def test_insert_transaction(app, test_user):
         assert 3 == ts2.count()
 
 
-def test_get_transactions_for_username(app, test_user):
-    username1 = 'test'
-    t1 = create_transactions(username1)[0]
-    with app.app_context():
-        insert_transaction(username=t1['username'],
-                           payer=t1['payer'],
-                           payee=t1['payee'],
-                           amount=t1['amount'],
-                           date=t1['date'])
-        t2 = get_transactions_for_username(username1).first()
-        assert t2 is not None
-        assert t1['date'] == t2['date'].date()
-
-
 def test_get_transactions(app, test_user):
     username1 = 'test'
     t1 = create_transactions(username1)[0]
@@ -71,7 +56,6 @@ def test_get_transactions(app, test_user):
                            payee=t1['payee'],
                            amount=t1['amount'],
                            date=t1['date'])
-        t2 = get_transactions_for_username(username1).first()
         dt = datetime.combine(t1['date'], datetime.min.time())
         t2 = get_transactions(username1, {'date': dt}).first()
         assert t2 is not None

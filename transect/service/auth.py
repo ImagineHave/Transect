@@ -5,7 +5,6 @@ from flask import (
 )
 
 from transect.domain.users import get_user_id_from_username, create_user, get_username_from_user_id
-from transect import db
 from transect.forms.auth.login import LoginForm
 from transect.forms.auth.register import RegisterForm
 
