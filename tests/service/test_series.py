@@ -22,7 +22,7 @@ def create_series(
             'amount': amount,
             'start_date': start_date.date(),
             'end_date': end_date.date(),
-            'frequency': get_by_label(frequency)
+            'frequency': get_by_label(frequency).label
         }
         series.append(s)
     return series
@@ -47,11 +47,10 @@ def test_adding_series(client, app, auth, test_user):
 
         for series in s1s:
             response = auth.post('/series/add', data=series)
-            print(response.data)
 
-        assert len(get_transactions_for_user_id(user_id1)) == 5
+        assert len(get_transactions_for_user_id(user_id1)) == 25
 
         for series in s1s:
-            dt = datetime.combine(series['date'], datetime.min.time())
-            assert len(get_transactions(series['username'], {'date': dt})) == 1
-            assert get_transactions(series['username'], {'date': dt}).first().date.date() == series['date']
+            dt = datetime.combine(series['start_date'], datetime.min.time())
+            assert 1 == len(get_transactions(series['username'], {'date': dt}))
+            assert series['start_date'] == get_transactions(series['username'], {'date': dt}).first().date.date()

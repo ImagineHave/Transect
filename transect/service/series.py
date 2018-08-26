@@ -15,16 +15,13 @@ bp = Blueprint('series', __name__, url_prefix='/series')
 def add():
     form = AddForm()
 
-    print(form.errors)
-    print(form.validate_on_submit())
-
     if form.validate_on_submit():
         insert_series(username=g.username,
                       payer=form.payer.data,
                       payee=form.payee.data,
                       amount=form.amount.data,
-                      start_date=form.date.data,
-                      end_data=form.date.data,
+                      start_date=form.start_date.data,
+                      end_date=form.end_date.data,
                       frequency=get_by_label(form.frequency.data)
                       )
         return redirect(url_for('series.add'))
