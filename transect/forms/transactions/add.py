@@ -18,9 +18,9 @@ def has_payee(form, field):
 
 class AddForm(FlaskForm):
     payer = StringField('payer', [has_payer])
-    payer_account = SelectField(label='pay from account', choices=get_accounts_as_list_of_tuples(), default=1)
+    payer_account = SelectField(label='pay from account', choices=get_accounts_as_list_of_tuples(), default='other')
     payee = StringField('payee', [has_payee])
-    payee_account = SelectField(label='pay to account', choices=get_accounts_as_list_of_tuples(), default=1)
+    payee_account = SelectField(label='pay to account', choices=get_accounts_as_list_of_tuples(), default='other')
     amount = DecimalField('amount', [InputRequired()], places=2, default=0.0, rounding=ROUND_HALF_UP)
     date = DateField('date', [InputRequired()], format='%Y-%m-%d')
     submit = SubmitField('add')

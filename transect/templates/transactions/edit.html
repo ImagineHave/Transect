@@ -10,9 +10,11 @@
   <dl>
     {{ form.csrf_token }}
     {{ render_field(form.payer) }}
-    {{ render_field(form.payee)}}
-    {{ render_field(form.amount)}}
-    {{ render_field(form.date)}}
+    {{ render_field(form.payer_account) }}
+    {{ render_field(form.payee) }}
+    {{ render_field(form.payee_account) }}
+    {{ render_field(form.amount) }}
+    {{ render_field(form.date) }}
   </dl>
   <p>{{ form.submit() }}</p>
 </form>
