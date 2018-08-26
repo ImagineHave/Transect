@@ -14,11 +14,8 @@ def create_standard_frequencies():
     Frequency(label='annually', value={'years': 1}).save()
 
 
-def get_list():
-    labels = []
-    for frequency in Frequency.objects:
-        labels.append(frequency.label)
-    return labels
+def get_as_list_of_tuples():
+    return [(f.label, f.value) for f in Frequency.objects.order_by('label')]
 
 
 def get_by_label(label):

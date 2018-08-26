@@ -11,7 +11,7 @@ def create_series(
         start_date=datetime.strptime('1982-05-14', '%Y-%m-%d'),
         end_date=datetime.strptime('1984-05-14', '%Y-%m-%d'),
         frequency='monthly',
-        count=0):
+        count=1):
 
     series = []
     for i in range(count):
@@ -20,8 +20,8 @@ def create_series(
             'payer': payer,
             'payee': payee,
             'amount': amount,
-            'start_date':start_date,
-            'end_date': end_date,
+            'start_date': start_date.date(),
+            'end_date': end_date.date(),
             'frequency': get_by_label(frequency)
         }
         series.append(s)
@@ -46,7 +46,8 @@ def test_adding_series(client, app, auth, test_user):
         assert 1 == len(s1s)
 
         for series in s1s:
-            auth.post('/series/add', data=series)
+            response = auth.post('/series/add', data=series)
+            print(response.data)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 

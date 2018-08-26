@@ -15,6 +15,9 @@ bp = Blueprint('series', __name__, url_prefix='/series')
 def add():
     form = AddForm()
 
+    print(form.errors)
+    print(form.validate_on_submit())
+
     if form.validate_on_submit():
         insert_series(username=g.username,
                       payer=form.payer.data,
