@@ -2,7 +2,8 @@
 
 {% block header %}
   {% block title %}home:
-  <a href="{{ url_for('transactions.all_transactions') }}">transactions</a>
+    <a href="{{ url_for('transactions.all_transactions') }}">transactions</a>
+    <a href="{{ url_for('series.all_series') }}">series</a>
   {% endblock %}
 {% endblock %}
 

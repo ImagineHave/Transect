@@ -1,15 +1,6 @@
 from datetime import datetime
 from transect.domain.transactions import insert_transaction, get_transactions_for_user_id, get_transactions
-from dateutil.relativedelta import relativedelta
-
-
-def create_transactions(username, payer='A', payee='B', amount=100.0, date='1982-05-14', count=1):
-    transactions = []
-    for i in range(count):
-        dt = datetime.strptime(date, '%Y-%m-%d') + relativedelta(months=i)
-        t = {'username': username, 'payer': payer, 'payee': payee, 'amount': amount+(i*10), 'date': dt.date()}
-        transactions.append(t)
-    return transactions
+from tests.domain.test_transactions import create_transactions
 
 
 def test_home(client, auth):
@@ -38,7 +29,7 @@ def test_adding_transactions(client, app, auth, test_user):
         username1 = 'test'
         user_id1 = test_user.get_user_id(username1)
 
-        t1s = create_transactions(username1, count=5)
+        t1s = create_transactions(count=5)
 
         for transaction in t1s:
             auth.post('/transactions/add', data=transaction)
@@ -47,8 +38,8 @@ def test_adding_transactions(client, app, auth, test_user):
 
         for transaction in t1s:
             dt = datetime.combine(transaction['date'], datetime.min.time())
-            assert len(get_transactions(transaction['username'], {'date': dt})) == 1
-            assert get_transactions(transaction['username'], {'date': dt}).first().date.date() == transaction['date']
+            assert len(get_transactions(username1, {'date': dt})) == 1
+            assert get_transactions(username1, {'date': dt}).first().date.date() == transaction['date']
 
 
 def test_editing_transactions(client, app, auth, test_user):
@@ -66,27 +57,19 @@ def test_editing_transactions(client, app, auth, test_user):
         username2 = 'test1'
         user_id1 = test_user.get_user_id(username1)
 
-        t1s = create_transactions(username1, count=5)
-        t2s = create_transactions(username2, count=3)
+        t1s = create_transactions(count=5)
+        t2s = create_transactions(count=3)
 
         for transaction in t1s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date=transaction['date'])
+            insert_transaction(username1, transaction)
 
         for transaction in t2s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date=transaction['date'])
+            insert_transaction(username2, transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        d1 = {'payer': 'A'}
-        d2 = {'payer': 'A'}
+        d1 = {'payer': 'PAYER'}
+        d2 = {'payer': 'PAYER'}
         t1id = get_transactions(username1, d1).first().get_id()
         t2id = get_transactions(username2, d2).first().get_id()
 
@@ -126,24 +109,16 @@ def test_deleting_transactions(client, app, auth, test_user):
         user_id1 = test_user.get_user_id(username1)
         user_id2 = test_user.get_user_id(username2)
 
-        t1s = create_transactions(username1, count=4)
-        t2s = create_transactions(username2, count=2)
-        t1s = t1s + create_transactions(username1, payee='C')
-        t2s = t2s + create_transactions(username2, payee='C')
+        t1s = create_transactions(count=4)
+        t2s = create_transactions(count=2)
+        t1s = t1s + create_transactions(payee='C')
+        t2s = t2s + create_transactions(payee='C')
 
         for transaction in t1s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date=transaction['date'])
+            insert_transaction(username1, transaction)
 
         for transaction in t2s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date=transaction['date'])
+            insert_transaction(username2, transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
@@ -185,15 +160,11 @@ def test_all_transactions(client, app, auth, test_user):
         username2 = 'test1'
         user_id1 = test_user.get_user_id(username1)
 
-        t1s = create_transactions(username1, count=100)
-        t2s = create_transactions(username2, count=3)
+        t1s = create_transactions(count=100)
+        t2s = create_transactions(count=3)
 
         for transaction in t2s:
-            insert_transaction(username=transaction['username'],
-                               payer=transaction['payer'],
-                               payee=transaction['payee'],
-                               amount=transaction['amount'],
-                               date=transaction['date'])
+            insert_transaction(username2, transaction)
 
         for transaction in t1s:
             response = auth.post_and_redirect('/transactions/add', data=transaction)

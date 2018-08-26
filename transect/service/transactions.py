@@ -18,8 +18,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.route('/all')
 @login_required
 def all_transactions():
-    transactions = get_transactions_for_username(g.username)
-    transactions = list(transactions.order_by('date'))
+    transactions = list(get_transactions_for_username(g.username))
     return render_template('transactions/all.html', transactions=transactions)
     
 
@@ -30,11 +29,11 @@ def add():
     form = AddForm()
 
     if form.validate_on_submit():
-        insert_transaction(username=g.username,
-                           payer=form.payer.data,
-                           payee=form.payee.data,
-                           amount=form.amount.data,
-                           date=form.date.data)
+        insert_transaction(g.username, {
+            'payer': form.payer.data,
+            'payee': form.payee.data,
+            'amount': form.amount.data,
+            'date': form.date.data})
         return redirect(url_for('transactions.all_transactions'))
     
     return render_template('transactions/add.html', form=form)
@@ -62,11 +61,11 @@ def edit(_id):
     form.process(formdata=request.form, obj=transaction)
 
     if form.validate_on_submit():
-        update_transaction(_id,
-                           payer=form.payer.data,
-                           payee=form.payee.data,
-                           amount=form.amount.data,
-                           date=form.date.data)
+        update_transaction(_id, {
+            'payer': form.payer.data,
+            'payee': form.payee.data,
+            'amount': form.amount.data,
+            'date': form.date.data})
         return redirect(url_for('transactions.all_transactions'))
 
     return render_template('transactions/edit.html', transaction=transaction, form=form)

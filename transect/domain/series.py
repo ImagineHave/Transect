@@ -27,15 +27,20 @@ class Series(Document):
 def create_transactions(username, payer, payee, amount, start_date, end_date, frequency):
     transactions = []
     while start_date <= end_date:
-        transaction = insert_transaction(username=username, payer=payer, payee=payee, amount=amount, date=start_date)
-        start_date += relativedelta(**frequency)
+        transaction = insert_transaction(username, {
+            'payer': payer,
+            'payee': payee,
+            'amount': amount,
+            'date': start_date
+        })
+        start_date += relativedelta(**frequency.value)
         transactions.append(transaction)
     return transactions
 
 
 def insert_series(username, name, payer, payee, amount, start_date, end_date, frequency):
     user = get_user(username=username)
-    transactions = create_transactions(username, payer, payee, amount, start_date, end_date, frequency.value)
+    transactions = create_transactions(username, payer, payee, amount, start_date, end_date, frequency)
     series = Series(
         name=name,
         user=user,
@@ -56,7 +61,7 @@ def get_series_by_id(_id):
 
 
 def get_series_by_username(username):
-    return Series.objects(user__in=Users.objects.filter(username=username))
+    return Series.objects(user__in=Users.objects.filter(username=username)).order_by('start_date')
 
 
 def delete_series(_id):
@@ -64,3 +69,9 @@ def delete_series(_id):
     for transaction in series.transactions:
         transaction.delete()
     series.delete()
+
+
+def get_series(username, data):
+    user = get_user(username=username)
+    series = Series.objects(user=user, __raw__=data)
+    return series

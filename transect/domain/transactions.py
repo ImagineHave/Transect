@@ -17,13 +17,13 @@ class Transactions(Document):
 
 
 def get_transactions_for_user(user):
-    return Transactions.objects(user=user)
+    return Transactions.objects(user=user).order_by('date')
 
 
 def get_transactions_for_username(username=None):
     if username:
         user = get_user(username=username)
-        return Transactions.objects(user=user.id)
+        return Transactions.objects(user=user.id).order_by('date')
     else:
         return None
 
@@ -31,7 +31,7 @@ def get_transactions_for_username(username=None):
 def get_transactions_for_user_id(user_id=None):
     if user_id:
         user = get_user(_id=user_id)
-        return Transactions.objects(user=user)
+        return Transactions.objects(user=user).order_by('date')
     else:
         return None
 
@@ -40,27 +40,17 @@ def get_transaction_from_transaction_id(_id):
     return Transactions.objects(id=_id).first()
 
 
-def insert_transaction(username, payer, payee, amount, date):
+def insert_transaction(username, data):
     user = get_user(username=username)
-    transaction = Transactions(user=user, payer=payer, payee=payee, amount=amount, date=date)
+    transaction = Transactions(user=user, **data)
     transaction.save()
     return transaction
 
 
-def update_transaction(_id, username=None, payer=None, payee=None, amount=None, date=None):
+def update_transaction(_id, data):
     transaction = get_transaction_from_transaction_id(_id)
-    if username is not None:
-        user = get_user(username=username)
-        transaction.update(user=user)
-    if payer is not None:
-        transaction.update(payer=payer)
-    if payee is not None:
-        transaction.update(payee=payee)
-    if amount is not None:
-        transaction.update(amount=amount)
-    if date is not None:
-        transaction.update(date=date)
-    transaction.update(date_modified=datetime.datetime.utcnow)
+    transaction.update(**data, date_modified=datetime.datetime.utcnow)
+    return transaction
 
 
 def delete_transaction(_id):
