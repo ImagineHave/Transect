@@ -18,11 +18,22 @@ def add():
     form = AddForm()
 
     if form.validate_on_submit():
+
+        if form.payer.data is None or len(form.payer.data) == 0:
+            payer = form.payer_account.data
+        else:
+            payer = form.payer.data
+
+        if form.payee.data is None or len(form.payee.data) == 0:
+            payee = form.payee_account.data
+        else:
+            payee = form.payee.data
+
         insert_series(
                 name=form.name.data,
                 username=g.username,
-                payer=form.payer.data,
-                payee=form.payee.data,
+                payer=payer,
+                payee=payee,
                 amount=form.amount.data,
                 start_date=form.start_date.data,
                 end_date=form.end_date.data,
@@ -61,12 +72,23 @@ def edit(_id):
     form.process(formdata=request.form, obj=series)
 
     if form.validate_on_submit():
+
+        if form.payer.data is None or len(form.payer.data) == 0:
+            payer = form.payer_account.data
+        else:
+            payer = form.payer.data
+
+        if form.payee.data is None or len(form.payee.data) == 0:
+            payee = form.payee_account.data
+        else:
+            payee = form.payee.data
+
         delete_series(_id)
         insert_series(
                 name=form.name.data,
                 username=g.username,
-                payer=form.payer.data,
-                payee=form.payee.data,
+                payer=payer,
+                payee=payee,
                 amount=form.amount.data,
                 start_date=form.start_date.data,
                 end_date=form.end_date.data,

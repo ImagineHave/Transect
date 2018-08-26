@@ -28,15 +28,21 @@ def add():
     
     form = AddForm()
 
-    print(form.validate_on_submit())
-    print(form.errors)
-    print(form.payer.data)
-    print(form.payer.errors)
-
     if form.validate_on_submit():
+
+        if form.payer.data is None or len(form.payer.data) == 0:
+            payer = form.payer_account.data
+        else:
+            payer = form.payer.data
+
+        if form.payee.data is None or len(form.payee.data) == 0:
+            payee = form.payee_account.data
+        else:
+            payee = form.payee.data
+
         insert_transaction(g.username, {
-            'payer': form.payer.data,
-            'payee': form.payee.data,
+            'payer': payer,
+            'payee': payee,
             'amount': form.amount.data,
             'date': form.date.data})
         return redirect(url_for('transactions.all_transactions'))
@@ -66,9 +72,20 @@ def edit(_id):
     form.process(formdata=request.form, obj=transaction)
 
     if form.validate_on_submit():
+
+        if form.payer.data is None or len(form.payer.data) == 0:
+            payer = form.payer_account.data
+        else:
+            payer = form.payer.data
+
+        if form.payee.data is None or len(form.payee.data) == 0:
+            payee = form.payee_account.data
+        else:
+            payee = form.payee.data
+
         update_transaction(_id, {
-            'payer': form.payer.data,
-            'payee': form.payee.data,
+            'payer': payer,
+            'payee': payee,
             'amount': form.amount.data,
             'date': form.date.data})
         return redirect(url_for('transactions.all_transactions'))
