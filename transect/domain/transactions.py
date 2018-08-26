@@ -1,5 +1,7 @@
 from transect.domain.users import get_user
-from mongoengine import StringField, DecimalField, DateTimeField, ReferenceField, Document
+from mongoengine import (
+    StringField, DecimalField, DateTimeField, ReferenceField, Document
+)
 from transect.domain.users import Users
 import datetime
 

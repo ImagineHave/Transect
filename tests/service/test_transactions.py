@@ -32,7 +32,9 @@ def test_adding_transactions(client, app, auth, test_user):
         t1s = create_transactions(count=5)
 
         for transaction in t1s:
-            auth.post('/transactions/add', data=transaction)
+            response = auth.post('/transactions/add', data=transaction)
+
+        print(response.data)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 

@@ -28,6 +28,11 @@ def add():
     
     form = AddForm()
 
+    print(form.validate_on_submit())
+    print(form.errors)
+    print(form.payer.data)
+    print(form.payer.errors)
+
     if form.validate_on_submit():
         insert_transaction(g.username, {
             'payer': form.payer.data,
