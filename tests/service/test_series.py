@@ -1,6 +1,7 @@
 from datetime import datetime
 from transect.domain.frequencies import get_by_label
 from transect.domain.transactions import get_transactions_for_user_id, get_transactions
+from transect.domain.series import get_series_by_username
 
 
 def create_series(
@@ -47,8 +48,10 @@ def test_adding_series(client, app, auth, test_user):
 
         for series in s1s:
             response = auth.post('/series/add', data=series)
+            print(response.data)
 
-        assert len(get_transactions_for_user_id(user_id1)) == 25
+        assert 1 == len(get_series_by_username(username1))
+        assert 25 == len(get_transactions_for_user_id(user_id1))
 
         for series in s1s:
             dt = datetime.combine(series['start_date'], datetime.min.time())

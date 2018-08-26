@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 
 class Series(Document):
+    name = StringField(max_length=200, required=True)
     payer = StringField(max_length=200, required=True)
     payee = StringField(max_length=200, required=True)
     amount = DecimalField(required=True, places=2, default=0.0)
@@ -32,10 +33,11 @@ def create_transactions(username, payer, payee, amount, start_date, end_date, fr
     return transactions
 
 
-def insert_series(username, payer, payee, amount, start_date, end_date, frequency):
+def insert_series(username, name, payer, payee, amount, start_date, end_date, frequency):
     user = get_user(username=username)
     transactions = create_transactions(username, payer, payee, amount, start_date, end_date, frequency.value)
     series = Series(
+        name=name,
         user=user,
         payer=payer,
         payee=payee,
@@ -51,6 +53,10 @@ def insert_series(username, payer, payee, amount, start_date, end_date, frequenc
 
 def get_series_by_id(_id):
     return Series.objects(id=_id).first()
+
+
+def get_series_by_username(username):
+    return Series.objects(user__in=Users.objects.filter(username=username))
 
 
 def delete_series(_id):

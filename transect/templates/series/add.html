@@ -9,6 +9,7 @@
 <form method=post>
   <dl>
     {{ form.csrf_token }}
+    {{ render_field(form.name) }}
     {{ render_field(form.payer) }}
     {{ render_field(form.payee) }}
     {{ render_field(form.amount) }}

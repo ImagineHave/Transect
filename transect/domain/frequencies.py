@@ -15,7 +15,7 @@ def create_standard_frequencies():
 
 
 def get_as_list_of_tuples():
-    return [(f.label, f.value) for f in Frequency.objects.order_by('label')]
+    return [(f.value, f.label) for f in Frequency.objects.order_by('label')]
 
 
 def get_by_label(label):

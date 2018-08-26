@@ -16,14 +16,16 @@ def add():
     form = AddForm()
 
     if form.validate_on_submit():
-        insert_series(username=g.username,
-                      payer=form.payer.data,
-                      payee=form.payee.data,
-                      amount=form.amount.data,
-                      start_date=form.start_date.data,
-                      end_date=form.end_date.data,
-                      frequency=get_by_label(form.frequency.data)
-                      )
+        insert_series(
+                name=form.name.data,
+                username=g.username,
+                payer=form.payer.data,
+                payee=form.payee.data,
+                amount=form.amount.data,
+                start_date=form.start_date.data,
+                end_date=form.end_date.data,
+                frequency=get_by_label(form.frequency.data)
+        )
         return redirect(url_for('series.add'))
 
     return render_template('series/add.html', form=form)
