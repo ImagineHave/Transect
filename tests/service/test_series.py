@@ -5,6 +5,7 @@ from transect.domain.series import get_series_by_username
 
 
 def create_series(
+        name='series name',
         username='test',
         payer='Payer',
         payee='Payee',
@@ -17,6 +18,7 @@ def create_series(
     series = []
     for i in range(count):
         s = {
+            'name': name,
             'username': username,
             'payer': payer,
             'payee': payee,

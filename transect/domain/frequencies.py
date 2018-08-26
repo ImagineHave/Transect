@@ -20,3 +20,7 @@ def get_as_list_of_tuples():
 
 def get_by_label(label):
     return Frequency.objects(label=label).first()
+
+
+def get_by_value(value):
+    return Frequency.objects(value=value).first()

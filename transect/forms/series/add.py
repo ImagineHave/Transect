@@ -8,7 +8,7 @@ from transect.domain.frequencies import get_as_list_of_tuples
 
 
 class AddForm(FlaskForm):
-    name = StringField('payer', [InputRequired()])
+    name = StringField('series name', [InputRequired()])
     payer = StringField('payer', [InputRequired()])
     payee = StringField('payee', [InputRequired()])
     amount = DecimalField('amount', [InputRequired()], places=2, default=0.0, rounding=ROUND_HALF_UP)

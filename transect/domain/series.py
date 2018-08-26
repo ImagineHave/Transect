@@ -1,5 +1,5 @@
 from mongoengine import (
-    StringField, DecimalField, DateTimeField, ReferenceField, Document, ListField, DictField, CASCADE
+    StringField, DecimalField, DateTimeField, ReferenceField, Document, ListField, CASCADE
     )
 from transect.domain.users import Users, get_user
 from transect.domain.frequencies import Frequency
