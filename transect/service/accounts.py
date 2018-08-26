@@ -10,14 +10,14 @@ from transect.forms.accounts.edit import EditForm
 from transect.service.auth import login_required
 from werkzeug.exceptions import abort
 
-bp = Blueprint('accounts', __name__, url_prefix='/account')
+bp = Blueprint('accounts', __name__, url_prefix='/accounts')
 
 
 @bp.route('/all')
 @login_required
-def all_account():
+def all_accounts():
     account = list(get_accounts_by_username(g.username))
-    return render_template('account/all.html', account=account)
+    return render_template('accounts/all.html', account=account)
 
 
 @bp.route('/add', methods=('POST', 'GET'))
@@ -64,9 +64,9 @@ def edit(_id):
             'credit_or_debit': form.credit_or_debit.data
         }
         update_account(g.username, data)
-        return redirect(url_for('account.all_account'))
+        return redirect(url_for('accounts.all_accounts'))
 
-    return render_template('account/edit.html', account=account, form=form)
+    return render_template('accounts/edit.html', account=account, form=form)
 
 
 @bp.route('/<_id>/delete', methods=('POST',))
@@ -74,4 +74,4 @@ def edit(_id):
 def delete(_id):
     get_account(_id)
     delete_account(_id)
-    return redirect(url_for('account.all_account'))
+    return redirect(url_for('accounts.all_accounts'))

@@ -43,3 +43,9 @@ def update_account(_id, data):
     account = get_account_by_id(_id)
     account.update(**data, date_modified=datetime.datetime.utcnow)
     return account
+
+
+def get_account(username, data):
+    user = get_user(username=username)
+    account = Accounts.objects(user=user, __raw__=data)
+    return account
