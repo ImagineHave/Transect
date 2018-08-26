@@ -4,7 +4,6 @@ from transect import create_app
 from transect.db import get_db, init_db
 from werkzeug.security import generate_password_hash
 from bson.objectid import ObjectId
-from transect.domain.accounts import create_standard_test_accounts
 
 
 @pytest.fixture
@@ -19,8 +18,7 @@ def app():
     
     with app.app_context():
         init_db()
-        create_standard_test_accounts()
-    
+
     with app.app_context():
         get_db()['users'].insert_one({"username": 'test', "password": generate_password_hash('test'),
                                       "email": "e@ma.il"})

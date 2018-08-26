@@ -3,6 +3,7 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 from transect.domain.frequencies import create_standard_frequencies
+from transect.domain.accounts import create_standard_test_accounts
 
 
 def get_client():
@@ -35,6 +36,7 @@ def init_db():
     for collection in collections:
         db[collection].drop()
     create_standard_frequencies()
+    create_standard_test_accounts()
 
 
 @click.command('init-db')

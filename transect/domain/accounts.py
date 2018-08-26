@@ -10,10 +10,8 @@ class Accounts(Document):
 
 
 def create_standard_test_accounts():
-    Accounts(account_name='R1').save()
-    Accounts(account_name='R2').save()
-    Accounts(account_name='E1').save()
-    Accounts(account_name='E2').save()
+    Accounts(account_name='other').save()
+
 
 
 def get_accounts_as_list_of_tuples():
