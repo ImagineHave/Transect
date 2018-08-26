@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}add transaction{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+  <dl>
+    {{ form.csrf_token }}
+    {{ render_field(form.account_name) }}
+    {{ render_field(form.account_opened_date) }}
+  </dl>
+  <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

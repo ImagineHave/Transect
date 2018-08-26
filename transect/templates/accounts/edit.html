@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  {% block title %}edit:{{account.payer}} to {{account.payee}} on {{account.date}}{% endblock %}
+{% endblock %}
+
+{% block content %}
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+  <dl>
+    {{ form.csrf_token }}
+    {{ render_field(form.account_name) }}
+    {{ render_field(form.account_opened_date) }}
+  </dl>
+  <p>{{ form.submit() }}</p>
+</form>
+<form action="{{ url_for('accounts.delete', _id=account.get_id()) }}" method="post">
+  <input class="danger" type="submit" value="delete" onclick="return confirm('Are you sure?');">
+</form>
+{% endblock %}
