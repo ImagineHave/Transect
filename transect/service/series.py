@@ -17,6 +17,7 @@ def add():
 
     print(form.errors)
     print(form.validate_on_submit())
+    print(form.frequency.data)
 
     if form.validate_on_submit():
         insert_series(
