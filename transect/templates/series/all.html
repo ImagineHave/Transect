@@ -26,8 +26,8 @@
             <td>{{ s.name }}</td>
             <td>{{ s.payer }}</td>
             <td>{{ s.payee }}</td>
-            <td>{{ s.start_date }}</td>
-            <td>{{ s.end_date }}</td>
+            <td>{{ s.start_date.date() }}</td>
+            <td>{{ s.end_date.date() }}</td>
             <td>{{ s.frequency.label }}</td>
             <td><a class="action" href="{{ url_for('series.edit', _id=s.get_id()) }}">edit</a></td>
           </tr>
