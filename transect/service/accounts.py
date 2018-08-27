@@ -16,8 +16,8 @@ bp = Blueprint('accounts', __name__, url_prefix='/accounts')
 @bp.route('/all')
 @login_required
 def all_accounts():
-    account = list(get_accounts_by_username(g.username))
-    return render_template('accounts/all.html', account=account)
+    accounts = list(get_accounts_by_username(g.username))
+    return render_template('accounts/all.html', accounts=accounts)
 
 
 @bp.route('/add', methods=('POST', 'GET'))
@@ -32,7 +32,7 @@ def add():
             'credit_or_debit': form.credit_or_debit.data
         }
         insert_account(g.username, data)
-        return redirect(url_for('accounts.add'))
+        return redirect(url_for('accounts.all_accounts'))
 
     return render_template('accounts/add.html', form=form)
 

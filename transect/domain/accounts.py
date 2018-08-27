@@ -10,6 +10,9 @@ class Accounts(Document):
     credit_or_debit = BooleanField(default=True)
     user = ReferenceField(Users)
 
+    def get_id(self):
+        return str(self.id)
+
 
 def create_standard_test_accounts():
     Accounts(account_name='other').save()

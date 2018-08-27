@@ -130,7 +130,7 @@ def test_editing_series(client, app, auth, test_user):
             assert series['start_date'] == get_transactions(series['username'], {'date': dt}).first().date.date()
 
 
-def test_editing_series(client, app, auth, test_user):
+def test_editing_series_accounts(client, app, auth, test_user):
     with app.app_context():
         add = '/series/add'
         response = auth.post_and_redirect(add)
@@ -189,7 +189,8 @@ def test_deleting_series(client, app, auth, test_user):
         assert 1 == len(s1s)
 
         for series in s1s:
-            auth.post('/series/add', data=series)
+            response = auth.post_and_redirect('/series/add', data=series)
+            assert b"all" in response.data
 
         assert 1 == len(get_series_by_username(username1))
         assert 25 == len(get_transactions_for_user_id(user_id1))
