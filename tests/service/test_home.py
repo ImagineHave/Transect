@@ -1,4 +1,5 @@
 from flask import g, session
+from tests.conftest import USERNAME1
 
 
 def test_home(client, app, auth, test_user):
@@ -21,4 +22,4 @@ def test_home(client, app, auth, test_user):
         assert b'transactions' in response.data
         assert b'series' in response.data
         assert session['user_id'] == test_user.get_user_id()
-        assert g.username == 'test'
+        assert g.username == USERNAME1

@@ -68,3 +68,16 @@ def get_transactions(username, data):
     user = get_user(username=username)
     transactions = Transactions.objects(user=user, __raw__=data)
     return transactions
+
+
+def get_transaction_ids(username, data):
+    ids = []
+    user = get_user(username=username)
+    for transaction in Transactions.objects(user=user, __raw__=data):
+        ids.append(transaction.id)
+    return ids
+
+
+def bulk_update(username, from_data, to_data):
+    for _id in get_transaction_ids(username, from_data):
+        update_transaction(_id, to_data)

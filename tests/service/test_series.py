@@ -1,34 +1,10 @@
 from datetime import datetime
-from transect.domain.frequencies import get_by_label
 from transect.domain.transactions import get_transactions_for_user_id, get_transactions
 from transect.domain.series import get_series_by_username, get_series
-
-
-def create_series(
-        name='series name',
-        username='test',
-        payer='Payer',
-        payee='Payee',
-        amount=123.45,
-        start_date='1982-05-14',
-        end_date='1984-05-14',
-        frequency='monthly',
-        count=1):
-
-    series = []
-    for i in range(count):
-        s = {
-            'name': name,
-            'username': username,
-            'payer': payer,
-            'payee': payee,
-            'amount': amount,
-            'start_date': datetime.strptime(start_date, '%Y-%m-%d').date(),
-            'end_date': datetime.strptime(end_date, '%Y-%m-%d').date(),
-            'frequency': get_by_label(frequency).label
-        }
-        series.append(s)
-    return series
+from tests.conftest import (
+    USERNAME1, PAYEE1, START_DATE1_DATE, START_DATE2_DATE,
+    STANDARD_SERIES1, STANDARD_SERIES_NO_PAYER, STANDARD_SERIES2
+)
 
 
 def test_adding_series(client, app, auth, test_user):
@@ -42,22 +18,18 @@ def test_adding_series(client, app, auth, test_user):
         response = auth.post_and_redirect(add)
         assert b"add" in response.data
 
-        username1 = 'test'
-        user_id1 = test_user.get_user_id(username1)
+        user_id1 = test_user.get_user_id(USERNAME1)
 
-        s1s = create_series()
-        assert 1 == len(s1s)
+        response = auth.post_and_redirect('/series/add', data=STANDARD_SERIES1)
+        assert 200 == response.status_code
+        assert b"all" in response.data
 
-        for series in s1s:
-            auth.post('/series/add', data=series)
-
-        assert 1 == len(get_series_by_username(username1))
+        assert 1 == len(get_series_by_username(USERNAME1))
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
-        for series in s1s:
-            dt = datetime.combine(series['start_date'], datetime.min.time())
-            assert 1 == len(get_transactions(series['username'], {'date': dt}))
-            assert series['start_date'] == get_transactions(series['username'], {'date': dt}).first().date.date()
+        date = datetime.combine(START_DATE1_DATE, datetime.min.time())
+        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
+        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
 
 
 def test_adding_series_accounts(client, app, auth, test_user):
@@ -71,23 +43,19 @@ def test_adding_series_accounts(client, app, auth, test_user):
         response = auth.post_and_redirect(add)
         assert b"add" in response.data
 
-        username1 = 'test'
-        user_id1 = test_user.get_user_id(username1)
+        user_id1 = test_user.get_user_id(USERNAME1)
 
-        s1s = create_series(payee='')
-        assert 1 == len(s1s)
+        print(STANDARD_SERIES_NO_PAYER)
+        response = auth.post_and_redirect('/series/add', data=STANDARD_SERIES_NO_PAYER)
+        assert 200 == response.status_code
+        assert b"all" in response.data
 
-        for series in s1s:
-            auth.post('/series/add', data=series)
-
-        assert 1 == len(get_series_by_username(username1))
+        assert 1 == len(get_series_by_username(USERNAME1))
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
-        for series in s1s:
-            dt = datetime.combine(series['start_date'], datetime.min.time())
-            assert 1 == len(get_transactions(series['username'], {'date': dt, 'payee': 'other'}))
-            assert series['start_date'] == get_transactions(series['username'],
-                                                            {'date': dt, 'payee': 'other'}).first().date.date()
+        date = datetime.combine(START_DATE1_DATE, datetime.min.time())
+        assert 1 == len(get_transactions(USERNAME1, {'date': date, 'payer': 'other'}))
+        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date, 'payer': 'other'}).first().date
 
 
 def test_editing_series(client, app, auth, test_user):
@@ -101,33 +69,27 @@ def test_editing_series(client, app, auth, test_user):
         response = auth.post_and_redirect(add)
         assert b"add" in response.data
 
-        username1 = 'test'
-        user_id1 = test_user.get_user_id(username1)
+        user_id1 = test_user.get_user_id(USERNAME1)
 
-        s1s = create_series()
-        assert 1 == len(s1s)
+        response = auth.post_and_redirect('/series/add', data=STANDARD_SERIES1)
+        assert 200 == response.status_code
+        assert b"all" in response.data
 
-        for series in s1s:
-            auth.post('/series/add', data=series)
-
-        assert 1 == len(get_series_by_username(username1))
+        assert 1 == len(get_series_by_username(USERNAME1))
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
-        s1 = {'payee': 'Payee'}
-        s1id = get_series(username1, s1).first().get_id()
+        s1 = {'payee': PAYEE1}
+        s1id = get_series(USERNAME1, s1).first().get_id()
 
         change_logged_in_users_series = '/series/' + s1id + '/edit'
 
-        s1s = create_series(payee='Payee2', start_date='1952-05-14')
-
-        response = auth.post_and_redirect(change_logged_in_users_series, data=s1s[0])
+        response = auth.post_and_redirect(change_logged_in_users_series, data=STANDARD_SERIES2)
 
         assert 200 == response.status_code
-
-        for series in s1s:
-            dt = datetime.combine(series['start_date'], datetime.min.time())
-            assert 1 == len(get_transactions(series['username'], {'date': dt}))
-            assert series['start_date'] == get_transactions(series['username'], {'date': dt}).first().date.date()
+        assert 1 == len(get_series_by_username(USERNAME1))
+        date = datetime.combine(START_DATE2_DATE, datetime.min.time())
+        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
+        assert START_DATE2_DATE == get_transactions(USERNAME1, {'date': date}).first().date
 
 
 def test_editing_series_accounts(client, app, auth, test_user):
@@ -141,34 +103,27 @@ def test_editing_series_accounts(client, app, auth, test_user):
         response = auth.post_and_redirect(add)
         assert b"add" in response.data
 
-        username1 = 'test'
-        user_id1 = test_user.get_user_id(username1)
+        user_id1 = test_user.get_user_id(USERNAME1)
 
-        s1s = create_series()
-        assert 1 == len(s1s)
+        response = auth.post_and_redirect('/series/add', data=STANDARD_SERIES1)
+        assert 200 == response.status_code
+        assert b"all" in response.data
 
-        for series in s1s:
-            auth.post('/series/add', data=series)
-
-        assert 1 == len(get_series_by_username(username1))
+        assert 1 == len(get_series_by_username(USERNAME1))
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
-        s1 = {'payee': 'Payee'}
-        s1id = get_series(username1, s1).first().get_id()
+        s1 = {'payee': PAYEE1}
+        s1id = get_series(USERNAME1, s1).first().get_id()
 
         change_logged_in_users_series = '/series/' + s1id + '/edit'
 
-        s1s = create_series(payee='', start_date='1952-05-14')
-
-        response = auth.post_and_redirect(change_logged_in_users_series, data=s1s[0])
+        response = auth.post_and_redirect(change_logged_in_users_series, data=STANDARD_SERIES_NO_PAYER)
 
         assert 200 == response.status_code
 
-        for series in s1s:
-            dt = datetime.combine(series['start_date'], datetime.min.time())
-            assert 1 == len(get_transactions(series['username'], {'date': dt, 'payee': 'other'}))
-            assert series['start_date'] == get_transactions(series['username'],
-                                                            {'date': dt, 'payee': 'other'}).first().date.date()
+        date = datetime.combine(START_DATE1_DATE, datetime.min.time())
+        assert 1 == len(get_transactions(USERNAME1, {'date': date, 'payer': 'other'}))
+        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date, 'payer': 'other'}).first().date
 
 
 def test_deleting_series(client, app, auth, test_user):
@@ -182,21 +137,16 @@ def test_deleting_series(client, app, auth, test_user):
         response = auth.post_and_redirect(add)
         assert b"add" in response.data
 
-        username1 = 'test'
-        user_id1 = test_user.get_user_id(username1)
+        user_id1 = test_user.get_user_id(USERNAME1)
 
-        s1s = create_series()
-        assert 1 == len(s1s)
+        response = auth.post_and_redirect('/series/add', data=STANDARD_SERIES1)
+        assert b"all" in response.data
 
-        for series in s1s:
-            response = auth.post_and_redirect('/series/add', data=series)
-            assert b"all" in response.data
-
-        assert 1 == len(get_series_by_username(username1))
+        assert 1 == len(get_series_by_username(USERNAME1))
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
-        s1 = {'payee': 'Payee'}
-        s1id = get_series(username1, s1).first().get_id()
+        s1 = {'payee': PAYEE1}
+        s1id = get_series(USERNAME1, s1).first().get_id()
 
         change_logged_in_users_series = '/series/' + s1id + '/delete'
 
@@ -204,6 +154,5 @@ def test_deleting_series(client, app, auth, test_user):
 
         assert 200 == response.status_code
 
-        for series in s1s:
-            dt = datetime.combine(series['start_date'], datetime.min.time())
-            assert 0 == len(get_transactions(series['username'], {'date': dt}))
+        dt = datetime.combine(START_DATE1_DATE, datetime.min.time())
+        assert 0 == len(get_transactions(USERNAME1, {'date': dt}))

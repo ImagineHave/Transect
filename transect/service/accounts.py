@@ -5,6 +5,8 @@ from flask import (
 from transect.domain.accounts import (
     insert_account, get_accounts_by_username, get_account_by_id, delete_account, update_account
 )
+from transect.domain import transactions
+from transect.domain import series
 from transect.forms.accounts.add import AddForm
 from transect.forms.accounts.edit import EditForm
 from transect.service.auth import login_required
@@ -57,7 +59,21 @@ def edit(_id):
     '''put the transaction into the form'''
     form.process(formdata=request.form, obj=account)
 
+    print(form.validate_on_submit())
+    print(form.errors)
+
     if form.validate_on_submit():
+
+        from_data = {'payer': account.account_name}
+        to_data = {'payer': form.account_name.data}
+        series.bulk_update(g.username, from_data, to_data)
+        transactions.bulk_update(g.username, from_data, to_data)
+
+        from_data = {'payee': account.account_name}
+        to_data = {'payee': form.account_name.data}
+        series.bulk_update(g.username, from_data, to_data)
+        transactions.bulk_update(g.username, from_data, to_data)
+
         data = {
             'account_name': form.account_name.data,
             'account_opened_date': form.account_opened_date.data,

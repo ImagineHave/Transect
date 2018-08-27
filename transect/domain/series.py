@@ -3,7 +3,7 @@ from mongoengine import (
     )
 from transect.domain.users import Users, get_user
 from transect.domain.frequencies import Frequency
-from transect.domain.transactions import insert_transaction, Transactions
+from transect.domain.transactions import insert_transaction, Transactions, update_transaction
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -75,3 +75,24 @@ def get_series(username, data):
     user = get_user(username=username)
     series = Series.objects(user=user, __raw__=data)
     return series
+
+
+def update_series(_id, data):
+    series = get_series_by_id(_id)
+    for transaction in series.transactions:
+        update_transaction(transaction.id, data)
+    series.update(**data, date_modified=datetime.datetime.utcnow)
+    return series
+
+
+def get_series_ids(username, data):
+    ids = []
+    user = get_user(username=username)
+    for series in Series.objects(user=user, __raw__=data):
+        ids.append(series.id)
+    return ids
+
+
+def bulk_update(username, from_data, to_data):
+    for _id in get_series_ids(username, from_data):
+        update_series(_id, to_data)
