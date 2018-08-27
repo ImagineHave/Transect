@@ -3,7 +3,7 @@
 {% block header %}
   {% block title %}all:{% endblock %}
   {% if g.username %}
-    <a class="action" href="{{ url_for('account.add') }}">add</a>
+    <a class="action" href="{{ url_for('accounts.add') }}">add</a>
   {% endif %}
 {% endblock %}
 
@@ -27,7 +27,7 @@
             <td>{{ transaction.payer  }}</td>
             <td>{{ transaction.payee  }}</td>
             <td>{{ transaction.amount }}</td>
-            <td><a class="action" href="{{ url_for('account.edit', _id=account.get_id()) }}">edit</a></td>
+            <td><a class="action" href="{{ url_for('accounts.edit', _id=account.get_id()) }}">edit</a></td>
           </tr>
         {% endfor %}
       </tbody>
