@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  {% block title %}all:{% endblock %}
+  {% if g.username %}
+    <a class="action" href="{{ url_for('account.add') }}">add</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if g.username %}
+    
+      <table>
+      <thead>
+        <th>name</th>
+        <th>start date</th>
+        <th>payer</th>
+        <th>payee</th>
+        <th>amount</th>
+      </thead>
+
+      <tbody> 
+        {% for transaction in transactions %}
+          <tr>
+            <td>{{ transaction.name }}</td>
+            <td>{{ transaction.start_date.date() }}</td>
+            <td>{{ transaction.payer  }}</td>
+            <td>{{ transaction.payee  }}</td>
+            <td>{{ transaction.amount }}</td>
+            <td><a class="action" href="{{ url_for('account.edit', _id=account.get_id()) }}">edit</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      </table>
+    {% endif %}
+{% endblock %}

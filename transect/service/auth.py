@@ -4,7 +4,7 @@ from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
 
-from transect.domain.users import get_user_id_from_username, create_user, get_username_from_user_id
+from transect.domain.users import get_user_id_from_username, insert_user, get_username_from_user_id
 from transect.forms.auth.login import LoginForm
 from transect.forms.auth.register import RegisterForm
 
@@ -17,10 +17,12 @@ def register():
     form = RegisterForm()
     
     if form.validate_on_submit():
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
-        create_user(username, password, email)
+        data = {
+            'username': form.username.data,
+            'password': form.password.data,
+            'email': form.email.data
+        }
+        insert_user(data)
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', title='register', form=form)

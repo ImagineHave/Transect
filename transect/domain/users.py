@@ -1,4 +1,4 @@
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug import security
 from mongoengine import StringField, DateTimeField, Document
 import datetime
 
@@ -17,9 +17,13 @@ def does_username_exist(username):
     return Users.objects(username=username).count() == 1
 
 
-def create_user(username, password, email):
-    hashed_password = generate_password_hash(password)
-    user = Users(username=username, password=hashed_password, email=email)
+def generate_password_hash(password=None):
+    return security.generate_password_hash(password)
+
+
+def insert_user(data):
+    data['password'] = security.generate_password_hash(data['password'])
+    user = Users(**data)
     user.save()
 
 
@@ -59,5 +63,5 @@ def does_password_match_user(username, password=None):
     if not password or not user:
         return None
     else:
-        return check_password_hash(user.password, password)
+        return security.check_password_hash(user.password, password)
 

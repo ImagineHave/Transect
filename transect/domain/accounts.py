@@ -45,7 +45,7 @@ def update_account(_id, data):
     return account
 
 
-def get_account(username, data):
+def get_accounts(username, data):
     user = get_user(username=username)
     account = Accounts.objects(user=user, __raw__=data)
     return account

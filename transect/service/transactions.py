@@ -4,8 +4,10 @@ from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
 
-from transect.domain.transactions import get_transactions_for_username, insert_transaction, \
-    get_transaction_from_transaction_id, update_transaction, delete_transaction
+from transect.domain.transactions import (
+    get_transactions_for_username, insert_transaction, get_transaction_from_transaction_id,
+    update_transaction, delete_transaction
+)
 from transect.forms.transactions.add import AddForm
 from transect.forms.transactions.edit import EditForm
 from werkzeug.exceptions import abort
@@ -20,7 +22,13 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 def all_transactions():
     transactions = list(get_transactions_for_username(g.username))
     return render_template('transactions/all.html', transactions=transactions)
-    
+
+
+def get_account(p, a):
+    if p is None or len(p) == 0:
+        return a
+    else:
+        return p
 
 @bp.route('/add', methods=('POST', 'GET'))
 @login_required
@@ -30,19 +38,9 @@ def add():
 
     if form.validate_on_submit():
 
-        if form.payer.data is None or len(form.payer.data) == 0:
-            payer = form.payer_account.data
-        else:
-            payer = form.payer.data
-
-        if form.payee.data is None or len(form.payee.data) == 0:
-            payee = form.payee_account.data
-        else:
-            payee = form.payee.data
-
         insert_transaction(g.username, {
-            'payer': payer,
-            'payee': payee,
+            'payer': get_account(form.payer.data, form.payer_account.data),
+            'payee': get_account(form.payee.data, form.payee_account.data),
             'amount': form.amount.data,
             'date': form.date.data})
         return redirect(url_for('transactions.all_transactions'))
@@ -73,19 +71,9 @@ def edit(_id):
 
     if form.validate_on_submit():
 
-        if form.payer.data is None or len(form.payer.data) == 0:
-            payer = form.payer_account.data
-        else:
-            payer = form.payer.data
-
-        if form.payee.data is None or len(form.payee.data) == 0:
-            payee = form.payee_account.data
-        else:
-            payee = form.payee.data
-
         update_transaction(_id, {
-            'payer': payer,
-            'payee': payee,
+            'payer': get_account(form.payer.data, form.payer_account.data),
+            'payee': get_account(form.payee.data, form.payee_account.data),
             'amount': form.amount.data,
             'date': form.date.data})
         return redirect(url_for('transactions.all_transactions'))

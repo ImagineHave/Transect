@@ -34,8 +34,6 @@ def test_adding_transactions(client, app, auth, test_user):
         for transaction in t1s:
             response = auth.post('/transactions/add', data=transaction)
 
-        print(response.data)
-
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
         for transaction in t1s:
@@ -62,8 +60,6 @@ def test_adding_transactions_account(client, app, auth, test_user):
 
         for transaction in t1s:
             response = auth.post('/transactions/add', data=transaction)
-
-        print(response.data)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
         assert len(get_transactions(username1, {'payer': 'other'})) == 5

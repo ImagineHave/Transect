@@ -1,5 +1,5 @@
 from datetime import datetime
-from transect.domain.accounts import get_accounts_by_username, get_account
+from transect.domain.accounts import get_accounts_by_username, get_accounts
 
 
 def create_accounts(
@@ -44,6 +44,6 @@ def test_adding_accounts(client, app, auth, test_user):
 
         for account in a1s:
             dt = datetime.combine(account['account_opened_date'], datetime.min.time())
-            assert 1 == len(get_account(account['username'], {'account_opened_date': dt}))
-            assert account['account_opened_date'] == get_account(account['username'],
-                                                                 {'account_opened_date': dt}).first().account_opened_date.date()
+            assert 1 == len(get_accounts(account['username'], {'account_opened_date': dt}))
+            assert account['account_opened_date'] == get_accounts(account['username'],
+                                                                  {'account_opened_date': dt}).first().account_opened_date.date()

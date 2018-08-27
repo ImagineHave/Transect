@@ -1,11 +1,16 @@
 from transect.db import get_db
-from transect.domain.users import create_user, get_by_username, get_by_user_id, get_user, get_username_from_user_id, \
+from transect.domain.users import insert_user, get_by_username, get_by_user_id, get_user, get_username_from_user_id, \
     get_user_id_from_username, does_password_match_user, does_username_exist
 
 
-def test_create_user(app):
+def test_insert_user(app):
     with app.app_context():
-        create_user('a', 'a', 'a')
+        data = {
+            'username': 'a',
+            'password': 'a',
+            'email': 'a'
+        }
+        insert_user(data)
         assert get_db()['users'].find_one({'username': 'a'}) is not None
 
 

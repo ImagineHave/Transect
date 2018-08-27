@@ -1,5 +1,5 @@
 from transect.domain.accounts import (
-    insert_account, get_account_by_id, get_accounts_by_username, get_account, delete_account, update_account
+    insert_account, get_account_by_id, get_accounts_by_username, get_accounts, delete_account, update_account
 )
 from datetime import datetime
 
@@ -19,8 +19,8 @@ def test_insert_account(app):
         assert account is not None
         assert get_account_by_id(account.id) is not None
         assert 1 == len(get_accounts_by_username(username))
-        assert 1 == len(get_account(username, {}))
-        assert 1 == len(get_account(username, {'account_name': account_name}))
+        assert 1 == len(get_accounts(username, {}))
+        assert 1 == len(get_accounts(username, {'account_name': account_name}))
 
 
 def test_delete_account(app):
@@ -38,13 +38,13 @@ def test_delete_account(app):
         assert account is not None
         assert get_account_by_id(account.id) is not None
         assert 1 == len(get_accounts_by_username(username))
-        assert 1 == len(get_account(username, {}))
-        assert 1 == len(get_account(username, {'account_name': account_name}))
+        assert 1 == len(get_accounts(username, {}))
+        assert 1 == len(get_accounts(username, {'account_name': account_name}))
         delete_account(account.id)
         assert get_account_by_id(account.id) is None
         assert 0 == len(get_accounts_by_username(username))
-        assert 0 == len(get_account(username, {}))
-        assert 0 == len(get_account(username, {'account_name': account_name}))
+        assert 0 == len(get_accounts(username, {}))
+        assert 0 == len(get_accounts(username, {'account_name': account_name}))
 
 
 def test_update_account(app):
@@ -62,8 +62,8 @@ def test_update_account(app):
         assert account is not None
         assert get_account_by_id(account.id) is not None
         assert 1 == len(get_accounts_by_username(username))
-        assert 1 == len(get_account(username, {}))
-        assert 1 == len(get_account(username, {'account_name': account_name}))
+        assert 1 == len(get_accounts(username, {}))
+        assert 1 == len(get_accounts(username, {'account_name': account_name}))
         account_name = 'ACCOUNT1'
         account_opened_date = datetime.utcnow
         credit_or_debit = False
@@ -75,5 +75,5 @@ def test_update_account(app):
         update_account(account.id, data)
         assert get_account_by_id(account.id) is not None
         assert 1 == len(get_accounts_by_username(username))
-        assert 1 == len(get_account(username, {}))
-        assert 1 == len(get_account(username, {'account_name': account_name}))
+        assert 1 == len(get_accounts(username, {}))
+        assert 1 == len(get_accounts(username, {'account_name': account_name}))
