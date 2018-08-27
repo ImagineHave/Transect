@@ -12,6 +12,13 @@ from werkzeug.exceptions import abort
 bp = Blueprint('series', __name__, url_prefix='/series')
 
 
+def get_account(p, a):
+    if p is None or len(p) == 0:
+        return a
+    else:
+        return p
+
+
 @bp.route('/add', methods=('POST', 'GET'))
 @login_required
 def add():
@@ -19,21 +26,11 @@ def add():
 
     if form.validate_on_submit():
 
-        if form.payer.data is None or len(form.payer.data) == 0:
-            payer = form.payer_account.data
-        else:
-            payer = form.payer.data
-
-        if form.payee.data is None or len(form.payee.data) == 0:
-            payee = form.payee_account.data
-        else:
-            payee = form.payee.data
-
         insert_series(
                 name=form.name.data,
                 username=g.username,
-                payer=payer,
-                payee=payee,
+                payer=get_account(form.payer.data, form.payer_account.data),
+                payee=get_account(form.payee.data, form.payee_account.data),
                 amount=form.amount.data,
                 start_date=form.start_date.data,
                 end_date=form.end_date.data,
@@ -73,22 +70,12 @@ def edit(_id):
 
     if form.validate_on_submit():
 
-        if form.payer.data is None or len(form.payer.data) == 0:
-            payer = form.payer_account.data
-        else:
-            payer = form.payer.data
-
-        if form.payee.data is None or len(form.payee.data) == 0:
-            payee = form.payee_account.data
-        else:
-            payee = form.payee.data
-
         delete_series(_id)
         insert_series(
                 name=form.name.data,
                 username=g.username,
-                payer=payer,
-                payee=payee,
+                payer=get_account(form.payer.data, form.payer_account.data),
+                payee=get_account(form.payee.data, form.payee_account.data),
                 amount=form.amount.data,
                 start_date=form.start_date.data,
                 end_date=form.end_date.data,

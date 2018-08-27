@@ -20,13 +20,13 @@
       </thead>
 
       <tbody> 
-        {% for transaction in transactions %}
+        {% for account in accounts %}
           <tr>
-            <td>{{ transaction.name }}</td>
-            <td>{{ transaction.start_date.date() }}</td>
-            <td>{{ transaction.payer  }}</td>
-            <td>{{ transaction.payee  }}</td>
-            <td>{{ transaction.amount }}</td>
+            <td>{{ account.name }}</td>
+            <td>{{ account.start_date.date() }}</td>
+            <td>{{ account.payer  }}</td>
+            <td>{{ account.payee  }}</td>
+            <td>{{ account.amount }}</td>
             <td><a class="action" href="{{ url_for('accounts.edit', _id=account.get_id()) }}">edit</a></td>
           </tr>
         {% endfor %}

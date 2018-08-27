@@ -30,6 +30,7 @@ def get_account(p, a):
     else:
         return p
 
+
 @bp.route('/add', methods=('POST', 'GET'))
 @login_required
 def add():

@@ -20,14 +20,18 @@
       </thead>
 
       <tbody> 
-        {% for transaction in transactions %}
+        {% for s in series %}
           <tr>
-            <td>{{ transaction.name }}</td>
-            <td>{{ transaction.start_date.date() }}</td>
-            <td>{{ transaction.payer  }}</td>
-            <td>{{ transaction.payee  }}</td>
-            <td>{{ transaction.amount }}</td>
-            <td><a class="action" href="{{ url_for('series.edit', _id=series.get_id()) }}">edit</a></td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.payer }}</td>
+            <td>{{ s.payer_account }}</td>
+            <td>{{ s.payee }}</td>
+            <td>{{ s.payee_account }}</td>
+            <td>{{ s.amount }}</td>
+            <td>{{ s.start_date }}</td>
+            <td>{{ s.end_date }}</td>
+            <td>{{ s.frequency }}</td>
+            <td><a class="action" href="{{ url_for('series.edit', _id=s.get_id()) }}">edit</a></td>
           </tr>
         {% endfor %}
       </tbody>
