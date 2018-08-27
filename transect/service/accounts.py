@@ -63,7 +63,7 @@ def edit(_id):
             'account_opened_date': form.account_opened_date.data,
             'credit_or_debit': form.credit_or_debit.data
         }
-        update_account(g.username, data)
+        update_account(_id, data)
         return redirect(url_for('accounts.all_accounts'))
 
     return render_template('accounts/edit.html', account=account, form=form)
