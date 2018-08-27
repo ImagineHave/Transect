@@ -36,7 +36,7 @@ def add():
                 end_date=form.end_date.data,
                 frequency=get_by_label(form.frequency.data)
         )
-        return redirect(url_for('series.add'))
+        return redirect(url_for('series.all_series'))
 
     return render_template('series/add.html', form=form)
 

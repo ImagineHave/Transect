@@ -28,4 +28,5 @@ class EditForm(FlaskForm):
     start_date = DateField('start date', [InputRequired()], format='%Y-%m-%d', default=datetime.date.today())
     end_date = DateField('end date', [InputRequired()], format='%Y-%m-%d', default=datetime.date.today())
     frequency = SelectField(label='frequency', choices=get_as_list_of_tuples())
-    submit = SubmitField('add')
+    submit = SubmitField('edit')
+

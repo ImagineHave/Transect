@@ -13,10 +13,11 @@
       <table>
       <thead>
         <th>name</th>
-        <th>start date</th>
         <th>payer</th>
         <th>payee</th>
-        <th>amount</th>
+        <th>start date</th>
+        <th>end date</th>
+        <th>frequency</th>
       </thead>
 
       <tbody> 
@@ -24,13 +25,10 @@
           <tr>
             <td>{{ s.name }}</td>
             <td>{{ s.payer }}</td>
-            <td>{{ s.payer_account }}</td>
             <td>{{ s.payee }}</td>
-            <td>{{ s.payee_account }}</td>
-            <td>{{ s.amount }}</td>
             <td>{{ s.start_date }}</td>
             <td>{{ s.end_date }}</td>
-            <td>{{ s.frequency }}</td>
+            <td>{{ s.frequency.label }}</td>
             <td><a class="action" href="{{ url_for('series.edit', _id=s.get_id()) }}">edit</a></td>
           </tr>
         {% endfor %}

@@ -23,4 +23,4 @@ class EditForm(FlaskForm):
     payee_account = SelectField(label='pay to account', choices=get_accounts_as_list_of_tuples(), default='other')
     amount = DecimalField('amount', [InputRequired()], places=2, default=0.0, rounding=ROUND_HALF_UP)
     date = DateField('date', [InputRequired()], format='%Y-%m-%d')
-    submit = SubmitField('add')
+    submit = SubmitField('edit')
