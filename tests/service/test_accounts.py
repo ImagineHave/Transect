@@ -70,12 +70,14 @@ def test_adding_accounts(client, app, auth, test_user):
 
         response = auth.post_and_redirect(change_logged_in_users_series, data=STANDARD_SERIES_ACCOUNT)
 
+        print(response.data)
+
         assert 200 == response.status_code
         assert 1 == len(get_series_by_username(USERNAME1))
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
         assert 1 == len(get_transactions(USERNAME1, {'date': date}))
         assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
-        assert ACCOUNT_NAME1 == get_transactions(USERNAME1, {'payer': PAYER1}).first().payee
+        assert ACCOUNT_NAME1 == get_transactions(USERNAME1, {'payee': ACCOUNT_NAME1}).first().payee
 
 
 def test_editing_accounts(client, app, auth, test_user):
@@ -197,7 +199,7 @@ def test_add_edit_accounts(client, app, auth, test_user):
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
         assert 1 == len(get_transactions(USERNAME1, {'date': date}))
         assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
-        assert ACCOUNT_NAME1 == get_transactions(USERNAME1, {'payer': PAYER1}).first().payee
+        assert ACCOUNT_NAME1 == get_transactions(USERNAME1, {'payee': ACCOUNT_NAME1}).first().payee
 
         a1 = {'account_name': 'ACCOUNT_NAME1'}
         a1id = get_accounts(USERNAME1, a1).first().get_id()

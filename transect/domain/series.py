@@ -9,7 +9,8 @@ from dateutil.relativedelta import relativedelta
 
 
 class Series(Document):
-    name = StringField(max_length=200, required=True)
+
+    name = StringField(max_length=200, required=True, unique=True)
     payer = StringField(max_length=200, required=True)
     payee = StringField(max_length=200, required=True)
     amount = DecimalField(required=True, places=2, default=0.0)

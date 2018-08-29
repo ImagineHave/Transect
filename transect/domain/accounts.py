@@ -4,7 +4,7 @@ from transect.domain.users import get_user, Users
 
 
 class Accounts(Document):
-    account_name = StringField(max_length=200, required=True)
+    account_name = StringField(max_length=200, required=True, unique=True)
     account_opened_date = DateTimeField(required=True, default=datetime.datetime.utcnow)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
     credit_or_debit = BooleanField(default=True)

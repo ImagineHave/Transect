@@ -4,8 +4,8 @@ from mongoengine import (
 
 
 class Frequency(Document):
-    label = StringField(max_length=200, required=True)
-    value = DictField(required=True, places=0, default=0, min=0)
+    label = StringField(max_length=200, required=True, unique=True)
+    value = DictField(required=True, places=0, default=0, min=0, unique_with='label')
 
 
 def create_standard_frequencies():

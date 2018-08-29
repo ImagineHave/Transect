@@ -107,6 +107,7 @@ STANDARD_SERIES_ACCOUNT = {
     'frequency': FREQUENCY
 }
 
+
 @pytest.fixture
 def app():
 

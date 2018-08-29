@@ -4,6 +4,12 @@ import datetime
 
 
 class Users(Document):
+    meta = {
+        'indexes': [
+            {'fields': ('username', 'email'), 'unique': True}
+        ]
+    }
+
     username = StringField(max_length=200, required=True)
     password = StringField(max_length=200, required=True)
     email = StringField(required=True)

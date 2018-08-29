@@ -66,7 +66,7 @@ def edit(_id):
     series = get_series(_id)
     form = EditForm()
     '''put the transaction into the form'''
-    form.process(formdata=request.form, obj=series)
+    form.process(formdata=request.form, obj=series, )
 
     if form.validate_on_submit():
 
