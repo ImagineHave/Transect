@@ -11,7 +11,7 @@ from transect.forms.transactions.add import AddForm
 from transect.forms.transactions.edit import EditForm
 from werkzeug.exceptions import abort
 from transect.service.auth import login_required
-from transect.domain.accounts import get_accounts_as_list_of_tuples
+from transect.domain.accounts import insert_account, get_accounts
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
@@ -28,6 +28,7 @@ def get_account(p, a):
     if p is None or len(p) == 0:
         return a
     else:
+        insert_account({'username': g.username, 'account_name': p})
         return p
 
 
@@ -39,7 +40,8 @@ def add():
 
     if form.validate_on_submit():
 
-        insert_transaction(g.username, {
+        insert_transaction({
+            'username': g.username,
             'payer': get_account(form.payer.data, form.payer_account.data),
             'payee': get_account(form.payee.data, form.payee_account.data),
             'amount': form.amount.data,
@@ -73,6 +75,7 @@ def edit(_id):
     if form.validate_on_submit():
 
         update_transaction(_id, {
+            'username': g.username,
             'payer': get_account(form.payer.data, form.payer_account.data),
             'payee': get_account(form.payee.data, form.payee_account.data),
             'amount': form.amount.data,

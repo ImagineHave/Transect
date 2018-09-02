@@ -1,17 +1,19 @@
 from transect.domain.users import get_user
 from mongoengine import (
-    StringField, DecimalField, DateTimeField, ReferenceField, Document
+    DecimalField, DateTimeField, ReferenceField, Document
 )
 from transect.domain.users import Users
+from transect.domain.accounts import Accounts
 import datetime
+import copy
 
 
 class Transactions(Document):
-    payer = StringField(max_length=200, required=True)
-    payee = StringField(max_length=200, required=True)
+    payer = ReferenceField(Accounts, required=True)
+    payee = ReferenceField(Accounts, required=True)
     amount = DecimalField(required=True, places=2, default=0.0)
     date = DateTimeField(required=True, default=datetime.datetime.utcnow)
-    user = ReferenceField(Users)
+    user = ReferenceField(Users, required=True)
     date_modified = DateTimeField(default=datetime.datetime.utcnow)
 
     def get_id(self):
@@ -42,15 +44,30 @@ def get_transaction_from_transaction_id(_id):
     return Transactions.objects(id=_id).first()
 
 
-def insert_transaction(username, data):
-    user = get_user(username=username)
-    transaction = Transactions(user=user, **data)
+def insert_transaction(data):
+    data['user'] = Users.objects(username=data.pop('username')).first()
+    data['payee'] = Accounts.objects(account_name=data.pop('payee')).first()
+    data['payer'] = Accounts.objects(account_name=data.pop('payer')).first()
+    transaction = Transactions(**data)
     transaction.save()
     return transaction
 
 
 def update_transaction(_id, data):
     transaction = get_transaction_from_transaction_id(_id)
+
+    data['user'] = Users.objects(username=data.pop('username')).first()
+    if data['user'] != transaction.user:
+        return None
+
+    payer = Accounts.objects(account_name=data.pop('payer', None)).first()
+    if payer is not None:
+        data['payer'] = payer
+
+    payee = Accounts.objects(account_name=data.pop('payee', None)).first()
+    if payee is not None:
+        data['payee'] = payee
+
     transaction.update(**data, date_modified=datetime.datetime.utcnow)
     return transaction
 
@@ -64,20 +81,39 @@ def get_transaction(_id):
     return Transactions.objects(id=_id).first()
 
 
-def get_transactions(username, data):
-    user = get_user(username=username)
-    transactions = Transactions.objects(user=user, __raw__=data)
-    return transactions
+def get_transactions(data):
+    data['user'] = Users.objects(username=data.pop('username')).first().id
+
+    payer = Accounts.objects(account_name=data.pop('payer', None)).first()
+    if payer is not None:
+        data['payer'] = payer.id
+
+    payee = Accounts.objects(account_name=data.pop('payee', None)).first()
+    if payee is not None:
+        data['payee'] = payee.id
+
+    return Transactions.objects(__raw__=data)
 
 
-def get_transaction_ids(username, data):
+def get_transaction_ids(data):
     ids = []
-    user = get_user(username=username)
-    for transaction in Transactions.objects(user=user, __raw__=data):
+
+    data['user'] = Users.objects(username=data.pop('username')).first().id
+
+    payer = Accounts.objects(account_name=data.pop('payer', None)).first()
+    if payer is not None:
+        data['payer'] = payer.id
+
+    payee = Accounts.objects(account_name=data.pop('payee', None)).first()
+    if payee is not None:
+        data['payee'] = payee.id
+
+    for transaction in Transactions.objects(__raw__=data):
         ids.append(transaction.id)
     return ids
 
 
-def bulk_update(username, from_data, to_data):
-    for _id in get_transaction_ids(username, from_data):
-        update_transaction(_id, to_data)
+def bulk_update(from_data, to_data):
+    for _id in get_transaction_ids(from_data):
+        data = copy.deepcopy(to_data)
+        update_transaction(_id, data)

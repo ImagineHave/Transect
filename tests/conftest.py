@@ -1,7 +1,7 @@
 import pytest
 import os
 from transect import create_app
-from transect.db import get_db, init_db
+from transect.db import get_db
 from werkzeug.security import generate_password_hash
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -40,9 +40,21 @@ USER2P = {
 
 SERIES_NAME = 'Series Name'
 PAYER1 = 'Payer1'
+PAYER1_ACCOUNT = {
+    'account_name': PAYER1
+}
 PAYER2 = 'Payer2'
+PAYER2_ACCOUNT = {
+    'account_name': PAYER2
+}
 PAYEE1 = 'Payee1'
+PAYEE1_ACCOUNT = {
+    'account_name': PAYEE1
+}
 PAYEE2 = 'Payee2'
+PAYEE2_ACCOUNT = {
+    'account_name': PAYEE2
+}
 START_DATE1 = '1982-05-14'
 START_DATE1_DATE = datetime.strptime(START_DATE1, '%Y-%m-%d')
 START_DATE2 = '1984-05-14'
@@ -119,7 +131,11 @@ def app():
     with app.app_context():
         get_db()['users'].insert_one(USER1P)
         get_db()['users'].insert_one(USER2P)
-    
+        get_db()['accounts'].insert_one(PAYER1_ACCOUNT)
+        get_db()['accounts'].insert_one(PAYEE1_ACCOUNT)
+        get_db()['accounts'].insert_one(PAYER2_ACCOUNT)
+        get_db()['accounts'].insert_one(PAYEE2_ACCOUNT)
+
     yield app
     
     

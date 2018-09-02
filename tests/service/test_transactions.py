@@ -31,9 +31,9 @@ def test_adding_transactions(client, app, auth, test_user):
 
         user_id1 = test_user.get_user_id(USERNAME1)
 
-        t1s = create_transactions(count=5)
+        t1s = create_transactions(payer='Payer3', payee='Payee3')
 
-        assert 5 == len(t1s)
+        assert 1 == len(t1s)
 
         for transaction in t1s:
             print(transaction)
@@ -41,12 +41,12 @@ def test_adding_transactions(client, app, auth, test_user):
             assert 200 == response.status_code
             assert b'all' in response.data
 
-        assert 5 == len(get_transactions_for_user_id(user_id1))
+        assert 1 == len(get_transactions_for_user_id(user_id1))
 
         for transaction in t1s:
             dt = datetime.combine(transaction['date'], datetime.min.time())
-            assert 1 == len(get_transactions(USERNAME1, {'date': dt}))
-            assert get_transactions(USERNAME1, {'date': dt}).first().date.date() == transaction['date']
+            assert 1 == len(get_transactions({'username': USERNAME1, 'date': dt}))
+            assert get_transactions({'username': USERNAME1, 'date': dt}).first().date.date() == transaction['date']
 
 
 def test_adding_transactions_account(client, app, auth, test_user):
@@ -62,13 +62,13 @@ def test_adding_transactions_account(client, app, auth, test_user):
 
         user_id1 = test_user.get_user_id(USERNAME1)
 
-        t1s = create_transactions(payer='', count=5)
+        t1s = create_transactions(payer='', payee='', count=5)
 
         for transaction in t1s:
             auth.post('/transactions/add', data=transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
-        assert len(get_transactions(USERNAME1, {'payer': 'other'})) == 5
+        assert len(get_transactions({'username': USERNAME1, 'payer': 'other'})) == 5
 
 
 def test_editing_transactions(client, app, auth, test_user):
@@ -84,22 +84,23 @@ def test_editing_transactions(client, app, auth, test_user):
 
         user_id1 = test_user.get_user_id(USERNAME1)
 
-        t1s = create_transactions(count=5)
-        t2s = create_transactions(count=3)
+        t1s = create_transactions()
+        t2s = create_transactions(username=USERNAME2, payee='other', payer='other', count=3)
 
         for transaction in t1s:
-            insert_transaction(USERNAME1, transaction)
+            insert_transaction(transaction)
 
         for transaction in t2s:
-            insert_transaction(USERNAME2, transaction)
+            insert_transaction(transaction)
 
-        assert len(get_transactions_for_user_id(user_id1)) == 5
+        assert 1 == len(get_transactions_for_user_id(user_id1))
 
-        data = {'payer': PAYER1}
-        t1id = get_transactions(USERNAME1, data).first().get_id()
-        t2id = get_transactions(USERNAME2, data).first().get_id()
+        data1 = {'username': USERNAME1, 'payer': PAYER1}
+        data2 = {'username': USERNAME2, 'payer': 'other'}
+        t1id = get_transactions(data1).first().get_id()
+        t2id = get_transactions(data2).first().get_id()
 
-        t = create_transactions(USERNAME1, payee=PAYEE2, date=START_DATE2_DATE)[0]
+        t = create_transactions(USERNAME1, payer='', payee='Payer3', date=START_DATE2_DATE)[0]
 
         change_logged_in_users_transaction = '/transactions/' + t1id + '/edit'
         change_non_logged_in_users_transaction = '/transactions/' + t2id + '/edit'
@@ -112,11 +113,11 @@ def test_editing_transactions(client, app, auth, test_user):
 
         assert 403 == response.status_code
 
-        assert len(get_transactions_for_user_id(user_id1)) == 5
+        assert 1 == len(get_transactions_for_user_id(user_id1))
 
-        assert get_transactions(USERNAME1, {'payee': PAYEE2}).count() != 0
-        assert get_transactions(USERNAME1, {'payee': PAYEE2}).first().date.date() == t['date']
-        assert get_transactions(USERNAME2, {'payee': PAYEE2}).count() == 0
+        assert 0 != get_transactions({'username': USERNAME1, 'payee': 'Payee3'}).count()
+        assert t['date'] == get_transactions({'username': USERNAME1, 'payee': 'Payee3'}).first().date.date()
+        assert 0 == get_transactions({'username': USERNAME2, 'payee': 'Payee3'}).count()
 
 
 def test_editing_transactions_account(client, app, auth, test_user):
@@ -133,19 +134,20 @@ def test_editing_transactions_account(client, app, auth, test_user):
         user_id1 = test_user.get_user_id(USERNAME1)
 
         t1s = create_transactions(count=5)
-        t2s = create_transactions(count=3)
+        t2s = create_transactions(username=USERNAME2, count=3)
 
         for transaction in t1s:
-            insert_transaction(USERNAME1, transaction)
+            insert_transaction(transaction)
 
         for transaction in t2s:
-            insert_transaction(USERNAME2, transaction)
+            insert_transaction(transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        data = {'payer': PAYER1}
-        t1id = get_transactions(USERNAME1, data).first().get_id()
-        t2id = get_transactions(USERNAME2, data).first().get_id()
+        data1 = {'username': USERNAME1, 'payer': PAYER1}
+        data2 = {'username': USERNAME1, 'payer': PAYER1}
+        t1id = get_transactions(data1).first().get_id()
+        t2id = get_transactions(data2).first().get_id()
 
         t = create_transactions(USERNAME1, payee='', date=START_DATE2_DATE)[0]
 
@@ -162,9 +164,9 @@ def test_editing_transactions_account(client, app, auth, test_user):
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        assert get_transactions(USERNAME1, {'payee': 'other'}).count() != 0
-        assert get_transactions(USERNAME1, {'payee': 'other'}).first().date.date() == t['date']
-        assert get_transactions(USERNAME2, {'payee': 'other'}).count() == 0
+        assert get_transactions({'username': USERNAME1, 'payee': 'other'}).count() != 0
+        assert get_transactions({'username': USERNAME1, 'payee': 'other'}).first().date.date() == t['date']
+        assert get_transactions({'username': USERNAME1, 'payee': 'other'}).count() == 0
 
 
 def test_deleting_transactions(client, app, auth, test_user):
@@ -182,22 +184,22 @@ def test_deleting_transactions(client, app, auth, test_user):
         user_id2 = test_user.get_user_id(USERNAME2)
 
         t1s = create_transactions(count=4)
-        t2s = create_transactions(count=2)
+        t2s = create_transactions(username=USERNAME2, count=2)
         t1s = t1s + create_transactions(payee=PAYEE2)
-        t2s = t2s + create_transactions(payee=PAYEE2)
+        t2s = t2s + create_transactions(username=USERNAME2, payee=PAYEE2)
 
         for transaction in t1s:
-            insert_transaction(USERNAME1, transaction)
+            insert_transaction(transaction)
 
         for transaction in t2s:
-            insert_transaction(USERNAME2, transaction)
+            insert_transaction(transaction)
 
         assert len(get_transactions_for_user_id(user_id1)) == 5
 
-        d1 = {'payee': PAYEE2}
-        d2 = {'payee': PAYEE2}
-        t1id = get_transactions(USERNAME1, d1).first().get_id()
-        t2id = get_transactions(USERNAME2, d2).first().get_id()
+        d1 = {'username': USERNAME1, 'payee': PAYEE2}
+        d2 = {'username': USERNAME2, 'payee': PAYEE2}
+        t1id = get_transactions(d1).first().get_id()
+        t2id = get_transactions(d2).first().get_id()
 
         change_logged_in_users_transaction = '/transactions/' + t1id + '/delete'
         change_non_logged_in_users_transaction = '/transactions/' + t2id + '/delete'
@@ -213,8 +215,8 @@ def test_deleting_transactions(client, app, auth, test_user):
         assert len(get_transactions_for_user_id(user_id1)) == 4
         assert len(get_transactions_for_user_id(user_id2)) == 3
 
-        assert get_transactions(USERNAME1, {'payee': PAYEE2}).count() == 0
-        assert get_transactions(USERNAME2, {'payee': PAYEE2}).count() != 0
+        assert get_transactions({'username': USERNAME1, 'payee': PAYEE2}).count() == 0
+        assert get_transactions({'username': USERNAME1, 'payee': PAYEE2}).count() != 0
 
 
 def test_all_transactions(client, app, auth, test_user):
@@ -231,10 +233,10 @@ def test_all_transactions(client, app, auth, test_user):
         user_id1 = test_user.get_user_id(USERNAME1)
 
         t1s = create_transactions(count=100)
-        t2s = create_transactions(count=3)
+        t2s = create_transactions(username=USERNAME2, count=3)
 
         for transaction in t2s:
-            insert_transaction(USERNAME2, transaction)
+            insert_transaction(transaction)
 
         for transaction in t1s:
             response = auth.post_and_redirect('/transactions/add', data=transaction)

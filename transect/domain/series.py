@@ -6,6 +6,7 @@ from transect.domain.frequencies import Frequency
 from transect.domain.transactions import insert_transaction, Transactions, update_transaction
 import datetime
 from dateutil.relativedelta import relativedelta
+import copy
 
 
 class Series(Document):
@@ -28,7 +29,8 @@ class Series(Document):
 def create_transactions(username, payer, payee, amount, start_date, end_date, frequency):
     transactions = []
     while start_date <= end_date:
-        transaction = insert_transaction(username, {
+        transaction = insert_transaction({
+            'username': username,
             'payer': payer,
             'payee': payee,
             'amount': amount,
@@ -81,19 +83,21 @@ def get_series(username, data):
 def update_series(_id, data):
     series = get_series_by_id(_id)
     for transaction in series.transactions:
-        update_transaction(transaction.id, data)
+        update_transaction(transaction.id, copy.deepcopy(data))
+    data['user'] = Users.objects(username=data.pop('username')).first().id
     series.update(**data, date_modified=datetime.datetime.utcnow)
     return series
 
 
-def get_series_ids(username, data):
+def get_series_ids(data):
     ids = []
-    user = get_user(username=username)
-    for series in Series.objects(user=user, __raw__=data):
+    data['user'] = Users.objects(username=data.pop('username')).first().id
+    for series in Series.objects(__raw__=data):
         ids.append(series.id)
     return ids
 
 
-def bulk_update(username, from_data, to_data):
-    for _id in get_series_ids(username, from_data):
-        update_series(_id, to_data)
+def bulk_update(from_data, to_data):
+    for _id in get_series_ids(from_data):
+        data = copy.deepcopy(to_data)
+        update_series(_id, data)

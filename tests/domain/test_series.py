@@ -118,10 +118,10 @@ def test_bulk_update(app):
         assert 1 == len(get_series(USERNAME1, {}))
         assert 1 == len(get_series(USERNAME1, {'payer': PAYER1}))
 
-        from_data = {'payer': PAYER1}
-        to_data = {'payer': PAYER2}
+        from_data = {'username': USERNAME1, 'payer': PAYER1}
+        to_data = {'username': USERNAME1, 'payer': PAYER2}
 
-        bulk_update(USERNAME1, from_data, to_data)
+        bulk_update(from_data, to_data)
         assert 25 == get_transactions_for_username(USERNAME1).count()
         assert series is not None
         assert 25 == len(series.transactions)
@@ -131,4 +131,4 @@ def test_bulk_update(app):
         assert 1 == len(get_series(USERNAME1, {}))
         assert 1 == len(get_series(USERNAME1, {'payer': PAYER2}))
         for transaction in get_series_by_id(series.id).transactions:
-            assert PAYER2 == transaction.payer
+            assert PAYER2 == transaction.payer.account_name

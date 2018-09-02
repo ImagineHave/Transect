@@ -6,9 +6,11 @@ from tests.conftest import (
     USERNAME1, ACCOUNT_NAME1, ACCOUNT_OPENED_DATE1, PAYER1, ACCOUNT_NAME2, SERIES_NAME, AMOUNT,
     START_DATE1_DATE, END_DATE1_DATE, FREQUENCY, PAYEE1, STANDARD_SERIES1, STANDARD_SERIES_ACCOUNT
 )
+import copy
 
 
 def create_accounts(
+        username=USERNAME1,
         account_name=ACCOUNT_NAME1,
         account_opened_date=ACCOUNT_OPENED_DATE1,
         count=1):
@@ -16,6 +18,7 @@ def create_accounts(
     accounts = []
     for i in range(count):
         a = {
+            'username': username,
             'account_name': account_name,
             'account_opened_date': account_opened_date.date(),
         }
@@ -47,7 +50,7 @@ def test_adding_accounts(client, app, auth, test_user):
 
         for account in a1s:
             date = datetime.combine(account['account_opened_date'], datetime.min.time())
-            accounts = get_accounts(USERNAME1, {'account_opened_date': date})
+            accounts = get_accounts({'username': USERNAME1, 'account_opened_date': date})
             assert 1 == len(accounts)
             assert account['account_opened_date'] == accounts.first().account_opened_date.date()
 
@@ -74,9 +77,11 @@ def test_adding_accounts(client, app, auth, test_user):
         assert 200 == response.status_code
         assert 1 == len(get_series_by_username(USERNAME1))
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
-        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
-        assert ACCOUNT_NAME1 == get_transactions(USERNAME1, {'payee': ACCOUNT_NAME1}).first().payee
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date}))
+        assert START_DATE1_DATE == get_transactions({'username': USERNAME1, 'date': date}).first().date
+        assert ACCOUNT_NAME1 == get_transactions({
+            'username': USERNAME1,
+            'payee': ACCOUNT_NAME1}).first().payee.account_name
 
 
 def test_editing_accounts(client, app, auth, test_user):
@@ -99,20 +104,20 @@ def test_editing_accounts(client, app, auth, test_user):
 
         assert 1 == len(get_accounts_by_username(USERNAME1))
 
-        a1 = {'account_name': 'ACCOUNT_NAME1'}
-        a1id = get_accounts(USERNAME1, a1).first().get_id()
+        a1 = {'username': USERNAME1, 'account_name': 'ACCOUNT_NAME1'}
+        a1id = get_accounts(a1).first().get_id()
 
         change_logged_in_users_series = '/accounts/' + a1id + '/edit'
 
-        a1 = {'account_name': ACCOUNT_NAME2}
+        a1 = {'username': USERNAME1, 'account_name': ACCOUNT_NAME2}
         a1s = create_accounts(**a1)
 
         response = auth.post_and_redirect(change_logged_in_users_series, data=a1s[0])
 
         assert 200 == response.status_code
 
-        assert 1 == len(get_accounts(USERNAME1, a1))
-        assert ACCOUNT_NAME2 == get_accounts(USERNAME1, a1).first().account_name
+        assert 1 == len(get_accounts(copy.deepcopy(a1)))
+        assert ACCOUNT_NAME2 == get_accounts(copy.deepcopy(a1)).first().account_name
 
 
 def test_deleting_accounts(client, app, auth, test_user):
@@ -135,8 +140,8 @@ def test_deleting_accounts(client, app, auth, test_user):
 
         assert 1 == len(get_accounts_by_username(USERNAME1))
 
-        a1 = {'account_name': 'ACCOUNT_NAME1'}
-        a1id = get_accounts(USERNAME1, a1).first().get_id()
+        a1 = {'username': USERNAME1, 'account_name': 'ACCOUNT_NAME1'}
+        a1id = get_accounts(copy.deepcopy(a1)).first().get_id()
 
         change_logged_in_users_series = '/accounts/' + a1id + '/delete'
 
@@ -144,8 +149,7 @@ def test_deleting_accounts(client, app, auth, test_user):
 
         assert 200 == response.status_code
 
-        for account in a1s:
-            assert 0 == len(get_accounts(account['account_name'], a1))
+        assert 0 == len(get_accounts(a1))
 
 
 def test_add_edit_accounts(client, app, auth, test_user):
@@ -172,7 +176,7 @@ def test_add_edit_accounts(client, app, auth, test_user):
 
         for account in a1s:
             date = datetime.combine(account['account_opened_date'], datetime.min.time())
-            accounts = get_accounts(USERNAME1, {'account_opened_date': date})
+            accounts = get_accounts({'username': USERNAME1, 'account_opened_date': date})
             assert 1 == len(accounts)
             assert account['account_opened_date'] == accounts.first().account_opened_date.date()
 
@@ -196,28 +200,30 @@ def test_add_edit_accounts(client, app, auth, test_user):
         assert 200 == response.status_code
         assert 1 == len(get_series_by_username(USERNAME1))
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
-        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
-        assert ACCOUNT_NAME1 == get_transactions(USERNAME1, {'payee': ACCOUNT_NAME1}).first().payee
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date}))
+        assert START_DATE1_DATE == get_transactions({'username': USERNAME1, 'date': date}).first().date
+        assert ACCOUNT_NAME1 == get_transactions({
+            'username': USERNAME1,
+            'payee': ACCOUNT_NAME1}).first().payee.account_name
 
-        a1 = {'account_name': 'ACCOUNT_NAME1'}
-        a1id = get_accounts(USERNAME1, a1).first().get_id()
+        a1 = {'username': USERNAME1, 'account_name': 'ACCOUNT_NAME1'}
+        a1id = get_accounts(a1).first().get_id()
 
         change_logged_in_users_series = '/accounts/' + a1id + '/edit'
 
-        a1 = {'account_name': ACCOUNT_NAME2}
+        a1 = {'username': USERNAME1, 'account_name': ACCOUNT_NAME2}
         a1s = create_accounts(**a1)
 
         response = auth.post_and_redirect(change_logged_in_users_series, data=a1s[0])
 
         assert 200 == response.status_code
 
-        assert 1 == len(get_accounts(USERNAME1, a1))
-        assert ACCOUNT_NAME2 == get_accounts(USERNAME1, a1).first().account_name
+        assert 1 == len(get_accounts(copy.deepcopy(a1)))
+        assert ACCOUNT_NAME2 == get_accounts(copy.deepcopy(a1)).first().account_name
 
         assert 200 == response.status_code
         assert 1 == len(get_series_by_username(USERNAME1))
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
-        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
-        assert ACCOUNT_NAME2 == get_transactions(USERNAME1, {'payer': PAYER1}).first().payee
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date}))
+        assert START_DATE1_DATE == get_transactions({'username': USERNAME1, 'date': date}).first().date
+        assert ACCOUNT_NAME2 == get_transactions({'username': USERNAME1, 'payer': PAYER1}).first().payee.account_name
