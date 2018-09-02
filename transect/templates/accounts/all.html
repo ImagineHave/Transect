@@ -24,7 +24,6 @@
           <tr>
             <td>{{ account.account_name }}</td>
             <td>{{ account.account_opened_date }}</td>
-            <td>{{ account.credit_or_debit  }}</td>
             <td><a class="action" href="{{ url_for('accounts.edit', _id=account.get_id()) }}">edit</a></td>
           </tr>
         {% endfor %}

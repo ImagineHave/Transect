@@ -52,3 +52,11 @@ def init_app(app):
     app.cli.add_command(init_db_command)
     with app.app_context():
         get_db()
+
+
+def init_test_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
+    with app.app_context():
+        get_db()
+        init_db()

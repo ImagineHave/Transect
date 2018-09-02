@@ -3,7 +3,7 @@ from transect.domain.accounts import get_accounts_by_username, get_accounts
 from transect.domain.series import get_series_by_username, get_series
 from transect.domain.transactions import get_transactions_for_user_id, get_transactions
 from tests.conftest import (
-    USERNAME1, ACCOUNT_NAME1, ACCOUNT_OPENED_DATE1, CREDIT_OR_DEBIT_C, PAYER1, ACCOUNT_NAME2, SERIES_NAME, AMOUNT,
+    USERNAME1, ACCOUNT_NAME1, ACCOUNT_OPENED_DATE1, PAYER1, ACCOUNT_NAME2, SERIES_NAME, AMOUNT,
     START_DATE1_DATE, END_DATE1_DATE, FREQUENCY, PAYEE1, STANDARD_SERIES1, STANDARD_SERIES_ACCOUNT
 )
 
@@ -11,14 +11,12 @@ from tests.conftest import (
 def create_accounts(
         account_name=ACCOUNT_NAME1,
         account_opened_date=ACCOUNT_OPENED_DATE1,
-        credit_or_debit=CREDIT_OR_DEBIT_C,
         count=1):
 
     accounts = []
     for i in range(count):
         a = {
             'account_name': account_name,
-            'credit_or_debit': credit_or_debit,
             'account_opened_date': account_opened_date.date(),
         }
         accounts.append(a)

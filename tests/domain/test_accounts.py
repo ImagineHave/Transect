@@ -2,7 +2,7 @@ from transect.domain.accounts import (
     insert_account, get_account_by_id, get_accounts_by_username, get_accounts, delete_account, update_account
 )
 from tests.conftest import (
-    USERNAME1, ACCOUNT_NAME1, ACCOUNT_OPENED_DATE1, CREDIT_OR_DEBIT_C, CREDIT_OR_DEBIT_D, ACCOUNT_NAME2
+    USERNAME1, ACCOUNT_NAME1, ACCOUNT_OPENED_DATE1, ACCOUNT_NAME2
 )
 
 
@@ -11,7 +11,6 @@ def test_insert_account(app):
         data = {
             'account_name': ACCOUNT_NAME1,
             'account_opened_date': ACCOUNT_OPENED_DATE1,
-            'credit_or_debit': CREDIT_OR_DEBIT_C
         }
         account = insert_account(USERNAME1, data)
         assert account is not None
@@ -26,7 +25,6 @@ def test_delete_account(app):
         data = {
             'account_name': ACCOUNT_NAME1,
             'account_opened_date': ACCOUNT_OPENED_DATE1,
-            'credit_or_debit': CREDIT_OR_DEBIT_C
         }
         account = insert_account(USERNAME1, data)
         assert account is not None
@@ -46,7 +44,6 @@ def test_update_account(app):
         data = {
             'account_name': ACCOUNT_NAME1,
             'account_opened_date': ACCOUNT_OPENED_DATE1,
-            'credit_or_debit': CREDIT_OR_DEBIT_C
         }
         account = insert_account(USERNAME1, data)
         assert account is not None
@@ -57,7 +54,6 @@ def test_update_account(app):
         data = {
             'account_name': ACCOUNT_NAME2,
             'account_opened_date': ACCOUNT_OPENED_DATE1,
-            'credit_or_debit': CREDIT_OR_DEBIT_D
         }
         update_account(account.id, data)
         assert get_account_by_id(account.id) is not None

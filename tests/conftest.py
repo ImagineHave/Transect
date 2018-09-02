@@ -56,8 +56,6 @@ AMOUNT = 123.45
 ACCOUNT_NAME1 = 'ACCOUNT_NAME1'
 ACCOUNT_NAME2 = 'ACCOUNT_NAME2'
 ACCOUNT_OPENED_DATE1 = datetime.strptime('1982-05-14', '%Y-%m-%d')
-CREDIT_OR_DEBIT_C = True
-CREDIT_OR_DEBIT_D = False
 
 
 STANDARD_SERIES1 = {
@@ -118,9 +116,6 @@ def app():
                       'MONGODB_SETTINGS': {'MONGO_URI': os.environ['MONGO_URI']}
                       })
     
-    with app.app_context():
-        init_db()
-
     with app.app_context():
         get_db()['users'].insert_one(USER1P)
         get_db()['users'].insert_one(USER2P)

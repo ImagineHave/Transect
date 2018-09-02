@@ -25,7 +25,10 @@ def create_app(test_config=None):
     # we can initialise the database
     # database connections get torn down after each request
     from . import db
-    db.init_app(app)
+    if test_config:
+        db.init_test_app(app)
+    else:
+        db.init_app(app)
 
     from transect.service import auth
     app.register_blueprint(auth.bp)

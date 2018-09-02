@@ -31,7 +31,6 @@ def add():
         data = {
             'account_name': form.account_name.data,
             'account_opened_date': form.account_opened_date.data,
-            'credit_or_debit': form.credit_or_debit.data
         }
         insert_account(g.username, data)
         return redirect(url_for('accounts.all_accounts'))
@@ -77,7 +76,6 @@ def edit(_id):
         data = {
             'account_name': form.account_name.data,
             'account_opened_date': form.account_opened_date.data,
-            'credit_or_debit': form.credit_or_debit.data
         }
         update_account(_id, data)
         return redirect(url_for('accounts.all_accounts'))
