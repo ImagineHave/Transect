@@ -25,3 +25,7 @@ class AddForm(FlaskForm):
     date = DateField('date', [InputRequired()], format='%Y-%m-%d')
     submit = SubmitField('add')
 
+    def __init__(self, *args, **kwargs):
+        super(AddForm, self).__init__(*args, **kwargs)
+        self.payer_account.choices = get_accounts_as_list_of_tuples()
+        self.payee_account.choices = get_accounts_as_list_of_tuples()

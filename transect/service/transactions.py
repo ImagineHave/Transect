@@ -3,7 +3,6 @@ import csv
 from flask import (
     Blueprint, g, redirect, render_template, request, session, url_for
 )
-
 from transect.domain.transactions import (
     get_transactions_for_username, insert_transaction, get_transaction_from_transaction_id,
     update_transaction, delete_transaction
@@ -12,6 +11,7 @@ from transect.forms.transactions.add import AddForm
 from transect.forms.transactions.edit import EditForm
 from werkzeug.exceptions import abort
 from transect.service.auth import login_required
+from transect.domain.accounts import get_accounts_as_list_of_tuples
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 

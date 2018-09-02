@@ -29,3 +29,8 @@ class AddForm(FlaskForm):
     end_date = DateField('end date', [InputRequired()], format='%Y-%m-%d', default=datetime.date.today())
     frequency = SelectField(label='frequency', choices=get_as_list_of_tuples())
     submit = SubmitField('add')
+
+    def __init__(self, *args, **kwargs):
+        super(AddForm, self).__init__(*args, **kwargs)
+        self.payer_account.choices = get_accounts_as_list_of_tuples()
+        self.payee_account.choices = get_accounts_as_list_of_tuples()

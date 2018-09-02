@@ -69,6 +69,7 @@ def test_adding_accounts(client, app, auth, test_user):
         response = auth.post_and_redirect(change_logged_in_users_series, data=STANDARD_SERIES_ACCOUNT)
 
         print(response.data)
+        assert b'error' not in response.data
 
         assert 200 == response.status_code
         assert 1 == len(get_series_by_username(USERNAME1))

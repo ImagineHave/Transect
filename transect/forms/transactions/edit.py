@@ -24,3 +24,8 @@ class EditForm(FlaskForm):
     amount = DecimalField('amount', [InputRequired()], places=2, default=0.0, rounding=ROUND_HALF_UP)
     date = DateField('date', [InputRequired()], format='%Y-%m-%d')
     submit = SubmitField('edit')
+
+    def __init__(self, *args, **kwargs):
+        super(EditForm, self).__init__(*args, **kwargs)
+        self.payer_account.choices = get_accounts_as_list_of_tuples()
+        self.payee_account.choices = get_accounts_as_list_of_tuples()

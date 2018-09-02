@@ -30,3 +30,7 @@ class EditForm(FlaskForm):
     frequency = SelectField(label='frequency', choices=get_as_list_of_tuples())
     submit = SubmitField('edit')
 
+    def __init__(self, *args, **kwargs):
+        super(EditForm, self).__init__(*args, **kwargs)
+        self.payer_account.choices = get_accounts_as_list_of_tuples()
+        self.payee_account.choices = get_accounts_as_list_of_tuples()
