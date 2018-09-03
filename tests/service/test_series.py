@@ -28,8 +28,8 @@ def test_adding_series(client, app, auth, test_user):
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
-        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date}).first().date
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date}))
+        assert START_DATE1_DATE == get_transactions({'username': USERNAME1, 'date': date}).first().date
 
 
 def test_adding_series_accounts(client, app, auth, test_user):
@@ -54,8 +54,8 @@ def test_adding_series_accounts(client, app, auth, test_user):
         assert 25 == len(get_transactions_for_user_id(user_id1))
 
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date, 'payer': 'other'}))
-        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date, 'payer': 'other'}).first().date
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date, 'payer': 'other'}))
+        assert START_DATE1_DATE == get_transactions({'username': USERNAME1, 'date': date, 'payer': 'other'}).first().date
 
 
 def test_editing_series(client, app, auth, test_user):
@@ -88,8 +88,8 @@ def test_editing_series(client, app, auth, test_user):
         assert 200 == response.status_code
         assert 1 == len(get_series_by_username(USERNAME1))
         date = datetime.combine(START_DATE2_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date}))
-        assert START_DATE2_DATE == get_transactions(USERNAME1, {'date': date}).first().date
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date}))
+        assert START_DATE2_DATE == get_transactions({'username': USERNAME1, 'date': date}).first().date
 
 
 def test_editing_series_accounts(client, app, auth, test_user):
@@ -122,8 +122,8 @@ def test_editing_series_accounts(client, app, auth, test_user):
         assert 200 == response.status_code
 
         date = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 1 == len(get_transactions(USERNAME1, {'date': date, 'payer': 'other'}))
-        assert START_DATE1_DATE == get_transactions(USERNAME1, {'date': date, 'payer': 'other'}).first().date
+        assert 1 == len(get_transactions({'username': USERNAME1, 'date': date, 'payer': 'other'}))
+        assert START_DATE1_DATE == get_transactions({'username': USERNAME1, 'date': date, 'payer': 'other'}).first().date
 
 
 def test_deleting_series(client, app, auth, test_user):
@@ -155,4 +155,4 @@ def test_deleting_series(client, app, auth, test_user):
         assert 200 == response.status_code
 
         dt = datetime.combine(START_DATE1_DATE, datetime.min.time())
-        assert 0 == len(get_transactions(USERNAME1, {'date': dt}))
+        assert 0 == len(get_transactions({'username': USERNAME1, 'date': dt}))

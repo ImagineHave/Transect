@@ -131,8 +131,12 @@ def app():
     with app.app_context():
         get_db()['users'].insert_one(USER1P)
         get_db()['users'].insert_one(USER2P)
+        PAYER1_ACCOUNT['user'] = get_db()['users'].find_one(USER1P)['_id']
+        PAYEE1_ACCOUNT['user'] = get_db()['users'].find_one(USER1P)['_id']
         get_db()['accounts'].insert_one(PAYER1_ACCOUNT)
         get_db()['accounts'].insert_one(PAYEE1_ACCOUNT)
+        PAYER2_ACCOUNT['user'] = get_db()['users'].find_one(USER2P)['_id']
+        PAYEE2_ACCOUNT['user'] = get_db()['users'].find_one(USER2P)['_id']
         get_db()['accounts'].insert_one(PAYER2_ACCOUNT)
         get_db()['accounts'].insert_one(PAYEE2_ACCOUNT)
 

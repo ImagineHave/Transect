@@ -50,5 +50,5 @@ def update_account(_id, data):
 
 def get_accounts(data):
     data['user'] = Users.objects(username=data.pop('username')).first().id
-    account = Accounts.objects(__raw__=data)
-    return account
+    accounts = Accounts.objects(__raw__=data)
+    return accounts

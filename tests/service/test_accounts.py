@@ -46,7 +46,7 @@ def test_adding_accounts(client, app, auth, test_user):
             response = auth.post('/accounts/add', data=account)
             assert b"all" in response.data
 
-        assert 1 == len(get_accounts_by_username(USERNAME1))
+        assert 3 == len(get_accounts_by_username(USERNAME1))
 
         for account in a1s:
             date = datetime.combine(account['account_opened_date'], datetime.min.time())
@@ -102,7 +102,7 @@ def test_editing_accounts(client, app, auth, test_user):
             response = auth.post_and_redirect('/accounts/add', data=account)
             assert b'all' in response.data
 
-        assert 1 == len(get_accounts_by_username(USERNAME1))
+        assert 3 == len(get_accounts_by_username(USERNAME1))
 
         a1 = {'username': USERNAME1, 'account_name': 'ACCOUNT_NAME1'}
         a1id = get_accounts(a1).first().get_id()
@@ -138,7 +138,7 @@ def test_deleting_accounts(client, app, auth, test_user):
             response = auth.post_and_redirect('/accounts/add', data=account)
             assert b"all" in response.data
 
-        assert 1 == len(get_accounts_by_username(USERNAME1))
+        assert 3 == len(get_accounts_by_username(USERNAME1))
 
         a1 = {'username': USERNAME1, 'account_name': 'ACCOUNT_NAME1'}
         a1id = get_accounts(copy.deepcopy(a1)).first().get_id()
@@ -172,7 +172,7 @@ def test_add_edit_accounts(client, app, auth, test_user):
             response = auth.post('/accounts/add', data=account)
             assert b"all" in response.data
 
-        assert 1 == len(get_accounts_by_username(USERNAME1))
+        assert 3 == len(get_accounts_by_username(USERNAME1))
 
         for account in a1s:
             date = datetime.combine(account['account_opened_date'], datetime.min.time())
