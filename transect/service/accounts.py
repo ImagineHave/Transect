@@ -60,9 +60,6 @@ def edit(_id):
     '''put the transaction into the form'''
     form.process(formdata=request.form, obj=account)
 
-    print(form.validate_on_submit())
-    print(form.errors)
-
     if form.validate_on_submit():
 
         from_data = {'username': g.username, 'payer': account.account_name}

@@ -28,8 +28,6 @@ def get_account(p, a):
     if p is None or len(p) == 0:
         return a
     else:
-        print({'username': g.username, 'account_name': p})
-        print(get_accounts({'username': g.username, 'account_name': p}))
         if get_accounts({'username': g.username, 'account_name': p}).count() == 0:
             insert_account({'username': g.username, 'account_name': p})
         return p

@@ -36,7 +36,6 @@ def test_adding_transactions(client, app, auth, test_user):
         assert 1 == len(t1s)
 
         for transaction in t1s:
-            print(transaction)
             response = auth.post_and_redirect('/transactions/add', data=transaction)
             assert 200 == response.status_code
             assert b'all' in response.data

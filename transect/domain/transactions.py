@@ -98,13 +98,14 @@ def get_transactions(data):
 def get_transaction_ids(data):
     ids = []
 
-    data['user'] = Users.objects(username=data.pop('username')).first().id
+    user = Users.objects(username=data.pop('username')).first()
+    data['user'] = user.id
 
-    payer = Accounts.objects(account_name=data.pop('payer', None)).first()
+    payer = Accounts.objects(user=user, account_name=data.pop('payer', None)).first()
     if payer is not None:
         data['payer'] = payer.id
 
-    payee = Accounts.objects(account_name=data.pop('payee', None)).first()
+    payee = Accounts.objects(user=user, account_name=data.pop('payee', None)).first()
     if payee is not None:
         data['payee'] = payee.id
 

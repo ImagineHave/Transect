@@ -45,7 +45,6 @@ def test_adding_series_accounts(client, app, auth, test_user):
 
         user_id1 = test_user.get_user_id(USERNAME1)
 
-        print(STANDARD_SERIES_NO_PAYER)
         response = auth.post_and_redirect('/series/add', data=STANDARD_SERIES_NO_PAYER)
         assert 200 == response.status_code
         assert b"all" in response.data
